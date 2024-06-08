@@ -20,37 +20,37 @@ local dragger = {}; do
 	local inputService = cloneref(game:GetService('UserInputService'));
 	local RunService = cloneref(game:GetService("RunService"));
 	local heartbeat = RunService.Heartbeat;
-    -- // credits to Ririchi / Inori for this cute drag function :)
-    function dragger.new(frame)
+	-- // credits to Ririchi / Inori for this cute drag function :)
+	function dragger.new(frame)
 		frame.Draggable = false;
-		
-        local s, event = pcall(function()
-            return frame.MouseEnter
-        end)
 
-        if s then
-            frame.Active = true;
+		local s, event = pcall(function()
+			return frame.MouseEnter
+		end)
 
-            event:connect(function()
-                local input = frame.InputBegan:connect(function(key)
-                    if key.UserInputType == Enum.UserInputType.MouseButton1 then
-                        local objectPosition = Vector2.new(mouse.X - frame.AbsolutePosition.X, mouse.Y - frame.AbsolutePosition.Y);
-                        while heartbeat:wait() and inputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) do
-                            pcall(function()
-                                frame:TweenPosition(UDim2.new(0, mouse.X - objectPosition.X + (frame.Size.X.Offset * frame.AnchorPoint.X), 0, mouse.Y - objectPosition.Y + (frame.Size.Y.Offset * frame.AnchorPoint.Y)), 'Out', 'Quad', 0.1, true);
-                            end)
-                        end
-                    end
-                end)
+		if s then
+			frame.Active = true;
 
-                local leave;
-                leave = frame.MouseLeave:connect(function()
-                    input:disconnect();
-                    leave:disconnect();
-                end)
-            end)
-        end
-    end
+			event:connect(function()
+				local input = frame.InputBegan:connect(function(key)
+					if key.UserInputType == Enum.UserInputType.MouseButton1 then
+						local objectPosition = Vector2.new(mouse.X - frame.AbsolutePosition.X, mouse.Y - frame.AbsolutePosition.Y);
+						while heartbeat:wait() and inputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) do
+							pcall(function()
+								frame:TweenPosition(UDim2.new(0, mouse.X - objectPosition.X + (frame.Size.X.Offset * frame.AnchorPoint.X), 0, mouse.Y - objectPosition.Y + (frame.Size.Y.Offset * frame.AnchorPoint.Y)), 'Out', 'Quad', 0.1, true);
+							end)
+						end
+					end
+				end)
+
+				local leave;
+				leave = frame.MouseLeave:connect(function()
+					input:disconnect();
+					leave:disconnect();
+				end)
+			end)
+		end
+	end
 end
 
 dragger.new(editor)
@@ -107,9 +107,13 @@ local Lexer; do
 		"loadstring",
 		"newproxy",
 		"next",
+		"PathWaypoint",
+		"Path2DControlPoint",
+		"PhysicalProperties",
 		"pairs",
 		"pcall",
 		"print",
+		"printidentity",
 		"rawequal",
 		"rawget",
 		"rawset",
@@ -119,13 +123,35 @@ local Lexer; do
 		"tonumber",
 		"tostring",
 		"type",
+		"typeof",
 		"unpack",
 		"_VERSION",
+		"version",
+		"Version",
 		"xpcall",
 		"delay",
+		"Delay",
+		"DockWidgetPluginGuiInfo",
+		"DateTime",
+		"DateTime.fromUnixTimestamp",
+		"DateTime.now",
+		"DateTime.fromIsoDate",
+		"DateTime.fromUnixTimestampMillis",
+		"DateTime.fromLocalTime",
+		"DateTime.fromUniversalTime",
+		"task",
+		"task.defer",
+		"task.cancel",
+		"task.wait",
+		"task.desynchronize",
+		"task.synchronize",
+		"task.delay",
+		"task.spawn",
 		"elapsedTime",
+		"ElapsedTime",
 		"require",
 		"spawn",
+		"Spawn",
 		"tick",
 		"time",
 		"typeof",
@@ -138,37 +164,99 @@ local Lexer; do
 		"shared",
 		"workspace",
 		"Axes",
+		"bit32",
+		"bit32.band",
+		"bit32.extract",
+		"bit32.byteswap",
+		"bit32.bor",
+		"bit32.bnot",
+		"bit32.countrz",
+		"bit32.bxor",
+		"bit32.arshift",
+		"bit32.rshift",
+		"bit32.rrotate",
+		"bit32.replace",
+		"bit32.lshift",
+		"bit32.lrotate",
+		"bit32.btest",
+		"bit32.countlz",
+		"buffer",
+		"buffer.readf64",
+		"buffer.readu32",
+		"buffer.tostring",
+		"buffer.readi8",
+		"buffer.readu16",
+		"buffer.copy",
+		"buffer.readu8",
+		"buffer.writei16",
+		"buffer.writeu16",
+		"buffer.fromstring",
+		"buffer.readi32",
+		"buffer.fill",
+		"buffer.writeu32",
+		"buffer.writeu8",
+		"buffer.create",
+		"buffer.writestring",
+		"buffer.writei8",
+		"buffer.writef32",
+		"buffer.readi16",
+		"buffer.writef64",
+		"buffer.len",
+		"buffer.writei32",
+		"buffer.readstring",
+		"buffer.readf32",
 		"BrickColor",
 		"CFrame",
 		"Color3",
 		"ColorSequence",
 		"ColorSequenceKeypoint",
+		"CatalogSearchParams",
 		"Faces",
+		"FloatCurveKey",
+		"Font",
+		"Font.fromId",
+		"Font.fromEnum",
+		"Font.fromName",
 		"Instance",
+		"Instance.new",
+		"Instance.fromExisting",
 		"NumberRange",
 		"NumberSequence",
 		"NumberSequenceKeypoint",
-		"PhysicalProperties",
 		"Random",
 		"Ray",
+		"RotationCurveKey",
+		"RaycastParams",
 		"Rect",
 		"Region3",
 		"Region3int16",
 		"TweenInfo",
+		"utf8",
+		"utf8.char",
 		"UDim",
 		"UDim2",
 		"Vector2",
 		"Vector3",
 		"Vector3int16",
 		"next",
+		"OverlapParams",
 		"os",
+		"os.clock",
 		"os.time",
 		"os.date",
 		"os.difftime",
 		"debug",
-		"debug.traceback",
+		"debug.dumpheap",
+		"debug.getmemorycategory",
+		"debug.resetmemorycategory",
+		"debug.setmemorycategory",
+		"debug.dumpcodesize",
 		"debug.profilebegin",
+		"debug.loadmodule",
 		"debug.profileend",
+		"debug.info",
+		"debug.dumprefs",
+		"debug.traceback",
 		"math",
 		"math.abs",
 		"math.acos",
@@ -208,26 +296,46 @@ local Lexer; do
 		"coroutine.status",
 		"coroutine.wrap",
 		"coroutine.yield",
+		"coroutine.close",
+		"coroutine.isyieldable",
+		"stats",
+		"Stats",
 		"string",
-		"string.byte",
-		"string.char",
-		"string.dump",
-		"string.find",
-		"string.format",
-		"string.len",
-		"string.lower",
+		"string.split",
 		"string.match",
-		"string.rep",
-		"string.reverse",
-		"string.sub",
-		"string.upper",
 		"string.gmatch",
+		"string.upper",
 		"string.gsub",
+		"string.format",
+		"string.lower",
+		"string.sub",
+		"string.pack",
+		"string.find",
+		"string.char",
+		"string.packsize",
+		"string.reverse",
+		"string.byte",
+		"string.unpack",
+		"string.rep",
+		"string.len",
 		"table",
-		"table.concat",
+		"table.getn",
+		"table.foreachi",
+		"table.foreach",
+		"table.sort",
+		"table.unpack",
+		"table.freeze",
+		"table.clear",
+		"table.pack",
+		"table.move",
 		"table.insert",
+		"table.create",
+		"table.maxn",
+		"table.isfrozen",
+		"table.concat",
+		"table.clone",
+		"table.find",
 		"table.remove",
-		"table.sort"
 	}
 	local Keywords = {
 		["and"] = true,
@@ -250,7 +358,8 @@ local Lexer; do
 		["then"] = true,
 		["true"] = true,
 		["until"] = true,
-		["while"] = true;
+		["continue"] = true,
+		["while"] = true,
 		["self"] = true;
 	}
 	local Tokens = {
@@ -263,7 +372,7 @@ local Lexer; do
 		Builtin = 7,
 		Symbol = 19400
 	}
-	
+
 	local Stream; do
 		local sub, newline = string.sub, "\n"
 		function Stream(Input, FileName)
@@ -318,7 +427,7 @@ local Lexer; do
 			}
 		end
 	end
-	
+
 	local idenCheck, numCheck, opCheck = "abcdefghijklmnopqrstuvwxyz_", "0123456789", "+-*/%^#~=<>(){}[];:,."
 	local blank, dot, equal, openbrak, closebrak, newline, backslash, dash, quote, apos = "", ".", "=", "[", "]", "\n", "\\", "-", "\"", "'"
 	function Lexer(Code)
@@ -613,7 +722,7 @@ function Selection.new(Start, End, CaretSide)
 		Side = CaretSide
 	}
 end
-	
+
 local Themes = {
 	Plain = {
 		LineSelection = Color3.fromRGB(46, 46, 46),
@@ -702,7 +811,7 @@ function EditorLib.Initialize(Frame, Options)
 	TextArea.BottomImage = "rbxasset://textures/ui/Scroll/scroll-middle.png"
 	TextArea.TopImage = "rbxasset://textures/ui/Scroll/scroll-middle.png"
 	TextArea.ZIndex = 3;
-	
+
 	local Gutter = newInst("Frame")
 	Gutter.Name = "Gutter"
 	Gutter.ZIndex = baseZIndex
@@ -815,7 +924,7 @@ function EditorLib.Initialize(Frame, Options)
 	LineSelection.ZIndex = -1 + baseZIndex
 	LineSelection.Parent = TextArea
 	LineSelection.Visible = false;
-	
+
 	local ErrorHighlighter = newInst("Frame")
 	ErrorHighlighter.Name = "ErrorHighlighter"
 	ErrorHighlighter.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
@@ -854,14 +963,14 @@ function EditorLib.Initialize(Frame, Options)
 	local Caret = newInst("Frame")
 	Caret.Name = "Caret"
 	Caret.BorderSizePixel = 0
-	
+
 	Caret.BackgroundColor3 = Themes[Options.Theme].Text
 	ThemeSet(Caret, "BackgroundColor3", "Text")
 	Caret.Size = udim2(0, 2, 0, CharHeight)
 	Caret.Position = udim2(0, 0, 0, 0)
 	Caret.ZIndex = 100
 	Caret.Visible = false;
-	
+
 	local selectedword = nil;
 	local tokens = {}
 	local function NewToken(Content, Color, Position, Parent)		
@@ -1003,7 +1112,7 @@ function EditorLib.Initialize(Frame, Options)
 				CanvasWidth = width
 			end
 		end
-		
+
 		ClearTokensAndSelection()
 		TextArea.CanvasSize = udim2(0, 3000, 0, select(2, gsub(Editor.Content, newline, "")) * CharHeight + TextArea.AbsoluteWindowSize.Y)
 		DrawnLines = {}
@@ -1457,7 +1566,7 @@ local ScriptEditor, EditorGrid, Clear, TxtArea = EditorLib.Initialize(editor:Fin
 local function openScript(o)
 	EditorGrid.Text = "";
 	local id = GetDebugId(o);
-	
+
 	if cache[id] then
 		ScriptEditor.SetContent(cache[id])
 	else
@@ -1467,7 +1576,7 @@ local function openScript(o)
 		RunService.Heartbeat:wait();
 		ScriptEditor.SetContent(cache[id])
 	end
-	
+
 	Title.Text = "[Script Viewer] Viewing: " .. o.Name;
 end
 
@@ -1482,7 +1591,7 @@ SaveScript.MouseButton1Click:connect(function()
 		if fileName == "File Name" or FileName == "" then
 			fileName = "LocalScript_" .. math.random(1, 5000)
 		end
-		
+
 		fileName = fileName .. ".lua";
 		writefile(fileName, ScriptEditor.Content);
 	end
