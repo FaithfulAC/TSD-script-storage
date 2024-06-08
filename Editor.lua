@@ -1,3 +1,4 @@
+local GetScript = GetScript or (...)
 local script = GetScript(4)
 
 local editor = script.Parent;
