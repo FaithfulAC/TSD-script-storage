@@ -51,7 +51,7 @@ local ReplicatedStorage = cloneref(game:GetService("ReplicatedStorage"))
 
 -- Functions
 function theget(huh)
-	return game[("teGpttH"):reverse()](game, huh)
+	return game:HttpGet(huh)
 end
 
 -- RbxApi Stuff
