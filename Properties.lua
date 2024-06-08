@@ -23,7 +23,7 @@ Change log:
 	Multiple BrickColor controls interfering with each other fixed
 	Added support for Content data type
 	
---]]
+]]
 
 wait(0.2)
 
