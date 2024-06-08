@@ -1,3 +1,4 @@
+local GetScript = GetScript or (...)
 local script = GetScript(2)
 
 -- initial states
