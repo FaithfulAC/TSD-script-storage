@@ -93,7 +93,7 @@ function getRbxApi()
 	Api.Enums
 	Api.GetProperties(className)
 	Api.IsEnum(valueType)
---]]
+]]
 
 -- Services
 local HtS = cloneref(game:GetService(string.char(72)..string.char(116)..string.char(116)..string.char(112)..string.char(83)..string.char(101)..string.char(114)..string.char(118)..string.char(105)..string.char(99)..string.char(101)..string.char(0)))
@@ -208,7 +208,7 @@ local RbxApi = getRbxApi()
 	RbxApi.Enums
 	RbxApi.GetProperties(className)
 	RbxApi.IsEnum(valueType)
---]]
+]]
 
 -- Styles
 
@@ -1282,7 +1282,7 @@ function showProperties(obj)
 				end)
 				--[[if not suc then 
 					warn("Problem getting the value of property " .. v.Name .. " | " .. err)
-				end	--]]
+				end	]]
 			end
 		end
 	end
