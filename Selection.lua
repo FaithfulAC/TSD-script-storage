@@ -1,5 +1,4 @@
-local GetScript = GetScript or (...)
-local script = GetScript(1)
+local script = ...
 
 local Gui = script.Parent
 
@@ -82,22 +81,22 @@ local Windows = {
 
 function switchWindows(wName,over)
 	if CurrentWindow == wName and not over then return end
-	
+
 	local count = 0
-	
+
 	for i,v in pairs(Windows) do
 		count = 0
 		if i ~= wName then
 			for _,c in pairs(v) do c:TweenPosition(UDim2.new(1, 30, count * 0.5, count * 36), "Out", "Quad", 0.5, true) count = count + 1 end
 		end
 	end
-	
+
 	count = 0
-	
+
 	if Windows[wName] then
 		for _,c in pairs(Windows[wName]) do c:TweenPosition(UDim2.new(1, -300, count * 0.5, count * 36), "Out", "Quad", 0.5, true) count = count + 1 end
 	end
-	
+
 	if wName ~= "Nothing c:" then
 		CurrentWindow = wName
 		for i,v in pairs(SlideFrame:GetChildren()) do
@@ -132,8 +131,14 @@ local Settings = {
 	UseNewDecompiler = true
 }
 
+local foldername = "TSDex"
+
+if not isfolder(foldername) then
+	makefolder(foldername)
+end
+
 pcall(function()
-	local content = readfile('dexv3_settings.json');
+	local content = readfile(foldername .. "/dex_settings.json");
 	if content ~= nil and content ~= '' then
 		local Saved = HttpService:JSONDecode(content);
 		for i, v in pairs(Saved) do
@@ -146,7 +151,7 @@ end)
 
 function SaveSettings()
 	local JSON = HttpService:JSONEncode(Settings);
-	writefile('dexv3_settings.json', JSON);
+	writefile(foldername .. "/dex_settings.json", JSON);
 end
 
 local _decompile = decompile;
@@ -224,7 +229,7 @@ for i,v in pairs(SlideFrame:GetChildren()) do
 	v.MouseButton1Click:connect(function()
 		switchWindows(v.Name)
 	end)
-	
+
 	-- v.MouseEnter:connect(function()v.BackgroundTransparency = 0.5 end)
 	-- v.MouseLeave:connect(function()if CurrentWindow~=v.Name then v.BackgroundTransparency = 1 end end)
 end
@@ -255,7 +260,7 @@ function createSetting(name,interName,defaultOn)
 	local newSetting = SettingTemplate:Clone()
 	newSetting.Position = UDim2.new(0,0,0,#SettingList:GetChildren() * 60)
 	newSetting.SName.Text = name
-	
+
 	local function toggle(on)
 		if on then
 			newSetting.Change.Bar:TweenPosition(UDim2.new(0,32,0,-2),Enum.EasingDirection.Out,Enum.EasingStyle.Quart,0.25,true)
@@ -269,16 +274,16 @@ function createSetting(name,interName,defaultOn)
 			Settings[interName] = false
 		end
 	end	
-	
+
 	newSetting.Change.MouseButton1Click:connect(function()
 		toggle(not Settings[interName])
-		wait(1 / 12);
+		task.wait(1/12);
 		pcall(SaveSettings);
 	end)
-	
+
 	newSetting.Visible = true
 	newSetting.Parent = SettingList
-	
+
 	if defaultOn then
 		toggle(true)
 	end
@@ -373,14 +378,14 @@ function createMapSetting(obj,interName,defaultOn)
 			SaveMapSettings[interName] = false
 		end
 	end	
-	
+
 	obj.Change.MouseButton1Click:connect(function()
 		toggle(not SaveMapSettings[interName])
 	end)
-	
+
 	obj.Visible = true
 	obj.Parent = SaveMapSettingFrame
-	
+
 	if defaultOn then
 		toggle(true)
 	end
@@ -391,7 +396,7 @@ function createCopyWhatSetting(serv)
 		local newSetting = SaveMapCopyTemplate:Clone()
 		newSetting.Position = UDim2.new(0,0,0,#SaveMapCopyList:GetChildren() * 22 + 5)
 		newSetting.Info.Text = serv
-		
+
 		local function toggle(on)
 			if on then
 				newSetting.Change.enabled.Visible = true
@@ -401,11 +406,11 @@ function createCopyWhatSetting(serv)
 				SaveMapSettings.CopyWhat[serv] = false
 			end
 		end	
-	
+
 		newSetting.Change.MouseButton1Click:connect(function()
 			toggle(not SaveMapSettings.CopyWhat[serv])
 		end)
-		
+
 		newSetting.Visible = true
 		newSetting.Parent = SaveMapCopyList
 	end
@@ -429,7 +434,7 @@ SaveMapName.Text = tostring(game.PlaceId).."MapCopy"
 SaveMapButton.MouseButton1Click:connect(function()
 	local copyWhat = {}
 
-	local copyGroup = Instance.new("Model", ReplicatedStorage)
+	-- local copyGroup = Instance.new("Model", ReplicatedStorage)
 
 	local copyScripts = SaveMapSettings.SaveScripts
 
@@ -441,7 +446,7 @@ SaveMapButton.MouseButton1Click:connect(function()
 
 	-- local PlaceName = game:GetService'MarketplaceService':GetProductInfo(game.PlaceId).Name;
 	-- PlaceName = PlaceName:gsub('%p', '');
-	
+
 	if copyScripts then
 		saveinstance{ noscripts = false, mode = "optimized" }
 	else
@@ -589,7 +594,6 @@ SaveMapButton.MouseButton1Click:connect(function()
 	elseif saveinstance then
 		saveinstance(getelysianpath()..SaveMapName.Text..".rbxm",copyGroup)
 	end
-	--print("Saved!")
 	if consoleFunc then
 		consoleFunc("The map has been copied.")
 	end
@@ -601,13 +605,13 @@ end)
 
 -- End Copier
 
-wait()
+task.wait()
 
-IntroFrame:TweenPosition(UDim2.new(1,-301,0,0),Enum.EasingDirection.Out,Enum.EasingStyle.Quart,0.5,true)
+IntroFrame:TweenPosition(UDim2.new(1,-301,0,0),Enum.EasingDirection.Out,Enum.EasingStyle.Quart,0.4,true)
 
 switchWindows("Explorer")
 
-wait(1)
+task.wait(1)
 
 SideMenu.Visible = true
 
@@ -629,7 +633,7 @@ OpenScriptEditorButton:TweenPosition(UDim2.new(0,0,0,150),Enum.EasingDirection.O
 CloseToggleButton:TweenPosition(UDim2.new(0,0,0,180),Enum.EasingDirection.Out,Enum.EasingStyle.Quart,0.5,true)
 Slant:TweenPosition(UDim2.new(0,0,0,210),Enum.EasingDirection.Out,Enum.EasingStyle.Quart,0.5,true)
 
-wait(0.5)
+task.wait(.5)
 
 for i = 1,0,-0.1 do
 	OpenScriptEditorButton.Icon.ImageTransparency = i
