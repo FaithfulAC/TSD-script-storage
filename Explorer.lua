@@ -33,9 +33,12 @@ DexOutput.Name = "Output"
 local DexOutputMain = Instance.new("ScreenGui", DexOutput)
 DexOutputMain.Name = "Dex Output"
 
-local print = function(...)
-	if europa then return print(...) end
-	return;
+local print = print
+
+if not (EUROPA_INTERNAL_LOADED or PRINT_DETER) then
+	print = function(...)
+		return;
+	end
 end
 
 explorerPanel:WaitForChild("GetPrint").OnInvoke = function()
