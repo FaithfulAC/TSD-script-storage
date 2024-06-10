@@ -1,5 +1,4 @@
-local GetScript = GetScript or (...)
-local script = GetScript(4)
+local script = ...
 
 local editor = script.Parent;
 local bindable = editor:WaitForChild("OpenScript");
