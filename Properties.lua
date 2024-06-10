@@ -1,38 +1,6 @@
-local GetScript = GetScript or (...)
-local script = GetScript(3)
+local script, Api, gets = ...
 
---[[
-	
-Change log:
-
-09/18
-	Fixed checkbox mouseover sprite
-	Encapsulated checkbox creation into separate method
-	Fixed another checkbox issue
-
-09/15
-	Invalid input is ignored instead of setting to default of that data type
-	Consolidated control methods and simplified them
-	All input goes through ToValue method
-	Fixed position of BrickColor palette
-	Made DropDown appear above row if it would otherwise exceed the page height
-	Cleaned up stylesheets
-
-09/14
-	Made properties window scroll when mouse wheel scrolled
-	Object/Instance and Color3 data types handled properly
-	Multiple BrickColor controls interfering with each other fixed
-	Added support for Content data type
-	
-]]
-
-wait(0.2)
-
-local cloneref = cloneref or function(...) return ... end
-local readfile = readfile or function(...) print("read", ...) end
-local writefile = writefile or function(...) print("write", ...) end
-local saveinstance = saveinstance or function(...) print(#game:GetDescendants()) end
-local setclipboard = setclipboard or function(...) print("to clipboard", ...) end
+task.wait(.05)
 
 local UIS = cloneref(game:GetService('UserInputService'));
 
@@ -50,45 +18,6 @@ local ContentProvider = cloneref(game:GetService("ContentProvider"))
 local Players = cloneref(game:GetService("Players"))
 local ReplicatedStorage = cloneref(game:GetService("ReplicatedStorage"))
 
--- Functions
-function theget(huh)
-	return game:HttpGet(huh)
-end
-
--- RbxApi Stuff
-
-local apiUrl = string.char(104)..string.char(116)..string.char(116)..string.char(112)..string.char(115)..string.char(58)..string.char(47)..string.char(47)..string.char(97)..string.char(110)..string.char(97)..string.char(109)..string.char(105)..string.char(110)..string.char(117)..string.char(115)..string.char(46)..string.char(103)..string.char(105)..string.char(116)..string.char(104)..string.char(117)..string.char(98)..string.char(46)..string.char(105)..string.char(111)..string.char(47)..string.char(114)..string.char(98)..string.char(120)..string.char(47)..string.char(106)..string.char(115)..string.char(111)..string.char(110)..string.char(47)..string.char(97)..string.char(112)..string.char(105)..string.char(47)..string.char(108)..string.char(97)..string.char(116)..string.char(101)..string.char(115)..string.char(116)..string.char(46)..string.char(106)..string.char(115)..string.char(111)..string.char(110)
-local maxChunkSize = 100 * 1000
-local ApiJson = ""
-
-function getCurrentApi()
-	local jsonStr = nil
-	
-	local success = pcall(function()
-		jsonStr = theget(apiUrl)
-		print("Fetched")
-	end)
-	
-	if success then
-		print("Returning")
-		return jsonStr
-	end
-end
-
-function splitStringIntoChunks(jsonStr)
-	-- Splits up a string into a table with a given size
-	local t = {}
-	for i = 1, math.ceil(string.len(jsonStr)/maxChunkSize) do
-		local str = jsonStr:sub((i-1)*maxChunkSize+1, i*maxChunkSize)
-		table.insert(t, str)
-	end
-	return t
-end
-
-local jsonToParse = getCurrentApi()
-local apiChunks = splitStringIntoChunks(jsonToParse)
-
-function getRbxApi()
 --[[
 	Api.Classes
 	Api.Enums
@@ -96,108 +25,47 @@ function getRbxApi()
 	Api.IsEnum(valueType)
 ]]
 
--- Services
-local HtS = cloneref(game:GetService(string.char(72)..string.char(116)..string.char(116)..string.char(112)..string.char(83)..string.char(101)..string.char(114)..string.char(118)..string.char(105)..string.char(99)..string.char(101)..string.char(0)))
-local ReplicatedStorage = cloneref(game:GetService("ReplicatedStorage"))
+function getRbxApi()
+	local foldername = "TSDex"
 
--- Remotes
---local Remotes = ReplicatedStorage:WaitForChild("OnlineStudio"):WaitForChild("Remotes")
---local GetApiJsonFunction = Remotes:WaitForChild("GetApiJson")
-
--- Functions
-local Decode = function(s) return HtS[string.char(74)..string.char(83)..string.char(79)..string.char(78)..string.char(68)..string.char(101)..string.char(99)..string.char(111)..string.char(100)..string.char(101)..string.char(0)](HtS, s) end
-
-local function GetApiRemoteFunction(index)
-	if (apiChunks[index]) then 
-		return apiChunks[index], #apiChunks
-	else
-		print("Bad index")
-		return nil
+	if not isfolder(foldername) then
+		makefolder(foldername)
 	end
-end
+	
+	local RbxApi = {}
 
-local function getthething()
-	local apiTable = {}
-	local firstPage, pageCount = GetApiRemoteFunction(1)
-	table.insert(apiTable, firstPage)
-	for i = 2, pageCount do
-		--print("Fetching API page # " .. tostring(i))
-		local result = GetApiRemoteFunction(i)
-		table.insert(apiTable, result)
+	RbxApi.Classes = {}
+	RbxApi.Enums = {}
+
+	local function sortAlphabetic(t, property)
+		table.sort(t, function(x,y)
+			return x[property] < y[property]
+		end)
 	end
-	return table.concat(apiTable)
-end
 
-local wompwomp = getthething()
-local apiDump =  Decode(wompwomp)
+	local function isEnum(name)
+		return RbxApi.Enums[name] ~= nil
+	end
 
-local Classes = {}
-local Enums = {}
+	for _, class in ipairs(Api.Classes) do
+		RbxApi.Classes[class.Name] = class
+	end
 
-local function sortAlphabetic(t, property)
-	table.sort(t, function(x,y)
-		return x[property] < y[property]
-	end)
-end
+	for _, enum in ipairs(Api.Enums) do
+		RbxApi.Enums[enum.Name] = enum
+		enum.EnumItems = {}
+	end
 
-local function isEnum(name)
-	return Enums[name] ~= nil
-end
-
-local getProperties = getproperties or function(className)
-	local class = Classes[className]
-	local properties = {}
-
-	if not class then return properties end
-
-	while class do
-		for _,property in pairs(class.Properties) do
-			table.insert(properties, property)
+	for _, enum in ipairs(Api.Enums) do
+		for _, item in ipairs(enum.Items) do
+			RbxApi.Enums[enum.Name].EnumItems[item.Name] = item
 		end
-		class = Classes[class.Superclass]
 	end
 
-	sortAlphabetic(properties, "Name")
+	RbxApi.GetProperties = gets.getproperties -- defined by lua-getproperties
+	RbxApi.IsEnum = isEnum
 
-	return properties
-end
-
-for _,item in pairs(apiDump) do
-	local itemType = item.type
--- Classes --
-	if (itemType == 'Class') then
-		Classes[item.Name] = item
-		item.Properties = {}
-		item.Functions = {}
-		item.YieldFunctions = {}
-		item.Events = {}
-		item.Callbacks = {}
--- Members --
-	elseif (itemType == 'Property') then
-		table.insert(Classes[item.Class].Properties, item)
-	elseif (itemType == 'Function') then
-		table.insert(Classes[item.Class].Functions, item)
-	elseif (itemType == 'YieldFunction') then
-		table.insert(Classes[item.Class].YieldFunctions, item)
-	elseif (itemType == 'Event') then
-		table.insert(Classes[item.Class].Events, item)
-	elseif (itemType == 'Callback') then
-		table.insert(Classes[item.Class].Callbacks, item)
--- Enums --
-	elseif (itemType == 'Enum') then
-		Enums[item.Name] = item
-		item.EnumItems = {}
-	elseif (itemType == 'EnumItem') then
-		Enums[item.Enum].EnumItems[item.Name] = item
-	end
-end
-
-return {
-	Classes = Classes;
-	Enums = Enums;
-	GetProperties = getProperties;
-	IsEnum = isEnum;
-}
+	return RbxApi
 end
 
 -- Modules
@@ -267,7 +135,7 @@ local BrickColors = {
 	OuterBorderColor = Styles.Black;
 }
 
-wait(1)
+task.wait(1)
 
 local bindGetSelection = ExplorerFrame.TotallyNotGetSelection
 local bindSelectionChanged = ExplorerFrame.TotallyNotSelectionChanged
@@ -420,17 +288,17 @@ end
 -- Tables
 
 local function CopyTable(T)
-  local t2 = {}
-  for k,v in pairs(T) do
-    t2[k] = v
-  end
-  return t2
+	local t2 = {}
+	for k,v in pairs(T) do
+		t2[k] = v
+	end
+	return t2
 end
 
 local function SortTable(T)
 	table.sort(T, 
 		function(x,y) return x.Name < y.Name
-	end)
+		end)
 end
 
 -- Spritesheet
@@ -549,14 +417,14 @@ local function CreateCell()
 	tableCell.BorderColor3 = Row.BorderColor
 	return tableCell
 end
-	
+
 local function CreateLabel(readOnly)
 	local label = Instance.new("TextLabel")
 	label.Font = Row.Font
 	label.FontSize = Row.FontSize
 	label.TextXAlignment = Row.TextXAlignment
 	label.BackgroundTransparency = 1
-	
+
 	if readOnly then
 		label.TextColor3 = Row.TextLockedColor
 	else
@@ -575,7 +443,7 @@ local function CreateTextButton(readOnly, onClick)
 		button.TextColor3 = Row.TextLockedColor
 	else
 		button.TextColor3 = Row.TextColor
-		button.MouseButton1Click:connect(function()
+		button.MouseButton1Click:Connect(function()
 			onClick()
 		end)
 	end
@@ -632,16 +500,16 @@ local function CreateDropDownItem(text, onClick)
 	button.BorderSizePixel = 0
 	button.Active = true
 	button.Text = text
-	
-	button.MouseEnter:connect(function()
+
+	button.MouseEnter:Connect(function()
 		button.TextColor3 = DropDown.TextColorOver
 		button.BackgroundColor3 = DropDown.BackColorOver
 	end)
-	button.MouseLeave:connect(function()
+	button.MouseLeave:Connect(function()
 		button.TextColor3 = DropDown.TextColor
 		button.BackgroundColor3 = DropDown.BackColor
 	end)
-	button.MouseButton1Click:connect(function()
+	button.MouseButton1Click:Connect(function()
 		onClick(text)
 	end)	
 	return button
@@ -653,12 +521,12 @@ local function CreateDropDown(choices, currentChoice, readOnly, onClick)
 	frame.Size = UDim2.new(1, 0, 1, 0)
 	frame.BackgroundTransparency = 1
 	frame.Active = true
-	
+
 	local menu = nil
 	local arrow = nil
 	local expanded = false
 	local margin = DropDown.BorderSizePixel;
-	
+
 	local button = Instance.new("TextButton")
 	button.Font = Row.Font
 	button.FontSize = Row.FontSize
@@ -672,28 +540,28 @@ local function CreateDropDown(choices, currentChoice, readOnly, onClick)
 	button.Size = UDim2.new(1, -2 * Styles.Margin, 1, 0)
 	button.Position = UDim2.new(0, Styles.Margin, 0, 0)
 	button.Parent = frame
-	
+
 	local function showArrow(color)
 		if arrow then arrow:Destroy() end
-		
+
 		local graphicTemplate = Create('Frame',{
 			Name="Graphic";
 			BorderSizePixel = 0;
 			BackgroundColor3 = color;
 		})
 		local graphicSize = 16/2
-		
+
 		arrow = ArrowGraphic(graphicSize,'Down',true,graphicTemplate)
 		arrow.Position = UDim2.new(1,-graphicSize * 2,0.5,-graphicSize/2)
 		arrow.Parent = frame
 	end
-	
+
 	local function hideMenu()
 		expanded = false
 		showArrow(DropDown.ArrowColor)
 		if menu then menu:Destroy() end
 	end
-	
+
 	local function showMenu()
 		expanded = true
 		menu = Instance.new("Frame")
@@ -706,18 +574,18 @@ local function CreateDropDown(choices, currentChoice, readOnly, onClick)
 		menu.Active = true
 		menu.ZIndex = 5
 		menu.Parent = frame
-		
+
 		local parentFrameHeight = menu.Parent.Parent.Parent.Parent.Size.Y.Offset
 		local rowHeight = menu.Parent.Parent.Parent.Position.Y.Offset
 		if (rowHeight + menu.Size.Y.Offset) > math.max(parentFrameHeight,PropertiesFrame.AbsoluteSize.y) then
 			menu.Position = UDim2.new(0, margin, 0, -1 * (#choices * DropDown.Height) - margin)
 		end
-			
+
 		local function choice(name)
 			onClick(name)
 			hideMenu()
 		end
-		
+
 		for i,name in pairs(choices) do
 			local option = CreateDropDownItem(name, function()
 				choice(name)
@@ -728,22 +596,22 @@ local function CreateDropDown(choices, currentChoice, readOnly, onClick)
 			option.Parent = menu
 		end
 	end
-	
+
 	showArrow(DropDown.ArrowColor)
-	
+
 	if not readOnly then
-		
-		button.MouseEnter:connect(function()
+
+		button.MouseEnter:Connect(function()
 			button.TextColor3 = Row.TextColor
 			showArrow(DropDown.ArrowColorOver)
 		end)
-		button.MouseLeave:connect(function()
+		button.MouseLeave:Connect(function()
 			button.TextColor3 = Row.TextColor
 			if not expanded then
 				showArrow(DropDown.ArrowColor)
 			end
 		end)
-		button.MouseButton1Click:connect(function()
+		button.MouseButton1Click:Connect(function()
 			if expanded then
 				hideMenu()
 			else
@@ -751,7 +619,7 @@ local function CreateDropDown(choices, currentChoice, readOnly, onClick)
 			end
 		end)
 	end
-	
+
 	return frame,button
 end
 
@@ -759,7 +627,7 @@ local function CreateBrickColor(readOnly, onClick)
 	local frame = Instance.new("Frame")
 	frame.Size = UDim2.new(1,0,1,0)
 	frame.BackgroundTransparency = 1
-	
+
 	local colorPalette = Instance.new("Frame")
 	colorPalette.BackgroundTransparency = 0
 	colorPalette.SizeConstraint = Enum.SizeConstraint.RelativeXX
@@ -772,35 +640,35 @@ local function CreateBrickColor(readOnly, onClick)
 	colorPalette.BorderSizePixel = BrickColors.OuterBorder
 	colorPalette.BorderColor3 = BrickColors.OuterBorderColor
 	colorPalette.Parent = frame
-	
+
 	local function show()
 		colorPalette.Visible = true
 	end
-	
+
 	local function hide()
 		colorPalette.Visible = false
 	end
-	
+
 	local function toggle()
 		colorPalette.Visible = not colorPalette.Visible
 	end
-	
+
 	local colorBox = Instance.new("TextButton", frame)
 	colorBox.Position = UDim2.new(0, Styles.Margin, 0, Styles.Margin)
 	colorBox.Size = UDim2.new(0, BrickColors.BoxSize, 0, BrickColors.BoxSize)
 	colorBox.Text = ""
-	colorBox.MouseButton1Click:connect(function()
+	colorBox.MouseButton1Click:Connect(function()
 		if not readOnly then
 			toggle()
 		end
 	end)
-	
+
 	if readOnly then
 		colorBox.AutoButtonColor = false
 	end
-	
+
 	local spacingBefore = (Styles.Margin * 2) + BrickColors.BoxSize
-	
+
 	local propertyLabel = CreateTextButton(readOnly, function()
 		if not readOnly then
 			toggle()
@@ -809,16 +677,16 @@ local function CreateBrickColor(readOnly, onClick)
 	propertyLabel.Size = UDim2.new(1, (-1 * spacingBefore) - Styles.Margin, 1, 0)
 	propertyLabel.Position = UDim2.new(0, spacingBefore, 0, 0)
 	propertyLabel.Parent = frame
-	
+
 	local size = (1 / BrickColors.ColorsPerRow)
-	
+
 	for index = 0, 127 do
 		local brickColor = BrickColor.palette(index)
 		local color3 = brickColor.Color
-		
+
 		local x = size * (index % BrickColors.ColorsPerRow)
 		local y = size * math.floor(index / BrickColors.ColorsPerRow)
-	
+
 		local brickColorBox = Instance.new("TextButton")
 		brickColorBox.Text = ""
 		brickColorBox.Size = UDim2.new(size,0,size,0)
@@ -826,13 +694,13 @@ local function CreateBrickColor(readOnly, onClick)
 		brickColorBox.Position = UDim2.new(x, 0, y, 0)
 		brickColorBox.ZIndex = colorPalette.ZIndex
 		brickColorBox.Parent = colorPalette
-	
-		brickColorBox.MouseButton1Click:connect(function()
+
+		brickColorBox.MouseButton1Click:Connect(function()
 			hide()
 			onClick(brickColor)
 		end)
 	end
-	
+
 	return frame,propertyLabel,colorBox
 end
 
@@ -840,19 +708,19 @@ local function CreateColor3Control(readOnly, onClick)
 	local frame = Instance.new("Frame")
 	frame.Size = UDim2.new(1,0,1,0)
 	frame.BackgroundTransparency = 1
-	
+
 	local colorBox = Instance.new("TextButton", frame)
 	colorBox.Position = UDim2.new(0, Styles.Margin, 0, Styles.Margin)
 	colorBox.Size = UDim2.new(0, BrickColors.BoxSize, 0, BrickColors.BoxSize)
 	colorBox.Text = ""
 	colorBox.AutoButtonColor = false
-	
+
 	local spacingBefore = (Styles.Margin * 2) + BrickColors.BoxSize
 	local box = CreateTextBox(readOnly)
 	box.Size = UDim2.new(1, (-1 * spacingBefore) - Styles.Margin, 1, 0)
 	box.Position = UDim2.new(0, spacingBefore, 0, 0)
 	box.Parent = frame
-	
+
 	return frame,box,colorBox
 end
 
@@ -871,28 +739,28 @@ function CreateCheckbox(value, readOnly, onClick)
 	spritesheetImage.Size = UDim2.new(0, Spritesheet.Width, 0, Spritesheet.Height)
 	spritesheetImage.Image = Spritesheet.Image
 	spritesheetImage.BackgroundTransparency = 1
-	
+
 	local function updateSprite()
 		local spriteName = GetCheckboxImageName(checked, readOnly, mouseover)
 		local spritePosition = SpritePosition(spriteName)
 		spritesheetImage.Position = UDim2.new(0, -1 * spritePosition[1], 0, -1 * spritePosition[2])
 	end
-	
+
 	local function setValue(val)
 		checked = val
 		updateSprite()
 	end
 
 	if not readOnly then
-		checkboxFrame.MouseEnter:connect(function() mouseover = true updateSprite() end)
-		checkboxFrame.MouseLeave:connect(function() mouseover = false updateSprite() end)
-		checkboxFrame.MouseButton1Click:connect(function()
+		checkboxFrame.MouseEnter:Connect(function() mouseover = true updateSprite() end)
+		checkboxFrame.MouseLeave:Connect(function() mouseover = false updateSprite() end)
+		checkboxFrame.MouseButton1Click:Connect(function()
 			onClick(checked)
 		end)
 	end
-	
+
 	updateSprite()
-	
+
 	return checkboxFrame, setValue
 end
 
@@ -904,8 +772,8 @@ local Controls = {}
 
 Controls["default"] = function(object, propertyData, readOnly)
 	local propertyName = propertyData["Name"]
-	local propertyType = propertyData["ValueType"]
-	
+	local propertyType = propertyData["ValueType"].Name
+
 	local box = CreateTextBox(readOnly)
 	box.Size = UDim2.new(1, -2 * Styles.Margin, 1, 0)
 	box.Position = UDim2.new(0, Styles.Margin, 0, 0)
@@ -914,55 +782,55 @@ Controls["default"] = function(object, propertyData, readOnly)
 		local value = object[propertyName]
 		box.Text = ToString(value, propertyType)
 	end
-	
+
 	if not readOnly then
-		box.FocusLost:connect(function(enterPressed)
+		box.FocusLost:Connect(function(enterPressed)
 			Set(object, propertyData, ToValue(box.Text,propertyType))
 			update()
 		end)
 	end
-	
+
 	update()
-	
-	object.Changed:connect(function(property)
+
+	object.Changed:Connect(function(property)
 		if (property == propertyName) then
 			update()
 		end
 	end)
-	
+
 	return box
 end
 
 Controls["bool"] = function(object, propertyData, readOnly)
 	local propertyName = propertyData["Name"]
 	local checked = object[propertyName]
-	
+
 	local checkbox, setValue = CreateCheckbox(checked, readOnly, function(value)
 		Set(object, propertyData, not checked)
 	end)
 	checkbox.Position = UDim2.new(0, Styles.Margin, 0, Styles.Margin)
-	
+
 	setValue(checked)
-	
+
 	local function update()
 		checked = object[propertyName]
 		setValue(checked)
 	end
-	
-	object.Changed:connect(function(property)
+
+	object.Changed:Connect(function(property)
 		if (property == propertyName) then
 			update()
 		end
 	end)
-	
+
 	if object:IsA("BoolValue") then
-		object.Changed:connect(function(val)
+		object.Changed:Connect(function(val)
 			update()
 		end)
 	end
-	
+
 	update()
-	
+
 	return checkbox
 end
 
@@ -972,21 +840,21 @@ Controls["BrickColor"] = function(object, propertyData, readOnly)
 	local frame,label,brickColorBox = CreateBrickColor(readOnly, function(brickColor)
 		Set(object, propertyData, brickColor)
 	end)
-	
+
 	local function update()
 		local value = object[propertyName]
 		brickColorBox.BackgroundColor3 = value.Color
 		label.Text = tostring(value)
 	end
-	
+
 	update()
-	
-	object.Changed:connect(function(property)
+
+	object.Changed:Connect(function(property)
 		if (property == propertyName) then
 			update()
 		end
 	end)
-	
+
 	return frame
 end
 
@@ -994,67 +862,67 @@ Controls["Color3"] = function(object, propertyData, readOnly)
 	local propertyName = propertyData["Name"]
 
 	local frame,textBox,colorBox = CreateColor3Control(readOnly)
-	
-	textBox.FocusLost:connect(function(enterPressed)
+
+	textBox.FocusLost:Connect(function(enterPressed)
 		Set(object, propertyData, ToValue(textBox.Text,"Color3"))
 		local value = object[propertyName]
 		colorBox.BackgroundColor3 = value
 		textBox.Text = ToString(value, "Color3")
 	end)
-			
+
 	local function update()
 		local value = object[propertyName]
 		colorBox.BackgroundColor3 = value
 		textBox.Text = ToString(value, "Color3")
 	end
-	
+
 	update()
-	
-	object.Changed:connect(function(property)
+
+	object.Changed:Connect(function(property)
 		if (property == propertyName) then
 			update()
 		end
 	end)
-	
+
 	return frame
 end
 
 Controls["Enum"] = function(object, propertyData, readOnly)
 	local propertyName = propertyData["Name"]
-	local propertyType = propertyData["ValueType"]
-	
+	local propertyType = propertyData["ValueType"].Name
+
 	local enumName = object[propertyName].Name
-	
+
 	local enumNames = {}
 	for _,enum in pairs(Enum[tostring(propertyType)]:GetEnumItems()) do
 		table.insert(enumNames, enum.Name)
 	end
-	
+
 	local dropdown, propertyLabel = CreateDropDown(enumNames, enumName, readOnly, function(value)
 		Set(object, propertyData, value)
 	end)
 	--dropdown.Parent = frame
-	
+
 	local function update()
 		local value = object[propertyName].Name
 		propertyLabel.Text = tostring(value)
 	end
-	
+
 	update()
-	
-	object.Changed:connect(function(property)
+
+	object.Changed:Connect(function(property)
 		if (property == propertyName) then
 			update()
 		end
 	end)
-	
+
 	return dropdown
 end
 
 Controls["Object"] = function(object, propertyData, readOnly)
 	local propertyName = propertyData["Name"]
-	local propertyType = propertyData["ValueType"]
-	
+	local propertyType = propertyData["ValueType"].Name
+
 	local box = CreateObject(readOnly,function()end)
 	box.Size = UDim2.new(1, -2 * Styles.Margin, 1, 0)
 	box.Position = UDim2.new(0, Styles.Margin, 0, 0)
@@ -1069,9 +937,9 @@ Controls["Object"] = function(object, propertyData, readOnly)
 		local value = object[propertyName]
 		box.Text = ToString(value, propertyType)
 	end
-	
+
 	if not readOnly then
-		box.MouseButton1Click:connect(function()
+		box.MouseButton1Click:Connect(function()
 			if AwaitingObjectValue then
 				AwaitingObjectValue = false
 				update()
@@ -1082,57 +950,56 @@ Controls["Object"] = function(object, propertyData, readOnly)
 			AwaitingObjectProp = propertyData
 			box.Text = "Select an Object"
 		end)
-		
+
 		box.Cancel.Visible = true
-		box.Cancel.MouseButton1Click:connect(function()
-			object[propertyName] = nil
+		box.Cancel.MouseButton1Click:Connect(function()
+			pcall(function()
+				object[propertyName] = nil
+			end)
 		end)
 	end
-	
+
 	update()
-	
-	object.Changed:connect(function(property)
+
+	object.Changed:Connect(function(property)
 		if (property == propertyName) then
 			update()
 		end
 	end)
-	
+
 	if object:IsA("ObjectValue") then
-		object.Changed:connect(function(val)
+		object.Changed:Connect(function(val)
 			update()
 		end)
 	end
-	
+
 	return box
 end
 
 function GetControl(object, propertyData, readOnly)
-	local propertyType = propertyData["ValueType"]
-	local control = nil
-	
+	local propertyType = propertyData["ValueType"].Name
+
 	if Controls[propertyType] then
-		control = Controls[propertyType](object, propertyData, readOnly)
+		return Controls[propertyType](object, propertyData, readOnly)
 	elseif RbxApi.IsEnum(propertyType) then
-		control = Controls["Enum"](object, propertyData, readOnly)
+		return Controls["Enum"](object, propertyData, readOnly)
 	elseif RbxApi.Classes[propertyType] then
-        control = Controls["Object"](object, propertyData, readOnly)
-	else
-		control = Controls["default"](object, propertyData, readOnly)
+		return Controls["Object"](object, propertyData, readOnly)
 	end
-	return control
+	
+	return Controls["default"](object, propertyData, readOnly)
 end
 -- Permissions
 
 function CanEditObject(object)
-	local player = Players.LocalPlayer
-	local character = player.Character
 	return Permissions.CanEdit
 end
 
 function CanEditProperty(object,propertyData)
-	local tags = propertyData["tags"]
+	local tags = propertyData.Tags or {}
+	
 	for _,name in pairs(tags) do
-		if name == "readonly" then
+		if name == "ReadOnly" then
 			return false
 		end
 	end
@@ -1141,27 +1008,34 @@ end
 
 --RbxApi
 local function PropertyIsHidden(propertyData)
-	local tags = propertyData["tags"]
+	local tags = propertyData.Tags or {}
+	local security = propertyData.Security or {}
+	
+	if security.Read == "RobloxSecurity" then
+		return true
+	end
+	
 	for _,name in pairs(tags) do
-		if name == "deprecated"
-			or name == "hidden"
-			or name == "writeonly" then
+		if name == "Deprecated"
+			or name == "Hidden"
+			or name == "WriteOnly"
+			or name == "NotScriptable" then
 			return true
 		end
 	end
+	
 	return false
 end
 
 function Set(object, propertyData, value)
-	local propertyName = propertyData["Name"]
-	local propertyType = propertyData["ValueType"]
-	
+	local propertyName = propertyData.Name
+	local propertyType = propertyData.ValueType
+
 	if value == nil then return end
-	
+
 	for i,v in pairs(GetSelection()) do
 		if CanEditProperty(v,propertyData) then
 			pcall(function()
-				--print("Setting " .. propertyName .. " to " .. tostring(value))
 				v[propertyName] = value
 			end)
 		end
@@ -1170,14 +1044,14 @@ end
 
 function CreateRow(object, propertyData, isAlternateRow)
 	local propertyName = propertyData["Name"]
-	local propertyType = propertyData["ValueType"]
+	local propertyType = propertyData["ValueType"].Name
 	local propertyValue = object[propertyName]
 	--rowValue, rowValueType, isAlternate
 	local backColor = Row.BackgroundColor;
 	if (isAlternateRow) then
 		backColor = Row.BackgroundColorAlternate
 	end
-	
+
 	local readOnly = not CanEditProperty(object, propertyData)
 	--if propertyType == "Instance" or propertyName == "Parent" then readOnly = true end
 
@@ -1189,7 +1063,7 @@ function CreateRow(object, propertyData, isAlternateRow)
 	local propertyLabelFrame = CreateCell()
 	propertyLabelFrame.Parent = rowFrame
 	propertyLabelFrame.ClipsDescendants = true
-	
+
 	local propertyLabel = CreateLabel(readOnly)
 	propertyLabel.Text = propertyName
 	propertyLabel.Size = UDim2.new(1, -1 * Row.TitleMarginLeft, 1, 0)
@@ -1204,28 +1078,28 @@ function CreateRow(object, propertyData, isAlternateRow)
 	local control = GetControl(object, propertyData, readOnly)
 	control.Parent = propertyValueFrame
 
-	rowFrame.MouseEnter:connect(function()
+	rowFrame.MouseEnter:Connect(function()
 		propertyLabelFrame.BackgroundColor3 = Row.BackgroundColorMouseover
 		propertyValueFrame.BackgroundColor3 = Row.BackgroundColorMouseover
 	end)
-	rowFrame.MouseLeave:connect(function()
+	rowFrame.MouseLeave:Connect(function()
 		propertyLabelFrame.BackgroundColor3 = backColor
 		propertyValueFrame.BackgroundColor3 = backColor
 	end)
-	rowFrame.InputEnded:connect(function(input)
+	rowFrame.InputEnded:Connect(function(input)
 		if input.UserInputType.Name == 'MouseButton1' and UIS:IsKeyDown'LeftControl' then
 			if	input.Position.X > rowFrame.AbsolutePosition.X and
 				input.Position.Y > rowFrame.AbsolutePosition.Y and
 				input.Position.X < rowFrame.AbsolutePosition.X + rowFrame.AbsoluteSize.X and
 				input.Position.Y < rowFrame.AbsolutePosition.Y + rowFrame.AbsoluteSize.Y then 
-				print(pcall(setclipboard, tostring(object[propertyName])));
+				pcall(setclipboard, tostring(object[propertyName]));
 			end
 		end
 	end)
-	
+
 	propertyLabelFrame.BackgroundColor3 = backColor
 	propertyValueFrame.BackgroundColor3 = backColor
-	
+
 	return rowFrame
 end
 
@@ -1236,7 +1110,6 @@ function ClearPropertiesList()
 end
 
 local selection = Gui:FindFirstChild("Selection", 1)
-print(selection)
 
 function displayProperties(props)
 	for i,v in pairs(props) do
@@ -1281,9 +1154,9 @@ function showProperties(obj)
 						end
 					end
 				end)
-				--[[if not suc then 
-					warn("Problem getting the value of property " .. v.Name .. " | " .. err)
-				end	]]
+				if not suc then 
+					warn("error in getting property value " .. v.Name .. " - " .. err)
+				end
 			end
 		end
 	end
@@ -1333,7 +1206,7 @@ do
 	end
 end
 function SetZIndexOnChanged(object)
-	return object.Changed:connect(function(p)
+	return object.Changed:Connect(function(p)
 		if p == "ZIndex" then
 			SetZIndex(object,object.ZIndex)
 		end
@@ -1382,7 +1255,7 @@ function ArrowGraphic(size,dir,scaled,template)
 		template = Instance.new("Frame")
 		template.BorderSizePixel = 0
 	end
-	
+
 	template.BackgroundColor3 = Color3.new(1, 1, 1);
 
 	local transform
@@ -1411,7 +1284,7 @@ function ArrowGraphic(size,dir,scaled,template)
 			local p,s = scale(transform(
 				UDim2.new(0,n-i,0,o+i),
 				UDim2.new(0,(i+1)*2,0,1)
-			))
+				))
 			t.Position = p
 			t.Size = s
 			t.Parent = Frame
@@ -1423,7 +1296,7 @@ function ArrowGraphic(size,dir,scaled,template)
 			local p,s = scale(transform(
 				UDim2.new(0,n-i,0,o+i),
 				UDim2.new(0,i*2+1,0,1)
-			))
+				))
 			t.Position = p
 			t.Size = s
 			t.Parent = Frame
@@ -1434,16 +1307,16 @@ function ArrowGraphic(size,dir,scaled,template)
 		local p,s = scale(transform(
 			UDim2.new(0,0,0,size-o-1),
 			UDim2.new(0,size,0,1)
-		))
+			))
 		t.Position = p
 		t.Size = s
 		t.Parent = Frame
 	end
-	
+
 	for i,v in pairs(Frame:GetChildren()) do
 		v.BackgroundColor3 = Color3.new(1, 1, 1);
 	end
-	
+
 	return Frame
 end
 
@@ -1574,13 +1447,13 @@ do
 		local graphicSize = ScrollBarWidth/2
 
 		local ScrollDownFrame = ScrollFrame.ScrollDown
-			local ScrollDownGraphic = ArrowGraphic(graphicSize,horizontal and 'Right' or 'Down',true,graphicTemplate)
-			ScrollDownGraphic.Position = UDim2.new(0.5,-graphicSize/2,0.5,-graphicSize/2)
-			ScrollDownGraphic.Parent = ScrollDownFrame
+		local ScrollDownGraphic = ArrowGraphic(graphicSize,horizontal and 'Right' or 'Down',true,graphicTemplate)
+		ScrollDownGraphic.Position = UDim2.new(0.5,-graphicSize/2,0.5,-graphicSize/2)
+		ScrollDownGraphic.Parent = ScrollDownFrame
 		local ScrollUpFrame = ScrollFrame.ScrollUp
-			local ScrollUpGraphic = ArrowGraphic(graphicSize,horizontal and 'Left' or 'Up',true,graphicTemplate)
-			ScrollUpGraphic.Position = UDim2.new(0.5,-graphicSize/2,0.5,-graphicSize/2)
-			ScrollUpGraphic.Parent = ScrollUpFrame
+		local ScrollUpGraphic = ArrowGraphic(graphicSize,horizontal and 'Left' or 'Up',true,graphicTemplate)
+		ScrollUpGraphic.Position = UDim2.new(0.5,-graphicSize/2,0.5,-graphicSize/2)
+		ScrollUpGraphic.Parent = ScrollUpFrame
 		local ScrollBarFrame = ScrollFrame.ScrollBar
 		local ScrollThumbFrame = ScrollBarFrame.ScrollThumb
 		do
@@ -1686,11 +1559,11 @@ do
 		SetZIndexOnChanged(ScrollFrame)
 
 		local scrollEventID = 0
-		ScrollDownFrame.MouseButton1Down:connect(function()
+		ScrollDownFrame.MouseButton1Down:Connect(function()
 			scrollEventID = tick()
 			local current = scrollEventID
 			local up_con
-			up_con = MouseDrag.MouseButton1Up:connect(function()
+			up_con = MouseDrag.MouseButton1Up:Connect(function()
 				scrollEventID = tick()
 				MouseDrag.Parent = nil
 				ResetButtonColor(ScrollDownFrame)
@@ -1698,23 +1571,23 @@ do
 			end)
 			MouseDrag.Parent = GetScreen(ScrollFrame)
 			Class:ScrollDown()
-			wait(0.2) -- delay before auto scroll
+			task.wait(.2) -- delay before auto scroll
 			while scrollEventID == current do
 				Class:ScrollDown()
 				if not Class:CanScrollDown() then break end
-				wait()
+				task.wait()
 			end
 		end)
 
-		ScrollDownFrame.MouseButton1Up:connect(function()
+		ScrollDownFrame.MouseButton1Up:Connect(function()
 			scrollEventID = tick()
 		end)
 
-		ScrollUpFrame.MouseButton1Down:connect(function()
+		ScrollUpFrame.MouseButton1Down:Connect(function()
 			scrollEventID = tick()
 			local current = scrollEventID
 			local up_con
-			up_con = MouseDrag.MouseButton1Up:connect(function()
+			up_con = MouseDrag.MouseButton1Up:Connect(function()
 				scrollEventID = tick()
 				MouseDrag.Parent = nil
 				ResetButtonColor(ScrollUpFrame)
@@ -1722,24 +1595,24 @@ do
 			end)
 			MouseDrag.Parent = GetScreen(ScrollFrame)
 			Class:ScrollUp()
-			wait(0.2)
+			task.wait(.2)
 			while scrollEventID == current do
 				Class:ScrollUp()
 				if not Class:CanScrollUp() then break end
-				wait()
+				task.wait()
 			end
 		end)
 
-		ScrollUpFrame.MouseButton1Up:connect(function()
+		ScrollUpFrame.MouseButton1Up:Connect(function()
 			scrollEventID = tick()
 		end)
 
 		if horizontal then
-			ScrollBarFrame.MouseButton1Down:connect(function(x,y)
+			ScrollBarFrame.MouseButton1Down:Connect(function(x,y)
 				scrollEventID = tick()
 				local current = scrollEventID
 				local up_con
-				up_con = MouseDrag.MouseButton1Up:connect(function()
+				up_con = MouseDrag.MouseButton1Up:Connect(function()
 					scrollEventID = tick()
 					MouseDrag.Parent = nil
 					ResetButtonColor(ScrollUpFrame)
@@ -1748,28 +1621,28 @@ do
 				MouseDrag.Parent = GetScreen(ScrollFrame)
 				if x > ScrollThumbFrame.AbsolutePosition.x then
 					Class:ScrollTo(Class.ScrollIndex + Class.VisibleSpace)
-					wait(0.2)
+					task.wait(.2)
 					while scrollEventID == current do
 						if x < ScrollThumbFrame.AbsolutePosition.x + ScrollThumbFrame.AbsoluteSize.x then break end
 						Class:ScrollTo(Class.ScrollIndex + Class.VisibleSpace)
-						wait()
+						task.wait()
 					end
 				else
 					Class:ScrollTo(Class.ScrollIndex - Class.VisibleSpace)
-					wait(0.2)
+					task.wait(.2)
 					while scrollEventID == current do
 						if x > ScrollThumbFrame.AbsolutePosition.x then break end
 						Class:ScrollTo(Class.ScrollIndex - Class.VisibleSpace)
-						wait()
+						task.wait()
 					end
 				end
 			end)
 		else
-			ScrollBarFrame.MouseButton1Down:connect(function(x,y)
+			ScrollBarFrame.MouseButton1Down:Connect(function(x,y)
 				scrollEventID = tick()
 				local current = scrollEventID
 				local up_con
-				up_con = MouseDrag.MouseButton1Up:connect(function()
+				up_con = MouseDrag.MouseButton1Up:Connect(function()
 					scrollEventID = tick()
 					MouseDrag.Parent = nil
 					ResetButtonColor(ScrollUpFrame)
@@ -1778,31 +1651,31 @@ do
 				MouseDrag.Parent = GetScreen(ScrollFrame)
 				if y > ScrollThumbFrame.AbsolutePosition.y then
 					Class:ScrollTo(Class.ScrollIndex + Class.VisibleSpace)
-					wait(0.2)
+					task.wait(.2)
 					while scrollEventID == current do
 						if y < ScrollThumbFrame.AbsolutePosition.y + ScrollThumbFrame.AbsoluteSize.y then break end
 						Class:ScrollTo(Class.ScrollIndex + Class.VisibleSpace)
-						wait()
+						task.wait()
 					end
 				else
 					Class:ScrollTo(Class.ScrollIndex - Class.VisibleSpace)
-					wait(0.2)
+					task.wait(.2)
 					while scrollEventID == current do
 						if y > ScrollThumbFrame.AbsolutePosition.y then break end
 						Class:ScrollTo(Class.ScrollIndex - Class.VisibleSpace)
-						wait()
+						task.wait()
 					end
 				end
 			end)
 		end
 
 		if horizontal then
-			ScrollThumbFrame.MouseButton1Down:connect(function(x,y)
+			ScrollThumbFrame.MouseButton1Down:Connect(function(x,y)
 				scrollEventID = tick()
 				local mouse_offset = x - ScrollThumbFrame.AbsolutePosition.x
 				local drag_con
 				local up_con
-				drag_con = MouseDrag.MouseMoved:connect(function(x,y)
+				drag_con = MouseDrag.MouseMoved:Connect(function(x,y)
 					local bar_abs_pos = ScrollBarFrame.AbsolutePosition.x
 					local bar_drag = ScrollBarFrame.AbsoluteSize.x - ScrollThumbFrame.AbsoluteSize.x
 					local bar_abs_one = bar_abs_pos + bar_drag
@@ -1811,7 +1684,7 @@ do
 					x = x - bar_abs_pos
 					Class:SetScrollPercent(x/(bar_drag))
 				end)
-				up_con = MouseDrag.MouseButton1Up:connect(function()
+				up_con = MouseDrag.MouseButton1Up:Connect(function()
 					scrollEventID = tick()
 					MouseDrag.Parent = nil
 					ResetButtonColor(ScrollThumbFrame)
@@ -1821,12 +1694,12 @@ do
 				MouseDrag.Parent = GetScreen(ScrollFrame)
 			end)
 		else
-			ScrollThumbFrame.MouseButton1Down:connect(function(x,y)
+			ScrollThumbFrame.MouseButton1Down:Connect(function(x,y)
 				scrollEventID = tick()
 				local mouse_offset = y - ScrollThumbFrame.AbsolutePosition.y
 				local drag_con
 				local up_con
-				drag_con = MouseDrag.MouseMoved:connect(function(x,y)
+				drag_con = MouseDrag.MouseMoved:Connect(function(x,y)
 					local bar_abs_pos = ScrollBarFrame.AbsolutePosition.y
 					local bar_drag = ScrollBarFrame.AbsoluteSize.y - ScrollThumbFrame.AbsoluteSize.y
 					local bar_abs_one = bar_abs_pos + bar_drag
@@ -1835,7 +1708,7 @@ do
 					y = y - bar_abs_pos
 					Class:SetScrollPercent(y/(bar_drag))
 				end)
-				up_con = MouseDrag.MouseButton1Up:connect(function()
+				up_con = MouseDrag.MouseButton1Up:Connect(function()
 					scrollEventID = tick()
 					MouseDrag.Parent = nil
 					ResetButtonColor(ScrollThumbFrame)
@@ -1900,7 +1773,7 @@ Create(scrollBarH.GUI,{
 do
 	local listEntries = {}
 	local nameConnLookup = {}
-	
+
 	function scrollBar.UpdateCallback(self)
 		scrollBar.TotalSpace = ContentFrame.AbsoluteSize.Y
 		scrollBar.VisibleSpace = MainFrame.AbsoluteSize.Y
@@ -1908,10 +1781,10 @@ do
 	end
 
 	function scrollBarH.UpdateCallback(self)
-		
+
 	end
 
-	MainFrame.Changed:connect(function(p)
+	MainFrame.Changed:Connect(function(p)
 		if p == 'AbsoluteSize' then
 			scrollBarH.VisibleSpace = math.ceil(MainFrame.AbsoluteSize.x)
 			scrollBarH:Update()
@@ -1921,7 +1794,7 @@ do
 	end)
 
 	local wheelAmount = Row.Height
-	PropertiesFrame.MouseWheelForward:connect(function()
+	PropertiesFrame.MouseWheelForward:Connect(function()
 		if UIS:IsKeyDown'LeftShift' then
 			if scrollBarH.VisibleSpace - 1 > wheelAmount then
 				scrollBarH:ScrollTo(scrollBarH.ScrollIndex - wheelAmount)
@@ -1936,7 +1809,7 @@ do
 			end
 		end
 	end)
-	PropertiesFrame.MouseWheelBackward:connect(function()
+	PropertiesFrame.MouseWheelBackward:Connect(function()
 		if UIS:IsKeyDown'LeftShift' then
 			if scrollBarH.VisibleSpace - 1 > wheelAmount then
 				scrollBarH:ScrollTo(scrollBarH.ScrollIndex + wheelAmount)
@@ -1958,11 +1831,11 @@ scrollBar:Update()
 
 showProperties(GetSelection())
 
-bindSelectionChanged.Event:connect(function()
+bindSelectionChanged.Event:Connect(function()
 	showProperties(GetSelection())
 end)
 
-bindSetAwait.Event:connect(function(obj)
+bindSetAwait.Event:Connect(function(obj)
 	if AwaitingObjectValue then
 		AwaitingObjectValue = false
 		local mySel = obj
@@ -1974,7 +1847,7 @@ bindSetAwait.Event:connect(function(obj)
 	end
 end)
 
-propertiesSearch.Changed:connect(function(prop)
+propertiesSearch.Changed:Connect(function(prop)
 	if prop == "Text" then
 		showProperties(GetSelection())
 	end
