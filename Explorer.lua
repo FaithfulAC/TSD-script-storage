@@ -1,5 +1,4 @@
-local GetScript = GetScript or (...)
-local script = GetScript(2)
+local script, _, gets = ...
 
 -- initial states
 local Option = {
@@ -9,14 +8,7 @@ local Option = {
 	Selectable = true;
 }
 
-local cloneref = cloneref or function(...) return ... end
-local readfile = readfile or function(...) print("read", ...) end
-local writefile = writefile or function(...) print("write", ...) end
-local saveinstance = saveinstance or function(...) print(#game:GetDescendants()) end
-local setclipboard = setclipboard or function(...) print("to clipboard", ...) end
-local getnilinstances = getnilinstances or function(...) return {} end
-local getscripts = getscripts or function(...) local tbl = {} for i,v in pairs(game:GetDescendants())do if v:IsA("BaseScript") then table.insert(tbl,v)end end return tbl end
-local getloadedmodules = getloadedmodules or getscripts
+local getfunctions = gets.getfunctions
 
 -- MERELY
 
@@ -41,7 +33,10 @@ DexOutput.Name = "Output"
 local DexOutputMain = Instance.new("ScreenGui", DexOutput)
 DexOutputMain.Name = "Dex Output"
 
-function print(...)end
+local print = function(...)
+	if europa then return print(...) end
+	return;
+end
 
 explorerPanel:WaitForChild("GetPrint").OnInvoke = function()
 	return print
@@ -627,9 +622,9 @@ do
 			template = Instance.new("Frame")
 			template.BorderSizePixel = 0
 		end
-		
+
 		template.BackgroundColor3 = Color3.new(1, 1, 1);
-	
+
 		local transform
 		if dir == nil or dir == 'Up' then
 			function transform(p,s) return p,s end
@@ -640,14 +635,14 @@ do
 		elseif dir == 'Right' then
 			function transform(p,s) return UDim2.new(0,size-p.Y.Offset-1,0,p.X.Offset),UDim2.new(0,s.Y.Offset,0,s.X.Offset) end
 		end
-	
+
 		local scale
 		if scaled then
 			function scale(p,s) return UDim2.new(p.X.Offset/size,0,p.Y.Offset/size,0),UDim2.new(s.X.Offset/size,0,s.Y.Offset/size,0) end
 		else
 			function scale(p,s) return p,s end
 		end
-	
+
 		local o = math.floor(size/4)
 		if size%2 == 0 then
 			local n = size/2-1
@@ -656,7 +651,7 @@ do
 				local p,s = scale(transform(
 					UDim2.new(0,n-i,0,o+i),
 					UDim2.new(0,(i+1)*2,0,1)
-				))
+					))
 				t.Position = p
 				t.Size = s
 				t.Parent = Frame
@@ -668,7 +663,7 @@ do
 				local p,s = scale(transform(
 					UDim2.new(0,n-i,0,o+i),
 					UDim2.new(0,i*2+1,0,1)
-				))
+					))
 				t.Position = p
 				t.Size = s
 				t.Parent = Frame
@@ -679,16 +674,16 @@ do
 			local p,s = scale(transform(
 				UDim2.new(0,0,0,size-o-1),
 				UDim2.new(0,size,0,1)
-			))
+				))
 			t.Position = p
 			t.Size = s
 			t.Parent = Frame
 		end
-		
+
 		for i,v in pairs(Frame:GetChildren()) do
 			v.BackgroundColor3 = Color3.new(1, 1, 1);
 		end
-		
+
 		return Frame
 	end
 
@@ -817,13 +812,13 @@ do
 		local graphicSize = GUI_SIZE/2
 
 		local ScrollDownFrame = ScrollFrame.ScrollDown
-			local ScrollDownGraphic = ArrowGraphic(graphicSize,horizontal and 'Right' or 'Down',true,graphicTemplate)
-			ScrollDownGraphic.Position = UDim2.new(0.5,-graphicSize/2,0.5,-graphicSize/2)
-			ScrollDownGraphic.Parent = ScrollDownFrame
+		local ScrollDownGraphic = ArrowGraphic(graphicSize,horizontal and 'Right' or 'Down',true,graphicTemplate)
+		ScrollDownGraphic.Position = UDim2.new(0.5,-graphicSize/2,0.5,-graphicSize/2)
+		ScrollDownGraphic.Parent = ScrollDownFrame
 		local ScrollUpFrame = ScrollFrame.ScrollUp
-			local ScrollUpGraphic = ArrowGraphic(graphicSize,horizontal and 'Left' or 'Up',true,graphicTemplate)
-			ScrollUpGraphic.Position = UDim2.new(0.5,-graphicSize/2,0.5,-graphicSize/2)
-			ScrollUpGraphic.Parent = ScrollUpFrame
+		local ScrollUpGraphic = ArrowGraphic(graphicSize,horizontal and 'Left' or 'Up',true,graphicTemplate)
+		ScrollUpGraphic.Position = UDim2.new(0.5,-graphicSize/2,0.5,-graphicSize/2)
+		ScrollUpGraphic.Parent = ScrollUpFrame
 		local ScrollBarFrame = ScrollFrame.ScrollBar
 		local ScrollThumbFrame = ScrollBarFrame.ScrollThumb
 		do
@@ -1259,16 +1254,14 @@ explorerFilter.Parent = headerFrame
 
 SetZIndexOnChanged(explorerPanel)
 
-local function CreateColor3(r, g, b) return Color3.new(r/255,g/255,b/255) end
-
 local Styles = {
 	Font = Enum.Font.Arial;
 	Margin = 5;
-	Black = CreateColor3(0,0,0);
-	Black2 = CreateColor3(24, 24, 24);
-	White = CreateColor3(244,244,244);
-	Hover = CreateColor3(2, 128, 144);
-	Hover2 = CreateColor3(5, 102, 141);
+	Black = Color3.fromRGB(0,0,0);
+	Black2 = Color3.fromRGB(24, 24, 24);
+	White = Color3.fromRGB(244,244,244);
+	Hover = Color3.fromRGB(2, 128, 144);
+	Hover2 = Color3.fromRGB(5, 102, 141);
 }
 
 local Row = {
@@ -1277,35 +1270,35 @@ local Row = {
 	TextXAlignment = Enum.TextXAlignment.Left;
 	TextColor = Styles.White;
 	TextColorOver = Styles.White;
-	TextLockedColor = CreateColor3(155,155,155);
+	TextLockedColor = Color3.fromRGB(155,155,155);
 	Height = 24;
-	BorderColor = CreateColor3(216/4,216/4,216/4);
+	BorderColor = Color3.fromRGB(216/4,216/4,216/4);
 	BackgroundColor = Styles.Black2;
-	BackgroundColorAlternate = CreateColor3(32, 32, 32);
-	BackgroundColorMouseover = CreateColor3(40, 40, 40);
+	BackgroundColorAlternate = Color3.fromRGB(32, 32, 32);
+	BackgroundColorMouseover = Color3.fromRGB(40, 40, 40);
 	TitleMarginLeft = 15;
 }
 
 local DropDown = {
 	Font = Styles.Font;
 	FontSize = Enum.FontSize.Size14;
-	TextColor = CreateColor3(255,255,255);
+	TextColor = Color3.fromRGB(255,255,255);
 	TextColorOver = Styles.White;
 	TextXAlignment = Enum.TextXAlignment.Left;
 	Height = 20;
 	BackColor = Styles.Black2;
 	BackColorOver = Styles.Hover2;
-	BorderColor = CreateColor3(45,45,45);
+	BorderColor = Color3.fromRGB(45,45,45);
 	BorderSizePixel = 2;
-	ArrowColor = CreateColor3(160/2,160/2,160/2);
+	ArrowColor = Color3.fromRGB(160/2,160/2,160/2);
 	ArrowColorOver = Styles.Hover;
 }
 
 local BrickColors = {
 	BoxSize = 13;
 	BorderSizePixel = 1;
-	BorderColor = CreateColor3(160/3,160/3,160/3);
-	FrameColor = CreateColor3(160/3,160/3,160/3);
+	BorderColor = Color3.fromRGB(160/3,160/3,160/3);
+	FrameColor = Color3.fromRGB(160/3,160/3,160/3);
 	Size = 20;
 	Padding = 4;
 	ColorsPerRow = 8;
@@ -1320,37 +1313,36 @@ local CurrentFunctionCallerWindow
 local RbxApi
 
 function ClassCanCreate(IName)
-	local success,err = pcall(function() Instance.new(IName) end)
-	if err then
-		return false
-	else
-		return true
-	end
+	return (pcall(Instance.new, IName))
 end
 
 function GetClasses()
-	if RbxApi == nil then return {} end
+	if RbxApi == nil then
+		return {}
+	end
+
 	local classTable = {}
-	for i,v in pairs(RbxApi.Classes) do
-		if ClassCanCreate(v.Name) then
-			table.insert(classTable,v.Name)
+
+	for _, classData in pairs(RbxApi.Classes) do
+		if ClassCanCreate(classData.Name) then
+			table.insert(classTable, classData.Name)
 		end
 	end
+
 	return classTable
 end
 
+
 local function sortAlphabetic(t, property)
-	table.sort(t, 
-		function(x,y) return x[property] < y[property]
+	table.sort(t, function(x,y)
+		return x[property] < y[property]
 	end)
 end
 
 local function FunctionIsHidden(functionData)
-	local tags = functionData["tags"]
-	for _,name in pairs(tags) do
-		if name == "deprecated"
-			or name == "hidden"
-			or name == "writeonly" then
+	local tags = functionData.Tags or {}
+	for _, name in pairs(tags) do
+		if name == "Deprecated" or name == "Hidden" or name == "ReadOnly" then
 			return true
 		end
 	end
@@ -1358,37 +1350,35 @@ local function FunctionIsHidden(functionData)
 end
 
 local function GetAllFunctions(className)
-	local class = RbxApi.Classes[className]
-	local functions = {}
-	
-	if not class then return functions end
-	
-	while class do
-		if class.Name == "Instance" then break end
-		for _,nextFunction in pairs(class.Functions) do
-			if not FunctionIsHidden(nextFunction) then
-				table.insert(functions, nextFunction)
-			end
-		end
-		class = RbxApi.Classes[class.Superclass]
+	if not RbxApi then
+		return {}
 	end
 	
-	sortAlphabetic(functions, "Name")
-
+	local functions = getfunctions(className)
+	
+	for i, v in pairs(functions) do
+		if FunctionIsHidden(v) then table.remove(functions, i) end
+	end
+	
 	return functions
 end
 
 function GetFunctions()
-	if RbxApi == nil then return {} end
+	if not RbxApi then
+		return {}
+	end
+
 	local List = SelectionVar():Get()
-	
-	if #List == 0 then return end
-	
+
+	if #List == 0 then
+		return {}
+	end
+
 	local MyObject = List[1]
-	
+
 	local functionTable = {}
-	for i,v in pairs(GetAllFunctions(MyObject.ClassName)) do
-		table.insert(functionTable,v)
+	for _, functionData in pairs(GetAllFunctions(MyObject.ClassName)) do
+		table.insert(functionTable, functionData)
 	end
 	return functionTable
 end
@@ -1398,7 +1388,7 @@ function CreateInsertObjectMenu(choices, currentChoice, readOnly, onClick)
 	local mouse = Players.LocalPlayer:GetMouse()
 	local totalSize = explorerPanel.Parent.AbsoluteSize.y
 	if #choices == 0 then return end
-	
+
 	table.sort(choices, function(a,b) return a < b end)
 
 	local frame = Instance.new("Frame")	
@@ -1406,12 +1396,12 @@ function CreateInsertObjectMenu(choices, currentChoice, readOnly, onClick)
 	frame.Size = UDim2.new(0, 200, 1, 0)
 	frame.BackgroundTransparency = 1
 	frame.Active = true
-	
+
 	local menu = nil
 	local arrow = nil
 	local expanded = false
 	local margin = DropDown.BorderSizePixel;
-	
+
 	--[[
 	local button = Instance.new("TextButton")
 	button.Font = Row.Font
@@ -1427,7 +1417,7 @@ function CreateInsertObjectMenu(choices, currentChoice, readOnly, onClick)
 	button.Position = UDim2.new(0, Styles.Margin, 0, 0)
 	button.Parent = frame
 	--]]
-	
+
 	local function hideMenu()
 		expanded = false
 		--showArrow(DropDown.ArrowColor)
@@ -1436,7 +1426,7 @@ function CreateInsertObjectMenu(choices, currentChoice, readOnly, onClick)
 			CurrentInsertObjectWindow.Visible = false
 		end
 	end
-	
+
 	local function showMenu()
 		expanded = true
 		menu = Instance.new("ScrollingFrame")
@@ -1453,18 +1443,18 @@ function CreateInsertObjectMenu(choices, currentChoice, readOnly, onClick)
 		menu.Active = true
 		menu.ZIndex = 5
 		menu.Parent = frame
-		
+
 		--local parentFrameHeight = script.Parent.List.Size.Y.Offset
 		--local rowHeight = mouse.Y
 		--if (rowHeight + menu.Size.Y.Offset) > parentFrameHeight then
 		--	menu.Position = UDim2.new(0, margin, 0, -1 * (#choices * DropDown.Height) - margin)
 		--end
-			
+
 		local function choice(name)
 			onClick(name)
 			hideMenu()
 		end
-		
+
 		for i,name in pairs(choices) do
 			local option = CreateRightClickMenuItem(name, function()
 				choice(name)
@@ -1479,7 +1469,7 @@ function CreateInsertObjectMenu(choices, currentChoice, readOnly, onClick)
 
 	showMenu()
 
-	
+
 	return frame
 end
 
@@ -1488,7 +1478,7 @@ function CreateFunctionCallerMenu(choices, currentChoice, readOnly, onClick)
 	local mouse = Players.LocalPlayer:GetMouse()
 	local totalSize = explorerPanel.Parent.AbsoluteSize.y
 	if #choices == 0 then return end
-	
+
 	table.sort(choices, function(a,b) return a.Name < b.Name end)
 
 	local frame = Instance.new("Frame")	
@@ -1496,12 +1486,12 @@ function CreateFunctionCallerMenu(choices, currentChoice, readOnly, onClick)
 	frame.Size = UDim2.new(0, 200, 1, 0)
 	frame.BackgroundTransparency = 1
 	frame.Active = true
-	
+
 	local menu = nil
 	local arrow = nil
 	local expanded = false
 	local margin = DropDown.BorderSizePixel;
-	
+
 	local function hideMenu()
 		expanded = false
 		--showArrow(DropDown.ArrowColor)
@@ -1510,7 +1500,7 @@ function CreateFunctionCallerMenu(choices, currentChoice, readOnly, onClick)
 			CurrentInsertObjectWindow.Visible = false
 		end
 	end
-	
+
 	local function showMenu()
 		expanded = true
 		menu = Instance.new("ScrollingFrame")
@@ -1527,35 +1517,39 @@ function CreateFunctionCallerMenu(choices, currentChoice, readOnly, onClick)
 		menu.Active = true
 		menu.ZIndex = 5
 		menu.Parent = frame
-		
+
 		--local parentFrameHeight = script.Parent.List.Size.Y.Offset
 		--local rowHeight = mouse.Y
 		--if (rowHeight + menu.Size.Y.Offset) > parentFrameHeight then
 		--	menu.Position = UDim2.new(0, margin, 0, -1 * (#choices * DropDown.Height) - margin)
 		--end
-		
+
 		local function GetParameters(functionData)
 			local paraString = ""
-			paraString = paraString.."("
-			for i,v in pairs(functionData.Arguments) do
-				paraString = paraString..v.Type.." "..v.Name
-				if i < #functionData.Arguments then
-					paraString = paraString..", "
+			paraString ..= "("
+			
+			-- note from europa, jesus this code looks so ugly
+			for i, v in pairs(functionData.Parameters) do
+				paraString ..= v.Type.Name .. " " .. v.Name
+				
+				if i < #functionData.Parameters then
+					paraString ..= ", "
 				end
 			end
-			paraString = paraString..")"
+			
+			paraString ..= ")"
 			return paraString
 		end
-			
+
 		local function choice(name)
 			onClick(name)
 			hideMenu()
 		end
-		
+
 		for i,name in pairs(choices) do
-			local option = CreateRightClickMenuItem(name.ReturnType.." "..name.Name..GetParameters(name), function()
+			local option = CreateRightClickMenuItem(name.ReturnType.Name .. " " .. name.Name .. GetParameters(name), function()
 				choice(name)
-			end,2)
+			end, 2)
 			option.Size = UDim2.new(1, 0, 0, 20)
 			option.Position = UDim2.new(0, 0, 0, (i - 1) * DropDown.Height)
 			option.ZIndex = menu.ZIndex
@@ -1566,7 +1560,7 @@ function CreateFunctionCallerMenu(choices, currentChoice, readOnly, onClick)
 
 	showMenu()
 
-	
+
 	return frame
 end
 
@@ -1595,9 +1589,9 @@ function CreateFunctionCaller(oh)
 			CurrentFunctionCallerWindow = nil
 			local list = SelectionVar():Get()
 			for i,v in pairs(list) do
-				pcall(function() print("Function called.", pcall(function() v[option.Name](v) end)) end)
+				pcall(function() pcall(function() v[option.Name](v) end) end)
 			end
-			
+
 			DestroyRightClick()
 		end
 	)
@@ -1620,7 +1614,7 @@ function CreateRightClickMenuItem(text, onClick, insObj)
 	button.BorderSizePixel = 0
 	button.Active = true
 	button.Text = text
-	
+
 	if insObj == 1 then
 		local newIcon = Icon(nil,ExplorerIndex[text] or 0)
 		newIcon.Position = UDim2.new(0,0,0,2)
@@ -1631,7 +1625,7 @@ function CreateRightClickMenuItem(text, onClick, insObj)
 	elseif insObj == 2 then
 		button.FontSize = Enum.FontSize.Size11
 	end
-	
+
 	button.MouseEnter:connect(function()
 		button.TextColor3 = DropDown.TextColorOver
 		button.BackgroundColor3 = DropDown.BackColorOver
@@ -1672,12 +1666,12 @@ function CreateRightClickMenu(choices, currentChoice, readOnly, onClick)
 	frame.Size = UDim2.new(0, 200, 1, 0)
 	frame.BackgroundTransparency = 1
 	frame.Active = true
-	
+
 	local menu = nil
 	local arrow = nil
 	local expanded = false
 	local margin = DropDown.BorderSizePixel;
-	
+
 	--[[
 	local button = Instance.new("TextButton")
 	button.Font = Row.Font
@@ -1693,7 +1687,7 @@ function CreateRightClickMenu(choices, currentChoice, readOnly, onClick)
 	button.Position = UDim2.new(0, Styles.Margin, 0, 0)
 	button.Parent = frame
 	--]]
-	
+
 	local function hideMenu()
 		expanded = false
 		--showArrow(DropDown.ArrowColor)
@@ -1702,7 +1696,7 @@ function CreateRightClickMenu(choices, currentChoice, readOnly, onClick)
 			DestroyRightClick()
 		end
 	end
-	
+
 	local function showMenu()
 		expanded = true
 		menu = Instance.new("Frame")
@@ -1715,18 +1709,18 @@ function CreateRightClickMenu(choices, currentChoice, readOnly, onClick)
 		menu.Active = true
 		menu.ZIndex = 5
 		menu.Parent = frame
-		
+
 		--local parentFrameHeight = script.Parent.List.Size.Y.Offset
 		--local rowHeight = mouse.Y
 		--if (rowHeight + menu.Size.Y.Offset) > parentFrameHeight then
 		--	menu.Position = UDim2.new(0, margin, 0, -1 * (#choices * DropDown.Height) - margin)
 		--end
-			
+
 		local function choice(name)
 			onClick(name)
 			hideMenu()
 		end
-		
+
 		for i,name in pairs(choices) do
 			local option = CreateRightClickMenuItem(name, function()
 				choice(name)
@@ -1741,7 +1735,7 @@ function CreateRightClickMenu(choices, currentChoice, readOnly, onClick)
 
 	showMenu()
 
-	
+
 	return frame
 end
 
@@ -1751,7 +1745,7 @@ function checkMouseInGui(gui)
 	local plrMouse = Players.LocalPlayer:GetMouse()
 	local guiPosition = gui.AbsolutePosition
 	local guiSize = gui.AbsoluteSize	
-	
+
 	if plrMouse.X >= guiPosition.x and plrMouse.X <= guiPosition.x + guiSize.x and plrMouse.Y >= guiPosition.y and plrMouse.Y <= guiPosition.y + guiSize.y then
 		return true
 	else
@@ -1855,7 +1849,7 @@ local updateList,rawUpdateList,updateScroll,rawUpdateSize do
 
 		scrollBar.VisibleSpace = math.ceil(listFrame.AbsoluteSize.y/ENTRY_BOUND)
 		scrollBar.GUI.Size = UDim2.new(0,GUI_SIZE,1,-GUI_SIZE*(visible and 1 or 0) - HEADER_SIZE)
-		
+
 		scrollBar.TotalSpace = #TreeList+1
 		scrollBar:Update()
 	end
@@ -2013,11 +2007,11 @@ local Selection do
 			end
 		end
 	end
-	
+
 	function Selection:StopUpdates()
 		Updates = false
 	end
-	
+
 	function Selection:ResumeUpdates()
 		Updates = true
 		bindSelectionChanged:Fire()
@@ -2077,10 +2071,10 @@ function CreateTableCaution(title,msg)
 	if type(msg) ~= "table" then return CreateCaution(title,tostring(msg)) end
 	local newCaution = TableCautionWindow:Clone()
 	newCaution.Title.Text = title
-	
+
 	local TableList = newCaution.MainWindow.TableResults
 	local TableTemplate = newCaution.MainWindow.TableTemplate
-	
+
 	for i,v in pairs(msg) do
 		local newResult = TableTemplate:Clone()
 		newResult.Type.Text = type(v)
@@ -2217,7 +2211,6 @@ local function ToPropValue(value,type)
 				break
 			end
 		end
-		print(getEnum)
 		return getEnum
 	else
 		return nil
@@ -2232,19 +2225,19 @@ function PromptRemoteCaller(inst)
 	CurrentRemoteWindow = RemoteWindow:Clone()
 	CurrentRemoteWindow.Parent = explorerPanel.Parent
 	CurrentRemoteWindow.Visible = true
-	
+
 	local displayValues = false
-	
+
 	local ArgumentList = CurrentRemoteWindow.MainWindow.Arguments
 	local ArgumentTemplate = CurrentRemoteWindow.MainWindow.ArgumentTemplate
-	
+
 	if inst:IsA("RemoteEvent") then
 		CurrentRemoteWindow.Title.Text = "Fire Event"
 		CurrentRemoteWindow.MainWindow.Ok.Text = "Fire"
 		CurrentRemoteWindow.MainWindow.DisplayReturned.Visible = false
 		CurrentRemoteWindow.MainWindow.Desc2.Visible = false
 	end
-	
+
 	local newArgument = ArgumentTemplate:Clone()
 	newArgument.Parent = ArgumentList
 	newArgument.Visible = true
@@ -2253,7 +2246,7 @@ function PromptRemoteCaller(inst)
 			newArgument.Type.Text = choice
 		end,"Script","Number","String","Color3","Vector3","Vector2","UDim2","NumberRange")
 	end)
-	
+
 	CurrentRemoteWindow.MainWindow.Ok.MouseButton1Up:connect(function()
 		if CurrentRemoteWindow and inst.Parent ~= nil then
 			local MyArguments = {}
@@ -2282,7 +2275,7 @@ function PromptRemoteCaller(inst)
 			CurrentRemoteWindow = nil
 		end
 	end)
-	
+
 	CurrentRemoteWindow.MainWindow.Add.MouseButton1Up:connect(function()
 		if CurrentRemoteWindow then
 			local newArgument = ArgumentTemplate:Clone()
@@ -2297,7 +2290,7 @@ function PromptRemoteCaller(inst)
 			end)
 		end
 	end)
-	
+
 	CurrentRemoteWindow.MainWindow.Subtract.MouseButton1Up:connect(function()
 		if CurrentRemoteWindow then
 			if #ArgumentList:GetChildren() > 1 then
@@ -2306,14 +2299,14 @@ function PromptRemoteCaller(inst)
 			end
 		end
 	end)
-	
+
 	CurrentRemoteWindow.MainWindow.Cancel.MouseButton1Up:connect(function()
 		if CurrentRemoteWindow then
 			CurrentRemoteWindow:Destroy()
 			CurrentRemoteWindow = nil
 		end
 	end)
-	
+
 	CurrentRemoteWindow.MainWindow.DisplayReturned.MouseButton1Up:connect(function()
 		if displayValues then
 			displayValues = false
@@ -2337,11 +2330,11 @@ function PromptSaveInstance(inst)
 	CurrentSaveInstanceWindow = SaveInstanceWindow:Clone()
 	CurrentSaveInstanceWindow.Parent = explorerPanel.Parent
 	CurrentSaveInstanceWindow.Visible = true
-	
+
 	local filename = CurrentSaveInstanceWindow.MainWindow.FileName
 	local saveObjects = true
 	local overwriteCaution = false
-	
+
 	CurrentSaveInstanceWindow.MainWindow.Save.MouseButton1Up:connect(function()
 		--[[if readfile and getelysianpath then
 			if readfile(getelysianpath()..filename.Text..".rbxmx") then
@@ -2570,7 +2563,7 @@ function tableToString(t)
 end
 
 local HasSpecial = function(string)
-    return (string:match("%c") or string:match("%s") or string:match("%p")) ~= nil
+	return (string:match("%c") or string:match("%s") or string:match("%p")) ~= nil
 end
 
 local GetPath = function(Instance) -- ripped from some random script
@@ -2578,7 +2571,7 @@ local GetPath = function(Instance) -- ripped from some random script
 	local string = {}
 	local temp = {}
 	local error = false
-	
+
 	while Obj ~= game do
 		if Obj == nil then
 			error = true
@@ -2587,9 +2580,9 @@ local GetPath = function(Instance) -- ripped from some random script
 		table.insert(temp, Obj.Parent == game and Obj.ClassName or tostring(Obj))
 		Obj = Obj.Parent
 	end
-	
+
 	table.insert(string, "game:GetService(\"" .. temp[#temp] .. "\")")
-	
+
 	for i = #temp - 1, 1, -1 do
 		table.insert(string, HasSpecial(temp[i]) and "[\"" .. temp[i] .. "\"]" or "." .. temp[i])
 	end
@@ -2600,7 +2593,7 @@ end
 function rightClickMenu(sObj)
 	local Players = cloneref(game:GetService("Players"));
 	local mouse = Players.LocalPlayer:GetMouse()
-	
+
 	local extra = ((sObj == RunningScriptsStorageMain or sObj == LoadedModulesStorageMain or sObj == NilStorageMain) and 'Refresh Instances' or nil)
 
 	currentRightClickMenu = CreateRightClickMenu(
@@ -2821,7 +2814,7 @@ function rightClickMenu(sObj)
 					end
 				end
 			end
-	end)
+		end)
 	currentRightClickMenu.Parent = explorerPanel.Parent
 	currentRightClickMenu.Position = UDim2.new(0,mouse.X,0,mouse.Y)
 	if currentRightClickMenu.AbsolutePosition.X + currentRightClickMenu.AbsoluteSize.X > explorerPanel.AbsolutePosition.X + explorerPanel.AbsoluteSize.X then
@@ -3100,11 +3093,11 @@ do
 							bindSetAwaiting:Fire(node.Object)
 							return
 						end
-						
+
 						if not HoldingShift then
 							lastSelectedNode = i + self.ScrollIndex
 						end
-						
+
 						if HoldingShift and not filteringWorkspace() then
 							if lastSelectedNode then
 								if i + self.ScrollIndex - lastSelectedNode > 0 then
@@ -3129,7 +3122,7 @@ do
 							end
 							return
 						end
-						
+
 						if HoldingCtrl then
 							if Selection.Selected[node.Object] then
 								Selection:Remove(node.Object)
@@ -3153,29 +3146,29 @@ do
 
 					entry.MouseButton2Down:connect(function()
 						if not Option.Selectable then return end
-						
+
 						DestroyRightClick()
-						
+
 						curSelect = entry
-						
+
 						local node = TreeList[i + self.ScrollIndex]
-						
+
 						if GetAwaitRemote:Invoke() then
 							bindSetAwaiting:Fire(node.Object)
 							return
 						end
-						
+
 						if not Selection.Selected[node.Object] then
 							Selection:Set({node.Object})
 						end
 					end)
-					
-					
+
+
 					entry.MouseButton2Up:connect(function()
 						if not Option.Selectable then return end
-						
+
 						local node = TreeList[i + self.ScrollIndex]
-						
+
 						if checkMouseInGui(curSelect) then
 							rightClickMenu(node.Object)
 						end
@@ -3430,6 +3423,7 @@ local InstanceBlacklist = {
 	'GuidRegistryService';
 	'PathfindingService';
 	'GroupService';
+	'MessageBusService';
 }
 
 for i, v in ipairs(InstanceBlacklist) do
@@ -3452,7 +3446,7 @@ local function addObject(object,noupdate)
 	if object.Parent == game and InstanceBlacklist[object.ClassName] or object.ClassName == '' then
 		return;
 	end
-	
+
 	if script then
 		-- protect against naughty RobloxLocked objects
 		local s = pcall(check,object)
@@ -3513,8 +3507,7 @@ local function writeObject(obj)
 	local newObject = {ClassName = obj.ClassName, Properties = {}}
 	for i,v in pairs(RbxApi.GetProperties(obj.className)) do
 		if v["Name"] ~= "Parent" then
-			print("thispassed")
-			table.insert(newObject.Properties,{Name = v["Name"], Type = v["ValueType"], Value = tostring(obj[v["Name"]])})
+			table.insert(newObject.Properties,{Name = v["Name"], Type = v["ValueType"].Name, Value = tostring(obj[v["Name"]])})
 		end
 	end
 	return newObject
@@ -3522,11 +3515,11 @@ end
 
 local function buildDexStorage()
 	local localDexStorage
-	
+
 	local success,err = pcall(function()
 		localDexStorage = game:GetObjects("rbxasset://DexStorage.rbxm")[1]
 	end)
-	
+
 	if success and localDexStorage then
 		for i,v in pairs(localDexStorage:GetChildren()) do
 			pcall(function()
@@ -3534,7 +3527,7 @@ local function buildDexStorage()
 			end)
 		end
 	end
-	
+
 	updateDexStorageListeners()
 	--[[
 	local localDexStorage = readfile(getelysianpath().."DexStorage.txt")--game:GetService("CookiesService"):GetCookieValue("DexStorage")
@@ -3555,15 +3548,15 @@ local dexStorageListeners = {}
 local function updateDexStorage()
 	if dexStorageDebounce then return end
 	dexStorageDebounce = true	
-	
+
 	wait()
-	
+
 	pcall(function()
 		-- saveinstance("content//DexStorage.rbxm",DexStorageMain)
 	end)
-	
+
 	updateDexStorageListeners()
-	
+
 	dexStorageDebounce = false
 	--[[
 	local success,err = pcall(function()
@@ -3577,7 +3570,6 @@ local function updateDexStorage()
 	if err then
 		CreateCaution("DexStorage Save Fail!","DexStorage broke! If you see this message, report to Raspberry Pi!")
 	end
-	print("hi")
 	--]]
 end
 
@@ -3601,14 +3593,14 @@ do
 		Index = 0;
 		Expanded = true;
 	}
-	
+
 	NodeLookup[DexOutput] = {
 		Object = DexOutput;
 		Parent = nil;
 		Index = 0;
 		Expanded = true;
 	}
-	
+
 	if DexStorageEnabled then
 		NodeLookup[DexStorage] = {
 			Object = DexStorage;
@@ -3617,7 +3609,7 @@ do
 			Expanded = true;
 		}
 	end
-	
+
 	if NilStorageEnabled then
 		NodeLookup[NilStorage] = {
 			Object = NilStorage;
@@ -3626,7 +3618,7 @@ do
 			Expanded = true;
 		}
 	end
-	
+
 	if RunningScriptsStorageEnabled then
 		NodeLookup[RunningScriptsStorage] = {
 			Object = RunningScriptsStorage;
@@ -3635,7 +3627,7 @@ do
 			Expanded = true;
 		}
 	end
-	
+
 	if LoadedModulesStorageEnabled then
 		NodeLookup[LoadedModulesStorage] = {
 			Object = LoadedModulesStorage;
@@ -3647,30 +3639,30 @@ do
 
 	Connect(game.DescendantAdded,addObject)
 	Connect(game.DescendantRemoving,removeObject)
-	
+
 	Connect(DexOutput.DescendantAdded,addObject)
 	Connect(DexOutput.DescendantRemoving,removeObject)
-	
+
 	if DexStorageEnabled then
 		--[[
 		if readfile(getelysianpath().."DexStorage.txt") == nil then
 			writefile(getelysianpath().."DexStorage.txt","")
 		end
 		--]]
-		
+
 		buildDexStorage()
-	
+
 		Connect(DexStorage.DescendantAdded,addObject)
 		Connect(DexStorage.DescendantRemoving,removeObject)
-	
+
 		Connect(DexStorage.DescendantAdded,updateDexStorage)
 		Connect(DexStorage.DescendantRemoving,updateDexStorage)
 	end
-	
+
 	if NilStorageEnabled then
 		Connect(NilStorage.DescendantAdded,addObject)
 		Connect(NilStorage.DescendantRemoving,removeObject)		
-		
+
 		--[[local currentTable = get_nil_instances()	
 		
 		spawn(function()
@@ -3748,7 +3740,7 @@ local actionButtons do
 	local currentActions = totalActions
 	local function makeButton(icon,over,name,vis,cond)
 		local buttonEnabled = false
-		
+
 		local button = Create(Icon('ImageButton',icon),{
 			Name = name .. "Button";
 			Visible = Option.Modifiable and Option.Selectable;
@@ -3770,7 +3762,7 @@ local actionButtons do
 			Parent = headerFrame;
 		})
 
-		
+
 		button.MouseEnter:connect(function()
 			if buttonEnabled then
 				button.BackgroundTransparency = 0.9
@@ -3802,11 +3794,11 @@ local actionButtons do
 	local function delete(o)
 		o.Parent = nil
 	end
-	
+
 	makeButton(ACTION_EDITQUICKACCESS,ACTION_EDITQUICKACCESS,"Options",true,function()return true end).MouseButton1Click:connect(function()
-		
+
 	end)
-	
+
 
 	-- DELETE
 	makeButton(ACTION_DELETE,ACTION_DELETE_OVER,"Delete",true,function() return #Selection:Get() > 0 end).MouseButton1Click:connect(function()
@@ -3817,7 +3809,7 @@ local actionButtons do
 		end
 		Selection:Set({})
 	end)
-	
+
 	-- PASTE
 	makeButton(ACTION_PASTE,ACTION_PASTE_OVER,"Paste",true,function() return #Selection:Get() > 0 and #clipboard > 0 end).MouseButton1Click:connect(function()
 		if not Option.Modifiable then return end
@@ -3826,7 +3818,7 @@ local actionButtons do
 			clipboard[i]:Clone().Parent = parent
 		end
 	end)
-	
+
 	-- COPY
 	makeButton(ACTION_COPY,ACTION_COPY_OVER,"Copy",true,function() return #Selection:Get() > 0 end).MouseButton1Click:connect(function()
 		if not Option.Modifiable then return end
@@ -3837,7 +3829,7 @@ local actionButtons do
 		end
 		updateActions()
 	end)
-	
+
 	-- CUT
 	makeButton(ACTION_CUT,ACTION_CUT_OVER,"Cut",true,function() return #Selection:Get() > 0 end).MouseButton1Click:connect(function()
 		if not Option.Modifiable then return end
@@ -3856,13 +3848,13 @@ local actionButtons do
 		end
 		updateActions()
 	end)
-	
+
 	-- FREEZE
 	makeButton(ACTION_FREEZE,ACTION_FREEZE,"Freeze",true,function() return true end)
-	
+
 	-- ADD/REMOVE STARRED
 	makeButton(ACTION_ADDSTAR,ACTION_ADDSTAR_OVER,"Star",true,function() return #Selection:Get() > 0 end)
-	
+
 	-- STARRED
 	makeButton(ACTION_STARRED,ACTION_STARRED,"Starred",true,function() return true end)
 
