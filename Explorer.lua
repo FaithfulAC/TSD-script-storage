@@ -372,6 +372,7 @@ local ExplorerIndex = {
 	["ReflectionMetadataProperties"] = 86;
 	["ReflectionMetadataYieldFunctions"] = 86;
 	["RemoteEvent"] = 80;
+	["UnreliableRemoteEvent"] = 80;
 	["RemoteFunction"] = 79;
 	["ReplicatedFirst"] = 72;
 	["ReplicatedStorage"] = 72;
@@ -1119,7 +1120,6 @@ local GetApiRemote = explorerPanel.Parent:WaitForChild("PropertiesFrame"):WaitFo
 local GetAwaitRemote = explorerPanel.Parent:WaitForChild("PropertiesFrame"):WaitForChild("GetAwaiting")
 local bindSetAwaiting = explorerPanel.Parent:WaitForChild("PropertiesFrame"):WaitForChild("SetAwaiting")
 
-local SaveInstanceWindow = explorerPanel.Parent:WaitForChild("SaveInstance")
 local ConfirmationWindow = explorerPanel.Parent:WaitForChild("Confirmation")
 local CautionWindow = explorerPanel.Parent:WaitForChild("Caution")
 local TableCautionWindow = explorerPanel.Parent:WaitForChild("TableCaution")
@@ -1129,7 +1129,6 @@ local RemoteWindow = explorerPanel.Parent:WaitForChild("CallRemote")
 local ScriptEditor = explorerPanel.Parent:WaitForChild("ScriptEditor")
 local ScriptEditorEvent = ScriptEditor:WaitForChild("OpenScript")
 
-local CurrentSaveInstanceWindow
 local CurrentRemoteWindow
 
 local lastSelectedNode
@@ -2321,98 +2320,6 @@ function PromptRemoteCaller(inst)
 	end)
 end
 
-function PromptSaveInstance(inst)
-	if not SaveInstance and not _G.SaveInstance then CreateCaution("SaveInstance Missing","You do not have the SaveInstance function installed. Please go to RaspberryPi's thread to retrieve it.") return end
-	if CurrentSaveInstanceWindow then
-		CurrentSaveInstanceWindow:Destroy()
-		CurrentSaveInstanceWindow = nil
-		if explorerPanel.Parent:FindFirstChild("SaveInstanceOverwriteCaution") then
-			explorerPanel.Parent.SaveInstanceOverwriteCaution:Destroy()
-		end
-	end
-	CurrentSaveInstanceWindow = SaveInstanceWindow:Clone()
-	CurrentSaveInstanceWindow.Parent = explorerPanel.Parent
-	CurrentSaveInstanceWindow.Visible = true
-
-	local filename = CurrentSaveInstanceWindow.MainWindow.FileName
-	local saveObjects = true
-	local overwriteCaution = false
-
-	CurrentSaveInstanceWindow.MainWindow.Save.MouseButton1Up:connect(function()
-		--[[if readfile and getelysianpath then
-			if readfile(getelysianpath()..filename.Text..".rbxmx") then
-				if not overwriteCaution then
-					overwriteCaution = true
-					local newCaution = ConfirmationWindow:Clone()
-					newCaution.Name = "SaveInstanceOverwriteCaution"
-					newCaution.MainWindow.Desc.Text = "The file, "..filename.Text..".rbxmx, already exists. Overwrite?"
-					newCaution.Parent = explorerPanel.Parent
-					newCaution.Visible = true
-					newCaution.MainWindow.Yes.MouseButton1Up:connect(function()
-						pcall(function()
-							SaveInstance(inst,filename.Text..".rbxmx",not saveObjects)
-						end)
-						overwriteCaution = false
-						newCaution:Destroy()
-						if CurrentSaveInstanceWindow then
-							CurrentSaveInstanceWindow:Destroy()
-							CurrentSaveInstanceWindow = nil
-						end
-					end)
-					newCaution.MainWindow.No.MouseButton1Up:connect(function()
-						overwriteCaution = false
-						newCaution:Destroy()
-					end)
-				end
-			else
-				pcall(function()
-					SaveInstance(inst,filename.Text..".rbxmx",not saveObjects)
-				end)
-				if CurrentSaveInstanceWindow then
-					CurrentSaveInstanceWindow:Destroy()
-					CurrentSaveInstanceWindow = nil
-					if explorerPanel.Parent:FindFirstChild("SaveInstanceOverwriteCaution") then
-						explorerPanel.Parent.SaveInstanceOverwriteCaution:Destroy()
-					end
-				end
-			end
-		else
-			pcall(function()
-				if SaveInstance then
-					SaveInstance(inst,filename.Text..".rbxmx",not saveObjects)
-				else
-					_G.SaveInstance(inst,filename.Text,not saveObjects)
-				end
-			end)
-			if CurrentSaveInstanceWindow then
-				CurrentSaveInstanceWindow:Destroy()
-				CurrentSaveInstanceWindow = nil
-				if explorerPanel.Parent:FindFirstChild("SaveInstanceOverwriteCaution") then
-					explorerPanel.Parent.SaveInstanceOverwriteCaution:Destroy()
-				end
-			end
-		end]]
-	end)
-	CurrentSaveInstanceWindow.MainWindow.Cancel.MouseButton1Up:connect(function()
-		if CurrentSaveInstanceWindow then
-			CurrentSaveInstanceWindow:Destroy()
-			CurrentSaveInstanceWindow = nil
-			if explorerPanel.Parent:FindFirstChild("SaveInstanceOverwriteCaution") then
-				explorerPanel.Parent.SaveInstanceOverwriteCaution:Destroy()
-			end
-		end
-	end)
-	CurrentSaveInstanceWindow.MainWindow.SaveObjects.MouseButton1Up:connect(function()
-		if saveObjects then
-			saveObjects = false
-			CurrentSaveInstanceWindow.MainWindow.SaveObjects.enabled.Visible = false
-		else
-			saveObjects = true
-			CurrentSaveInstanceWindow.MainWindow.SaveObjects.enabled.Visible = true
-		end
-	end)
-end
-
 function DestroyRightClick()
 	if currentRightClickMenu then
 		currentRightClickMenu:Destroy()
@@ -2614,7 +2521,6 @@ function rightClickMenu(sObj)
 			'Insert Object',
 			'View Script',
 			'Save Script',
-			-- 'Save Instance',
 			'Copy Path',
 			'Call Function',
 			'Call Remote',
@@ -2747,23 +2653,6 @@ function rightClickMenu(sObj)
 						newPart.CFrame = CFrame.new(Players.LocalPlayer.Character.Head.Position) + Vector3.new(0,3,0)
 						table.insert(insertedParts,newPart)
 					end)
-				end
-			elseif option == "Save Instance" then
-				if not Option.Modifiable then return end
-				local list = Selection:Get()
-				if #list == 1 then
-					list[1].Archivable = true
-					pcall(function()PromptSaveInstance(list[1]:Clone())end)
-				elseif #list > 1 then
-					local newModel = Instance.new("Model")
-					newModel.Name = "SavedInstances"
-					for i = 1,#list do
-						pcall(function()
-							list[i].Archivable = true
-							list[i]:Clone().Parent = newModel
-						end)
-					end
-					PromptSaveInstance(newModel)
 				end
 			elseif option == 'Copy Path' then
 				if not Option.Modifiable then return end
