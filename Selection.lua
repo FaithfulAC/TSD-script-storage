@@ -611,7 +611,7 @@ IntroFrame:TweenPosition(UDim2.new(1,-301,0,0),Enum.EasingDirection.Out,Enum.Eas
 
 switchWindows("Explorer")
 
-task.wait(1)
+task.wait(.75)
 
 SideMenu.Visible = true
 
