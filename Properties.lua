@@ -31,7 +31,7 @@ function getRbxApi()
 	if not isfolder(foldername) then
 		makefolder(foldername)
 	end
-	
+
 	local RbxApi = {}
 
 	RbxApi.Classes = {}
@@ -986,7 +986,7 @@ function GetControl(object, propertyData, readOnly)
 	elseif RbxApi.Classes[propertyType] then
 		return Controls["Object"](object, propertyData, readOnly)
 	end
-	
+
 	return Controls["default"](object, propertyData, readOnly)
 end
 -- Permissions
@@ -997,7 +997,7 @@ end
 
 function CanEditProperty(object,propertyData)
 	local tags = propertyData.Tags or {}
-	
+
 	for _,name in pairs(tags) do
 		if name == "ReadOnly" then
 			return false
@@ -1010,11 +1010,11 @@ end
 local function PropertyIsHidden(propertyData)
 	local tags = propertyData.Tags or {}
 	local security = propertyData.Security or {}
-	
+
 	if security.Read == "RobloxSecurity" then
 		return true
 	end
-	
+
 	for _,name in pairs(tags) do
 		if name == "Deprecated"
 			or name == "Hidden"
@@ -1023,7 +1023,7 @@ local function PropertyIsHidden(propertyData)
 			return true
 		end
 	end
-	
+
 	return false
 end
 
@@ -1134,7 +1134,7 @@ end
 function sortProps(t)
 	table.sort(t, 
 		function(x,y) return x.propertyData.Name < y.propertyData.Name
-	end)
+		end)
 end
 
 function showProperties(obj)
