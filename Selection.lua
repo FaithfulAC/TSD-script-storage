@@ -24,7 +24,6 @@ local SettingsButton = SlideFrame:WaitForChild("Settings")
 local ExplorerPanel = Gui:WaitForChild("ExplorerPanel")
 local PropertiesFrame = Gui:WaitForChild("PropertiesFrame")
 local SaveMapWindow = Gui:WaitForChild("SaveMapWindow")
-local RemoteDebugWindow = Gui:WaitForChild("RemoteDebugWindow")
 
 local SettingsPanel = Gui:WaitForChild("SettingsPanel")
 local AboutPanel = Gui:WaitForChild("About")
@@ -75,7 +74,6 @@ local Windows = {
 	},
 	Settings = {SettingsPanel},
 	SaveMap = {SaveMapWindow},
-	Remotes = {RemoteDebugWindow},
 	About = {AboutPanel},
 }
 
