@@ -1386,8 +1386,9 @@ function GetFunctions()
 	return functionTable
 end
 
+local Players = cloneref(game:GetService("Players"));
+
 function CreateInsertObjectMenu(choices, currentChoice, readOnly, onClick)
-	local Players = cloneref(game:GetService("Players"));
 	local mouse = Players.LocalPlayer:GetMouse()
 	local totalSize = explorerPanel.Parent.AbsoluteSize.y
 	if #choices == 0 then return end
@@ -1477,7 +1478,6 @@ function CreateInsertObjectMenu(choices, currentChoice, readOnly, onClick)
 end
 
 function CreateFunctionCallerMenu(choices, currentChoice, readOnly, onClick)
-	local Players = cloneref(game:GetService("Players"));
 	local mouse = Players.LocalPlayer:GetMouse()
 	local totalSize = explorerPanel.Parent.AbsoluteSize.y
 	if #choices == 0 then return end
@@ -1661,7 +1661,7 @@ function CreateRightClickMenuItem(text, onClick, insObj)
 end
 
 function CreateRightClickMenu(choices, currentChoice, readOnly, onClick)
-	local Players = cloneref(game:GetService("Players"));
+	
 	local mouse = Players.LocalPlayer:GetMouse()
 
 	local frame = Instance.new("Frame")	
@@ -1744,7 +1744,7 @@ end
 
 function checkMouseInGui(gui)
 	if gui == nil then return false end
-	local Players = cloneref(game:GetService("Players"));
+	
 	local plrMouse = Players.LocalPlayer:GetMouse()
 	local guiPosition = gui.AbsolutePosition
 	local guiSize = gui.AbsoluteSize	
@@ -1827,6 +1827,8 @@ end
 local updateList,rawUpdateList,updateScroll,rawUpdateSize do
 	local function r(t)
 		for i = 1,#t do
+			if i % 100 == 0 then task.wait() end
+			
 			if not filteringWorkspace() or scanName(t[i].Object) then
 				TreeList[#TreeList+1] = t[i]
 
@@ -2045,9 +2047,7 @@ local Selection do
 
 	function Selection:Get()
 		local list = {}
-		for i = 1,#SelectionList do
-			list[i] = SelectionList[i]
-		end
+		table.move(SelectionList, 1, #SelectionList, 1, list)
 		return list
 	end
 
@@ -2098,14 +2098,14 @@ local function Split(str, delimiter)
 	local start = 1
 	local t = {}
 	while true do
-		local pos = string.find (str, delimiter, start, true)
+		local pos = string.find(str, delimiter, start, true)
 		if not pos then
 			break
 		end
-		table.insert (t, string.sub (str, start, pos - 1))
-		start = pos + string.len (delimiter)
+		table.insert (t, string.sub(str, start, pos - 1))
+		start = pos + string.len(delimiter)
 	end
-	table.insert (t, string.sub (str, start))
+	table.insert (t, string.sub(str, start))
 	return t
 end
 
@@ -2234,7 +2234,7 @@ function PromptRemoteCaller(inst)
 	local ArgumentList = CurrentRemoteWindow.MainWindow.Arguments
 	local ArgumentTemplate = CurrentRemoteWindow.MainWindow.ArgumentTemplate
 
-	if inst:IsA("RemoteEvent") then
+	if inst:IsA("BaseRemoteEvent") then
 		CurrentRemoteWindow.Title.Text = "Fire Event"
 		CurrentRemoteWindow.MainWindow.Ok.Text = "Fire"
 		CurrentRemoteWindow.MainWindow.DisplayReturned.Visible = false
@@ -2247,7 +2247,7 @@ function PromptRemoteCaller(inst)
 	newArgument.Type.MouseButton1Down:connect(function()
 		createDDown(newArgument.Type,function(choice)
 			newArgument.Type.Text = choice
-		end,"Script","Number","String","Color3","Vector3","Vector2","UDim2","NumberRange")
+		end,"Number","String","Color3","Vector3","Vector2","UDim2","NumberRange")
 	end)
 
 	CurrentRemoteWindow.MainWindow.Ok.MouseButton1Up:connect(function()
@@ -2289,7 +2289,7 @@ function PromptRemoteCaller(inst)
 			newArgument.Type.MouseButton1Down:connect(function()
 				createDDown(newArgument.Type,function(choice)
 					newArgument.Type.Text = choice
-				end,"Script","Number","String","Color3","Vector3","Vector2","UDim2","NumberRange")
+				end,"Number","String","Color3","Vector3","Vector2","UDim2","NumberRange")
 			end)
 		end
 	end)
@@ -2594,7 +2594,7 @@ local GetPath = function(Instance) -- ripped from some random script
 end
 
 function rightClickMenu(sObj)
-	local Players = cloneref(game:GetService("Players"));
+	
 	local mouse = Players.LocalPlayer:GetMouse()
 
 	local extra = ((sObj == RunningScriptsStorageMain or sObj == LoadedModulesStorageMain or sObj == NilStorageMain) and 'Refresh Instances' or nil)
@@ -2629,7 +2629,14 @@ function rightClickMenu(sObj)
 				local list = Selection.List
 				local cut = {}
 				for i = 1,#list do
-					local obj = list[i]:Clone()
+					local obj;
+					
+					if list[i].Archivable then
+						obj = list[i]:Clone()
+					else
+						obj = Instance.fromExisting(list[i])
+					end
+					
 					if obj then
 						table.insert(clipboard,obj)
 						table.insert(cut,list[i])
@@ -2643,43 +2650,52 @@ function rightClickMenu(sObj)
 				if not Option.Modifiable then return end
 				clipboard = {}
 				local list = Selection.List
-				for i = 1,#list do
-					table.insert(clipboard,list[i]:Clone())
+				
+				for i = 1, #list do
+					table.insert(clipboard,(list[i].Archivable and list[i]:Clone() or Instance.fromExisting(list[i])))
 				end
+				
 				updateActions()
 			elseif option == "Paste Into" then
 				if not Option.Modifiable then return end
 				local parent = Selection.List[1] or workspace
-				for i = 1,#clipboard do
-					clipboard[i]:Clone().Parent = parent
+				
+				for i = 1, #clipboard do
+					(clipboard[i].Archivable and clipboard[i]:Clone() or Instance.fromExisting(clipboard[i])).Parent = parent
 				end
 			elseif option == "Duplicate" then
 				if not Option.Modifiable then return end
 				local list = Selection:Get()
-				for i = 1,#list do
-					list[i]:Clone().Parent = Selection.List[1].Parent or workspace
+				
+				for i = 1, #list do
+					Instance.fromExisting(list[i]).Parent = Selection.List[1].Parent or workspace
 				end
 			elseif option == "Delete" then
 				if not Option.Modifiable then return end
 				local list = Selection:Get()
-				for i = 1,#list do
+				
+				for i = 1, #list do
 					pcall(delete,list[i])
 				end
+				
 				Selection:Set({})
 			elseif option == "Group" then
 				if not Option.Modifiable then return end
 				local newModel = Instance.new("Model")
 				local list = Selection:Get()
 				newModel.Parent = Selection.List[1].Parent or workspace
-				for i = 1,#list do
+				
+				for i = 1, #list do
 					list[i].Parent = newModel
 				end
+				
 				Selection:Set({})
 			elseif option == "Ungroup" then
 				if not Option.Modifiable then return end
 				local ungrouped = {}
 				local list = Selection:Get()
-				for i = 1,#list do
+				
+				for i = 1, #list do
 					if list[i]:IsA("Model") then
 						for i2,v2 in pairs(list[i]:GetChildren()) do
 							v2.Parent = list[i].Parent or workspace
@@ -2688,7 +2704,9 @@ function rightClickMenu(sObj)
 						pcall(delete,list[i])			
 					end
 				end
+				
 				Selection:Set({})
+				
 				if SettingsRemote:Invoke("SelectUngrouped") then
 					for i,v in pairs(ungrouped) do
 						Selection:Add(v)
@@ -2699,11 +2717,13 @@ function rightClickMenu(sObj)
 				local list = Selection:Get()
 				Selection:Set({})
 				Selection:StopUpdates()
-				for i = 1,#list do
+				
+				for i = 1, #list do
 					for i2,v2 in pairs(list[i]:GetChildren()) do
 						Selection:Add(v2)
 					end
 				end
+				
 				Selection:ResumeUpdates()
 			elseif option == "Teleport To" then
 				if not Option.Modifiable then return end
@@ -2711,7 +2731,6 @@ function rightClickMenu(sObj)
 				for i = 1,#list do
 					if list[i]:IsA("BasePart") then
 						pcall(function()
-							local Players = cloneref(game:GetService("Players"));
 							Players.LocalPlayer.Character.HumanoidRootPart.CFrame = list[i].CFrame * CFrame.new(0, 3, 0);
 						end)
 						break
@@ -2723,7 +2742,6 @@ function rightClickMenu(sObj)
 				local list = Selection:Get()
 				for i = 1,#list do
 					pcall(function()
-						local Players = cloneref(game:GetService("Players"));
 						local newPart = Instance.new("Part")
 						newPart.Parent = list[i]
 						newPart.CFrame = CFrame.new(Players.LocalPlayer.Character.Head.Position) + Vector3.new(0,3,0)
@@ -2763,7 +2781,7 @@ function rightClickMenu(sObj)
 				if not Option.Modifiable then return end
 				local list = Selection:Get()
 				for i = 1,#list do
-					if list[i]:IsA("RemoteFunction") or list[i]:IsA("RemoteEvent") then
+					if list[i]:IsA("RemoteFunction") or list[i]:IsA("BaseRemoteEvent") then
 						PromptRemoteCaller(list[i])
 						break
 					end
@@ -2772,7 +2790,9 @@ function rightClickMenu(sObj)
 				if not Option.Modifiable then return end
 				local list = Selection:Get()
 				for i = 1,#list do
-					if list[i]:IsA("LocalScript") or list[i]:IsA("ModuleScript") then
+					if list[i]:IsA("LocalScript") or list[i]:IsA("ModuleScript") or
+						(list[i]:IsA("Script") and list[i].RunContext == Enum.RunContext.Client)
+					then
 						ScriptEditorEvent:Fire(list[i])
 					end
 				end
@@ -2780,7 +2800,9 @@ function rightClickMenu(sObj)
 				if not Option.Modifiable then return end
 				local list = Selection:Get()
 				for i = 1,#list do
-					if list[i]:IsA("LocalScript") or list[i]:IsA("ModuleScript") then
+					if list[i]:IsA("LocalScript") or list[i]:IsA("ModuleScript") or
+						(list[i]:IsA("Script") and list[i].RunContext == Enum.RunContext.Client)
+					then
 						writefile(game.PlaceId .. '_' .. list[i].Name:gsub('%W', '') .. '_' .. math.random(100000, 999999) .. '.lua', decompile(list[i]));
 					end
 				end
@@ -2789,17 +2811,17 @@ function rightClickMenu(sObj)
 					for i, v in pairs(getnilinstances()) do
 						if v ~= DexOutput and v ~= DexOutputMain and v ~= DexStorage and v ~= DexStorageMain and v ~= RunningScriptsStorage and v ~= RunningScriptsStorageMain and v ~= LoadedModulesStorage and v ~= LoadedModulesStorageMain and v ~= NilStorage and v ~= NilStorageMain then
 							pcall(function()
-								v:clone().Parent = NilStorageMain;
+								v:Clone().Parent = NilStorageMain;
 							end)
 						end
 					end
 				elseif sObj == RunningScriptsStorageMain then
 					for i,v in pairs(getscripts()) do
 						if v ~= RunningScriptsStorage and v ~= LoadedModulesStorage and v ~= DexStorage and v ~= UpvalueStorage then
-							if (v:IsA'LocalScript' or v:IsA'ModuleScript' or v:IsA'Script') then
+							if v:IsA("BaseScript") then
 								v.Archivable = true;
-								local ls = v:clone()
-								if v:IsA'LocalScript' or v:IsA'Script' then ls.Disabled = true; end
+								local ls = v:Clone()
+								if v:IsA("LocalScript") or v:IsA("Script") then ls.Disabled = true end
 								ls.Parent = RunningScriptsStorageMain
 							end
 						end
