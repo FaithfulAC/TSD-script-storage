@@ -1569,6 +1569,8 @@ local function openScript(o)
 	if cache[id] then
 		ScriptEditor.SetContent(cache[id])
 	else
+		local decompile = decompile or disassemble
+		
 		local decompiled = decompile(o);
 		cache[id] = decompiled;
 		local RunService = cloneref(game:GetService("RunService"))
