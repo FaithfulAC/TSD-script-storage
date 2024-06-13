@@ -1569,16 +1569,28 @@ local function openScript(o)
 	if cache[id] then
 		ScriptEditor.SetContent(cache[id])
 	else
-		local decompile = decompile or disassemble
+		local decompile = decompile or disassemble or getscriptbytecode or function()
+			return "-- No function exists to load this script"
+		end;
 		
-		local decompiled = decompile(o);
-		cache[id] = decompiled;
-		local RunService = cloneref(game:GetService("RunService"))
-		RunService.Heartbeat:wait();
-		ScriptEditor.SetContent(cache[id])
+		local s, res = pcall(decompile, o);
+		if s then
+			cache[id] = res;
+			task.wait()
+			ScriptEditor.SetContent(cache[id])
+		else
+			task.wait()
+			ScriptEditor.SetContent("An error occurred while loading this script: " .. res)
+		end
 	end
 
 	Title.Text = "[Script Viewer] Viewing: " .. o.Name;
+end
+
+local foldername = "TSDex"
+
+if not isfolder(foldername) then
+	makefolder(foldername)
 end
 
 bindable.Event:connect(function(object)
@@ -1588,9 +1600,9 @@ end)
 
 SaveScript.MouseButton1Click:connect(function()
 	if ScriptEditor.Content ~= "" then
-		local fileName = FileName.Text;
+		local fileName = foldername .. "/" .. FileName.Text;
 		if fileName == "File Name" or FileName == "" then
-			fileName = "LocalScript_" .. math.random(1, 5000)
+			fileName = foldername .. "/" .. "LocalScript_" .. math.random(1, 5000)
 		end
 
 		fileName = fileName .. ".lua";
