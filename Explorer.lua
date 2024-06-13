@@ -1,4 +1,4 @@
-local script, _, gets = ...
+local script, RbxApi, gets = ...
 
 -- initial states
 local Option = {
@@ -32,18 +32,6 @@ local DexOutput = Instance.new("Folder")
 DexOutput.Name = "Output"
 local DexOutputMain = Instance.new("ScreenGui", DexOutput)
 DexOutputMain.Name = "Dex Output"
-
-local print = print
-
-if not (EUROPA_INTERNAL_LOADED or PRINT_DETER) then
-	print = function(...)
-		return;
-	end
-end
-
-explorerPanel:WaitForChild("GetPrint").OnInvoke = function()
-	return print
-end
 
 --[[
 
@@ -919,7 +907,7 @@ do
 
 		local MouseDrag = Create('ImageButton',{
 			Name = "MouseDrag";
-			Position = UDim2.new(-0.25,0,-0.25,0);
+			Position = UDim2.new(-.25,0,-.25,0);
 			Size = UDim2.new(1.5,0,1.5,0);
 			Transparency = 1;
 			AutoButtonColor = false;
@@ -940,11 +928,11 @@ do
 			end)
 			MouseDrag.Parent = GetScreen(ScrollFrame)
 			Class:ScrollDown()
-			wait(0.2) -- delay before auto scroll
+			task.wait(.2) -- delay before auto scroll
 			while scrollEventID == current do
 				Class:ScrollDown()
 				if not Class:CanScrollDown() then break end
-				wait()
+				task.wait()
 			end
 		end)
 
@@ -964,11 +952,11 @@ do
 			end)
 			MouseDrag.Parent = GetScreen(ScrollFrame)
 			Class:ScrollUp()
-			wait(0.2)
+			task.wait(.2)
 			while scrollEventID == current do
 				Class:ScrollUp()
 				if not Class:CanScrollUp() then break end
-				wait()
+				task.wait()
 			end
 		end)
 
@@ -990,19 +978,19 @@ do
 				MouseDrag.Parent = GetScreen(ScrollFrame)
 				if x > ScrollThumbFrame.AbsolutePosition.x then
 					Class:ScrollTo(Class.ScrollIndex + Class.VisibleSpace)
-					wait(0.2)
+					task.wait(.2)
 					while scrollEventID == current do
 						if x < ScrollThumbFrame.AbsolutePosition.x + ScrollThumbFrame.AbsoluteSize.x then break end
 						Class:ScrollTo(Class.ScrollIndex + Class.VisibleSpace)
-						wait()
+						task.wait()
 					end
 				else
 					Class:ScrollTo(Class.ScrollIndex - Class.VisibleSpace)
-					wait(0.2)
+					task.wait(.2)
 					while scrollEventID == current do
 						if x > ScrollThumbFrame.AbsolutePosition.x then break end
 						Class:ScrollTo(Class.ScrollIndex - Class.VisibleSpace)
-						wait()
+						task.wait()
 					end
 				end
 			end)
@@ -1020,19 +1008,19 @@ do
 				MouseDrag.Parent = GetScreen(ScrollFrame)
 				if y > ScrollThumbFrame.AbsolutePosition.y then
 					Class:ScrollTo(Class.ScrollIndex + Class.VisibleSpace)
-					wait(0.2)
+					task.wait(.2)
 					while scrollEventID == current do
 						if y < ScrollThumbFrame.AbsolutePosition.y + ScrollThumbFrame.AbsoluteSize.y then break end
 						Class:ScrollTo(Class.ScrollIndex + Class.VisibleSpace)
-						wait()
+						task.wait()
 					end
 				else
 					Class:ScrollTo(Class.ScrollIndex - Class.VisibleSpace)
-					wait(0.2)
+					task.wait(.2)
 					while scrollEventID == current do
 						if y > ScrollThumbFrame.AbsolutePosition.y then break end
 						Class:ScrollTo(Class.ScrollIndex - Class.VisibleSpace)
-						wait()
+						task.wait()
 					end
 				end
 			end)
@@ -1116,7 +1104,6 @@ Create(explorerPanel,{
 })
 
 local SettingsRemote = explorerPanel.Parent:WaitForChild("SettingsPanel"):WaitForChild("GetSetting")
-local GetApiRemote = explorerPanel.Parent:WaitForChild("PropertiesFrame"):WaitForChild("GetApi")
 local GetAwaitRemote = explorerPanel.Parent:WaitForChild("PropertiesFrame"):WaitForChild("GetAwaiting")
 local bindSetAwaiting = explorerPanel.Parent:WaitForChild("PropertiesFrame"):WaitForChild("SetAwaiting")
 
@@ -1311,8 +1298,6 @@ local BrickColors = {
 local currentRightClickMenu
 local CurrentInsertObjectWindow
 local CurrentFunctionCallerWindow
-
-local RbxApi
 
 function ClassCanCreate(IName)
 	return (pcall(Instance.new, IName))
@@ -2257,7 +2242,7 @@ function PromptRemoteCaller(inst)
 			end
 			if inst:IsA("RemoteFunction") then
 				if displayValues then
-					spawn(function()
+					task.spawn(function()
 						local myResults = inst:InvokeServer(unpack(MyArguments))
 						if myResults then
 							CreateTableCaution("Remote Caller",myResults)
@@ -2266,7 +2251,7 @@ function PromptRemoteCaller(inst)
 						end
 					end)
 				else
-					spawn(function()
+					task.spawn(function()
 						inst:InvokeServer(unpack(MyArguments))
 					end)
 				end
@@ -2513,11 +2498,10 @@ function rightClickMenu(sObj)
 			'Paste Into',
 			'Duplicate',
 			'Delete',
-			-- 'Group',
-			-- 'Ungroup',
+			'Group',
+			'Ungroup',
 			'Select Children',
 			'Teleport To',
-			-- 'Insert Part',
 			'Insert Object',
 			'View Script',
 			'Save Script',
@@ -2642,18 +2626,6 @@ function rightClickMenu(sObj)
 						break
 					end
 				end
-			elseif option == "Insert Part" then
-				if not Option.Modifiable then return end
-				local insertedParts = {}
-				local list = Selection:Get()
-				for i = 1,#list do
-					pcall(function()
-						local newPart = Instance.new("Part")
-						newPart.Parent = list[i]
-						newPart.CFrame = CFrame.new(Players.LocalPlayer.Character.Head.Position) + Vector3.new(0,3,0)
-						table.insert(insertedParts,newPart)
-					end)
-				end
 			elseif option == 'Copy Path' then
 				if not Option.Modifiable then return end
 				local list = Selection:Get()
@@ -2692,7 +2664,7 @@ function rightClickMenu(sObj)
 					if list[i]:IsA("LocalScript") or list[i]:IsA("ModuleScript") or
 						(list[i]:IsA("Script") and list[i].RunContext == Enum.RunContext.Client)
 					then
-						writefile(game.PlaceId .. '_' .. list[i].Name:gsub('%W', '') .. '_' .. math.random(100000, 999999) .. '.lua', decompile(list[i]));
+						writefile("TSDex/" .. game.PlaceId .. '_' .. list[i].Name:gsub('%W', '') .. '_' .. math.random(100000, 999999) .. '.lua', decompile(list[i]));
 					end
 				end
 			elseif option == 'Refresh Instances' then
@@ -2744,7 +2716,7 @@ do
 
 	local mouseDrag = Create('ImageButton',{
 		Name = "MouseDrag";
-		Position = UDim2.new(-0.25,0,-0.25,0);
+		Position = UDim2.new(-.25,0,-.25,0);
 		Size = UDim2.new(1.5,0,1.5,0);
 		Transparency = 1;
 		AutoButtonColor = false;
@@ -2856,7 +2828,7 @@ do
 			elseif (clickPos-dragPos).magnitude > 8 then
 				dragged = true
 				SetZIndex(dragGhost,9)
-				dragGhost.IndentFrame.Transparency = 0.25
+				dragGhost.IndentFrame.Transparency = .25
 				dragGhost.IndentFrame.EntryText.TextColor3 = GuiColor.TextSelected
 				dragGhost.Position = UDim2.new(0,dragPos.x+ghostOffset.x,0,dragPos.y+ghostOffset.y)
 				dragGhost.Parent = GetScreen(listFrame)
@@ -3463,7 +3435,7 @@ local function updateDexStorage()
 	if dexStorageDebounce then return end
 	dexStorageDebounce = true	
 
-	wait()
+	task.wait()
 
 	pcall(function()
 		-- saveinstance("content//DexStorage.rbxm",DexStorageMain)
@@ -3580,7 +3552,7 @@ do
 		--[[local currentTable = get_nil_instances()	
 		
 		spawn(function()
-			while wait() do
+			while task.wait() do
 				if #currentTable ~= #get_nil_instances() then
 					currentTable = get_nil_instances()
 					--NilStorageMain:ClearAllChildren()
@@ -3658,7 +3630,7 @@ local actionButtons do
 		local button = Create(Icon('ImageButton',icon),{
 			Name = name .. "Button";
 			Visible = Option.Modifiable and Option.Selectable;
-			Position = UDim2.new(1,-(GUI_SIZE+2)*currentActions+2,0.25,-GUI_SIZE/2);
+			Position = UDim2.new(1,-(GUI_SIZE+2)*currentActions+2,.25,-GUI_SIZE/2);
 			Size = UDim2.new(0,GUI_SIZE,0,GUI_SIZE);
 			Parent = headerFrame;
 		})
@@ -3853,11 +3825,6 @@ Input.InputEnded:connect(function(key)
 		HoldingShift = false
 	end
 end)
-
-while RbxApi == nil do
-	RbxApi = GetApiRemote:Invoke()
-	wait()
-end
 
 --[[
 explorerFilter.Changed:connect(function(prop)
