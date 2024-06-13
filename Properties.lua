@@ -7,8 +7,6 @@ local UIS = cloneref(game:GetService('UserInputService'));
 local Gui = script.Parent.Parent
 local PropertiesFrame = Gui:WaitForChild("PropertiesFrame")
 local ExplorerFrame = Gui:WaitForChild("ExplorerPanel")
-print = ExplorerFrame:WaitForChild("GetPrint"):Invoke()
-
 
 -- Services
 local Teams = cloneref(game:GetService("Teams"))
@@ -135,11 +133,10 @@ local BrickColors = {
 	OuterBorderColor = Styles.Black;
 }
 
-task.wait(1)
+task.wait(.5)
 
 local bindGetSelection = ExplorerFrame.TotallyNotGetSelection
 local bindSelectionChanged = ExplorerFrame.TotallyNotSelectionChanged
-local bindGetApi = PropertiesFrame.GetApi
 local bindGetAwait = PropertiesFrame.GetAwaiting
 local bindSetAwait = PropertiesFrame.SetAwaiting
 
@@ -1852,10 +1849,6 @@ propertiesSearch.Changed:Connect(function(prop)
 		showProperties(GetSelection())
 	end
 end)
-
-bindGetApi.OnInvoke = function()
-	return RbxApi
-end
 
 bindGetAwait.OnInvoke = function()
 	return AwaitingObjectValue
