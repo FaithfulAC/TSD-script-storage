@@ -346,16 +346,24 @@ local function getSelection()
 	end
 end
 
+local SelectionBoxIns = Instance.new("SelectionBox")
+
 Mouse.Button1Down:connect(function()
 	if CurrentWindow == "Explorer" and Settings.ClickSelect then
 		local target = Mouse.Target
 		if target then
+			if Settings.SelBox then
+				SelectionBoxIns.Parent = target
+				SelectionBoxIns.Adornee = target
+			end
 			TotallyNotSetSelection:Invoke({target})
 		end
 	end
 end)
 
 TotallyNotSelectionChanged.Event:connect(function()
+	SelectionBoxIns.Adornee = nil
+	SelectionBoxIns.Parent = nil
 end)
 
 SettingsListener.OnInvoke = ReturnSetting
