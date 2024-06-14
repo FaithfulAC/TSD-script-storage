@@ -362,8 +362,10 @@ Mouse.Button1Down:connect(function()
 end)
 
 TotallyNotSelectionChanged.Event:connect(function()
-	SelectionBoxIns.Adornee = nil
-	SelectionBoxIns.Parent = nil
+	if getSelection() ~= SelectionBoxIns.Adornee then
+		SelectionBoxIns.Adornee = nil
+		SelectionBoxIns.Parent = nil
+	end
 end)
 
 SettingsListener.OnInvoke = ReturnSetting
