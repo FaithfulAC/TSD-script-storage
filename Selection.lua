@@ -472,7 +472,7 @@ for i = 0,1,0.1 do
 	IntroFrame.Version.TextTransparency = i
 	IntroFrame.Creator.TextTransparency = i
 	IntroFrame.Sad.ImageTransparency = i
-	wait()
+	task.wait()
 end
 
 IntroFrame.Visible = false
@@ -487,7 +487,7 @@ task.wait(.5)
 for i = 1,0,-0.1 do
 	OpenScriptEditorButton.Icon.ImageTransparency = i
 	CloseToggleButton.TextTransparency = i
-	wait()
+	task.wait()
 end
 
 CloseToggleButton.Active = true
