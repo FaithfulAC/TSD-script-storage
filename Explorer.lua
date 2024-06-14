@@ -2576,7 +2576,11 @@ function rightClickMenu(sObj)
 				newModel.Parent = Selection.List[1].Parent or workspace
 				
 				for i = 1, #list do
-					list[i].Parent = newModel
+					local CanChangeParent = select(2, pcall(function() list[i].Parent = list[i] end)) == "Attempt to set " .. list[i]:GetFullName() .. " as its own parent"
+					
+					if CanChangeParent then
+						list[i].Parent = newModel
+					end
 				end
 				
 				Selection:Set({})
