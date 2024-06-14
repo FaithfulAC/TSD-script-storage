@@ -2590,9 +2590,13 @@ function rightClickMenu(sObj)
 				local list = Selection:Get()
 				
 				for i = 1, #list do
-					if list[i]:IsA("Model") then
+					-- 0 clue why but calling workspace:IsA("Model") returns true, so let's just do a classname check ;)
+					if list[i].ClassName == "Model" then
 						for i2,v2 in pairs(list[i]:GetChildren()) do
-							v2.Parent = list[i].Parent or workspace
+							pcall(function()
+								v2.Parent = list[i].Parent or workspace
+							end)
+							
 							table.insert(ungrouped,v2)
 						end		
 						pcall(delete,list[i])			
