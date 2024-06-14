@@ -1,6 +1,6 @@
 local script, Api, gets = ...
 
-task.wait(.05)
+task.wait()
 
 local UIS = cloneref(game:GetService('UserInputService'));
 
@@ -133,7 +133,7 @@ local BrickColors = {
 	OuterBorderColor = Styles.Black;
 }
 
-task.wait(.5)
+task.wait()
 
 local bindGetSelection = ExplorerFrame.TotallyNotGetSelection
 local bindSelectionChanged = ExplorerFrame.TotallyNotSelectionChanged
