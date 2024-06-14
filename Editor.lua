@@ -11,14 +11,13 @@ local FileName = editor:WaitForChild("TopBar"):WaitForChild("Other"):WaitForChil
 local Title	= editor:WaitForChild("TopBar"):WaitForChild("title");
 
 local cache = {};
-local GetDebugId = game.GetDebugId;
+local GetDebugId = clonefunction(game.GetDebugId);
 
 local dragger = {}; do
 	local Players = cloneref(game:GetService("Players"))
 	local mouse = Players.LocalPlayer:GetMouse();
 	local inputService = cloneref(game:GetService('UserInputService'));
 	local RunService = cloneref(game:GetService("RunService"));
-	local heartbeat = RunService.Heartbeat;
 	-- // credits to Ririchi / Inori for this cute drag function :)
 	function dragger.new(frame)
 		frame.Draggable = false;
@@ -34,7 +33,7 @@ local dragger = {}; do
 				local input = frame.InputBegan:connect(function(key)
 					if key.UserInputType == Enum.UserInputType.MouseButton1 then
 						local objectPosition = Vector2.new(mouse.X - frame.AbsolutePosition.X, mouse.Y - frame.AbsolutePosition.Y);
-						while heartbeat:wait() and inputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) do
+						while RunService.Heartbeat:wait() and inputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) do
 							pcall(function()
 								frame:TweenPosition(UDim2.new(0, mouse.X - objectPosition.X + (frame.Size.X.Offset * frame.AnchorPoint.X), 0, mouse.Y - objectPosition.Y + (frame.Size.Y.Offset * frame.AnchorPoint.Y)), 'Out', 'Quad', 0.1, true);
 							end)
@@ -1580,7 +1579,7 @@ local function openScript(o)
 			ScriptEditor.SetContent(cache[id])
 		else
 			task.wait()
-			ScriptEditor.SetContent("An error occurred while loading this script: " .. res)
+			ScriptEditor.SetContent("-- An error occurred while loading this script: " .. res)
 		end
 	end
 
