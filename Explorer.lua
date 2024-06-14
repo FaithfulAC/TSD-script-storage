@@ -1534,7 +1534,21 @@ function CreateFunctionCallerMenu(choices, currentChoice, readOnly, onClick)
 		end
 
 		for i,name in pairs(choices) do
-			local option = CreateRightClickMenuItem(name.ReturnType.Name .. " " .. name.Name .. GetParameters(name), function()
+			local returntype = name.ReturnType.Name
+			
+			if (not returntype) and #name.ReturnType > 1 then
+				returntype = ""
+				
+				for i, v in ipairs(name.ReturnType) do
+					returntype ..= v.Name
+					
+					if i ~= #name.ReturnType then
+						returntype ..= ", "
+					end
+				end
+			end
+			
+			local option = CreateRightClickMenuItem(returntype .. " " .. name.Name .. GetParameters(name), function()
 				choice(name)
 			end, 2)
 			option.Size = UDim2.new(1, 0, 0, 20)
