@@ -2974,6 +2974,16 @@ do
 					end)
 					expand.MouseLeave:connect(function()
 						local node = TreeList[i + self.ScrollIndex]
+						
+						if not node then
+							local a = tick()
+							
+							repeat
+								node = TreeList[i + self.ScrollIndex]
+								task.wait()
+							until node or tick() - a > 1
+						end
+						
 						if #node > 0 then
 							if node.Expanded then
 								Icon(expand,NODE_EXPANDED)
@@ -2984,6 +2994,16 @@ do
 					end)
 					expand.MouseButton1Down:connect(function()
 						local node = TreeList[i + self.ScrollIndex]
+						
+						if not node then
+							local a = tick()
+
+							repeat
+								node = TreeList[i + self.ScrollIndex]
+								task.wait()
+							until node or tick() - a > 1
+						end
+						
 						if #node > 0 then
 							node.Expanded = not node.Expanded
 							if node.Object == explorerPanel.Parent and node.Expanded then
