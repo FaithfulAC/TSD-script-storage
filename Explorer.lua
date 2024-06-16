@@ -3661,7 +3661,7 @@ end
 ----------------------------------------------------------------
 ---- Actions
 
-local actionButtons do
+--[[local actionButtons do
 	actionButtons = {}
 
 	local totalActions = 1
@@ -3844,7 +3844,7 @@ do
 			return options
 		end
 	end
-end
+end]]
 
 function SelectionVar()
 	return Selection
