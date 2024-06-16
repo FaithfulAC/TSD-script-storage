@@ -85,7 +85,7 @@ A GUI panel that displays the game hierarchy.
 		If Modifiable is false, then left-clicking will perform a drag
 		selection.
 
-## Updates
+## Updates yeah ok hmm lets see wow great 2013 updates lets see how they fare 11 years later
 
 - 2013-09-18
 	- Fixed explorer icons to match studio explorer.
