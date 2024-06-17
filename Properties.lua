@@ -293,56 +293,27 @@ local function CopyTable(T)
 end
 
 local function SortTable(T)
-	table.sort(T, 
-		function(x,y) return x.Name < y.Name
-		end)
+	table.sort(T, function(x,y)
+		return x.Name < y.Name
+	end)
 end
 
--- Spritesheet
-local Sprite = {
-	Width = 13;
-	Height = 13;
+-- "spritesheet" more like simple collection of basic rbxasset images
+
+local AssetImages = {
+	checked = "checkbox_checked_light.png",
+	unchecked = "checkbox_unchecked_light.png",
+	unchecked_over = "checkbox_unchecked_hover_light.png",
+	unchecked_disabled = "checkbox_unchecked_disabled_light.png",
 }
 
-local Spritesheet = {
-	Image = "http://www.roblox.com/asset/?id=128896947";
-	Height = 256;
-	Width = 256;
-}
-
-local Images = {
-	"unchecked",
-	"checked",
-	"unchecked_over",
-	"checked_over",
-	"unchecked_disabled",
-	"checked_disabled"
-}
-
-local function SpritePosition(spriteName)
-	local x = 0
-	local y = 0
-	for i,v in pairs(Images) do
-		if (v == spriteName) then
-			return {x, y}
-		end
-		x = x + Sprite.Height
-		if (x + Sprite.Width) > Spritesheet.Width then
-			x = 0
-			y = y + Sprite.Height
-		end
-	end
+for i, png in pairs(AssetImages) do
+	AssetImages[i] = "rbxasset://textures/DeveloperFramework/" .. png
 end
 
 local function GetCheckboxImageName(checked, readOnly, mouseover)
 	if checked then
-		if readOnly then
-			return "checked_disabled"
-		elseif mouseover then
-			return "checked_over"
-		else
-			return "checked"
-		end
+		return "checked"
 	else
 		if readOnly then
 			return "unchecked_disabled"
@@ -726,37 +697,31 @@ function CreateCheckbox(value, readOnly, onClick)
 	local mouseover = false
 
 	local checkboxFrame = Instance.new("ImageButton")
-	checkboxFrame.Size = UDim2.new(0, Sprite.Width, 0, Sprite.Height)
+	checkboxFrame.Size = UDim2.new(0, 13, 0, 13)
 	checkboxFrame.BackgroundTransparency = 1
 	checkboxFrame.ClipsDescendants = true
+	checkboxFrame.Image = AssetImages.unchecked
 	--checkboxFrame.Position = UDim2.new(0, Styles.Margin, 0, Styles.Margin)
 
-	local spritesheetImage = Instance.new("ImageLabel", checkboxFrame)
-	spritesheetImage.Name = "SpritesheetImageLabel"
-	spritesheetImage.Size = UDim2.new(0, Spritesheet.Width, 0, Spritesheet.Height)
-	spritesheetImage.Image = Spritesheet.Image
-	spritesheetImage.BackgroundTransparency = 1
-
-	local function updateSprite()
-		local spriteName = GetCheckboxImageName(checked, readOnly, mouseover)
-		local spritePosition = SpritePosition(spriteName)
-		spritesheetImage.Position = UDim2.new(0, -1 * spritePosition[1], 0, -1 * spritePosition[2])
+	local function updateImage()
+		local Name = GetCheckboxImageName(checked, readOnly, mouseover)
+		checkboxFrame.Image = AssetImages[Name]
 	end
 
 	local function setValue(val)
 		checked = val
-		updateSprite()
+		updateImage()
 	end
 
 	if not readOnly then
-		checkboxFrame.MouseEnter:Connect(function() mouseover = true updateSprite() end)
-		checkboxFrame.MouseLeave:Connect(function() mouseover = false updateSprite() end)
+		checkboxFrame.MouseEnter:Connect(function() mouseover = true updateImage() end)
+		checkboxFrame.MouseLeave:Connect(function() mouseover = false updateImage() end)
 		checkboxFrame.MouseButton1Click:Connect(function()
 			onClick(checked)
 		end)
 	end
 
-	updateSprite()
+	updateImage()
 
 	return checkboxFrame, setValue
 end
