@@ -84,65 +84,6 @@ A GUI panel that displays the game hierarchy.
 
 		If Modifiable is false, then left-clicking will perform a drag
 		selection.
-
-## Updates yeah ok hmm lets see wow great 2013 updates lets see how they fare 11 years later
-
-- 2013-09-18
-	- Fixed explorer icons to match studio explorer.
-
-- 2013-09-14
-	- Added GetOption and SetOption bindables.
-		- Option: Modifiable; sets whether objects can be modified by the panel.
-		- Option: Selectable; sets whether objects can be selected.
-	- Slight modification to left-click selection behavior.
-	- Improved layout and scaling.
-
-- 2013-09-13
-	- Added drag to reparent objects.
-		- Left-click to select/deselect object.
-		- Left-click and drag unselected object to reparent single object.
-		- Left-click and drag selected object to move reparent entire selection.
-		- Right-click while dragging to cancel.
-
-- 2013-09-11
-	- Added explorer panel header with actions.
-		- Added Cut action.
-		- Added Copy action.
-		- Added Paste action.
-		- Added Delete action.
-	- Added drag selection.
-		- Left-click: Add to selection on drag.
-		- Right-click: Add to or remove from selection on drag.
-	- Ensured SelectionChanged fires only when the selection actually changes.
-	- Added documentation and change log.
-	- Fixed thread issue.
-
-- 2013-09-09
-	- Added basic multi-selection.
-		- Left-click to set selection.
-		- Right-click to add to or remove from selection.
-	- Removed "Selection" ObjectValue.
-		- Added GetSelection BindableFunction.
-		- Added SetSelection BindableFunction.
-		- Added SelectionChanged BindableEvent.
-	- Changed font to SourceSans.
-
-- 2013-08-31
-	- Improved GUI sizing based off of `GUI_SIZE` constant.
-	- Automatic font size detection.
-
-- 2013-08-27
-	- Initial explorer panel.
-
-
-## Todo
-
-- Sorting
-	- by ExplorerOrder
-	- by children
-	- by name
-- Drag objects to reparent
-
 ]]
 
 local ENTRY_SIZE = GUI_SIZE + ENTRY_PADDING*2
@@ -151,7 +92,7 @@ local HEADER_SIZE = ENTRY_SIZE*2
 
 local FONT = 'SourceSans'
 local FONT_SIZE do
-	local size = {8,9,10,11,12,14,18,24,36,48}
+	local size = {8,9,10,11,12,14,18,24,83,48}
 	local s
 	local n = math.huge
 	for i = 1,#size do
@@ -201,9 +142,11 @@ local GuiColor = {
 ----------------------------------------------------------------
 ---- Icon map constants
 
-local MAP_ID = 483448923
+-- local MAP_ID = 483448923
 
 -- Indices based on implementation of Icon function.
+-- !!! TO BE REPLACED !!!
+--[[
 local ACTION_CUT         	 = 160
 local ACTION_COPY        	 = 161
 local ACTION_PASTE       	 = 162
@@ -219,218 +162,385 @@ local ACTION_FREEZE 		 = 188
 local ACTION_STARRED 		 = 189
 local ACTION_ADDSTAR 		 = 184
 local ACTION_ADDSTAR_OVER 	 = 187
+]]
 
-local NODE_COLLAPSED      = 165
-local NODE_EXPANDED       = 166
+local NODE_COLLAPSED      = "rbxasset://textures/ManageCollaborators/arrowRight_dark.png"
+local NODE_EXPANDED       = "rbxasset://textures/ManageCollaborators/arrowDown_dark.png"
 local NODE_COLLAPSED_OVER = 179
 local NODE_EXPANDED_OVER  = 180
 
-local ExplorerIndex = {
-	["Accessory"] = 32;
-	["Accoutrement"] = 32;
-	["AdService"] = 73;
-	["Animation"] = 60;
-	["AnimationController"] = 60;
-	["AnimationTrack"] = 60;
-	["Animator"] = 60;
-	["ArcHandles"] = 56;
-	["AssetService"] = 72;
-	["Attachment"] = 34;
-	["Backpack"] = 20;
-	["BadgeService"] = 75;
-	["BallSocketConstraint"] = 89;
-	["BillboardGui"] = 64;
-	["BinaryStringValue"] = 4;
-	["BindableEvent"] = 67;
-	["BindableFunction"] = 66;
-	["BlockMesh"] = 8;
-	["BloomEffect"] = 90;
-	["BlurEffect"] = 90;
-	["BodyAngularVelocity"] = 14;
-	["BodyForce"] = 14;
-	["BodyGyro"] = 14;
-	["BodyPosition"] = 14;
-	["BodyThrust"] = 14;
-	["BodyVelocity"] = 14;
-	["BoolValue"] = 4;
-	["BoxHandleAdornment"] = 54;
-	["BrickColorValue"] = 4;
-	["Camera"] = 5;
-	["CFrameValue"] = 4;
-	["CharacterMesh"] = 60;
-	["Chat"] = 33;
-	["ClickDetector"] = 41;
-	["CollectionService"] = 30;
-	["Color3Value"] = 4;
-	["ColorCorrectionEffect"] = 90;
-	["ConeHandleAdornment"] = 54;
-	["Configuration"] = 58;
-	["ContentProvider"] = 72;
-	["ContextActionService"] = 41;
-	["CoreGui"] = 46;
-	["CoreScript"] = 18;
-	["CornerWedgePart"] = 1;
-	["CustomEvent"] = 4;
-	["CustomEventReceiver"] = 4;
-	["CylinderHandleAdornment"] = 54;
-	["CylinderMesh"] = 8;
-	["CylindricalConstraint"] = 89;
-	["Debris"] = 30;
-	["Decal"] = 7;
-	["Dialog"] = 62;
-	["DialogChoice"] = 63;
-	["DoubleConstrainedValue"] = 4;
-	["Explosion"] = 36;
-	["FileMesh"] = 8;
-	["Fire"] = 61;
-	["Flag"] = 38;
-	["FlagStand"] = 39;
-	["FloorWire"] = 4;
-	["Folder"] = 70;
-	["ForceField"] = 37;
-	["Frame"] = 48;
-	["GamePassService"] = 19;
-	["Glue"] = 34;
-	["GuiButton"] = 52;
-	["GuiMain"] = 47;
-	["GuiService"] = 47;
-	["Handles"] = 53;
-	["HapticService"] = 84;
-	["Hat"] = 45;
-	["HingeConstraint"] = 89;
-	["Hint"] = 33;
-	["HopperBin"] = 22;
-	["HttpService"] = 76;
-	["Humanoid"] = 9;
-	["ImageButton"] = 52;
-	["ImageLabel"] = 49;
-	["InsertService"] = 72;
-	["IntConstrainedValue"] = 4;
-	["IntValue"] = 4;
-	["JointInstance"] = 34;
-	["JointsService"] = 34;
-	["Keyframe"] = 60;
-	["KeyframeSequence"] = 60;
-	["KeyframeSequenceProvider"] = 60;
-	["Lighting"] = 13;
-	["LineHandleAdornment"] = 54;
-	["LocalScript"] = 18;
-	["LogService"] = 87;
-	["MarketplaceService"] = 46;
-	["Message"] = 33;
-	["Model"] = 2;
-	["ModuleScript"] = 71;
-	["Motor"] = 34;
-	["Motor6D"] = 34;
-	["MoveToConstraint"] = 89;
-	["NegateOperation"] = 78;
-	["NetworkClient"] = 16;
-	["NetworkReplicator"] = 29;
-	["NetworkServer"] = 15;
-	["NumberValue"] = 4;
-	["ObjectValue"] = 4;
-	["Pants"] = 44;
-	["ParallelRampPart"] = 1;
-	["Part"] = 1;
-	["ParticleEmitter"] = 69;
-	["PartPairLasso"] = 57;
-	["PathfindingService"] = 37;
-	["Platform"] = 35;
-	["Player"] = 12;
-	["PlayerGui"] = 46;
-	["Players"] = 21;
-	["PlayerScripts"] = 82;
-	["PointLight"] = 13;
-	["PointsService"] = 83;
-	["Pose"] = 60;
-	["PrismaticConstraint"] = 89;
-	["PrismPart"] = 1;
-	["PyramidPart"] = 1;
-	["RayValue"] = 4;
-	["ReflectionMetadata"] = 86;
-	["ReflectionMetadataCallbacks"] = 86;
-	["ReflectionMetadataClass"] = 86;
-	["ReflectionMetadataClasses"] = 86;
-	["ReflectionMetadataEnum"] = 86;
-	["ReflectionMetadataEnumItem"] = 86;
-	["ReflectionMetadataEnums"] = 86;
-	["ReflectionMetadataEvents"] = 86;
-	["ReflectionMetadataFunctions"] = 86;
-	["ReflectionMetadataMember"] = 86;
-	["ReflectionMetadataProperties"] = 86;
-	["ReflectionMetadataYieldFunctions"] = 86;
-	["RemoteEvent"] = 80;
-	["UnreliableRemoteEvent"] = 80;
-	["RemoteFunction"] = 79;
-	["ReplicatedFirst"] = 72;
-	["ReplicatedStorage"] = 72;
-	["RightAngleRampPart"] = 1;
-	["RocketPropulsion"] = 14;
-	["RodConstraint"] = 89;
-	["RopeConstraint"] = 89;
-	["Rotate"] = 34;
-	["RotateP"] = 34;
-	["RotateV"] = 34;
-	["RunService"] = 66;
-	["ScreenGui"] = 47;
-	["Script"] = 6;
-	["ScrollingFrame"] = 48;
-	["Seat"] = 35;
-	["Selection"] = 55;
-	["SelectionBox"] = 54;
-	["SelectionPartLasso"] = 57;
-	["SelectionPointLasso"] = 57;
-	["SelectionSphere"] = 54;
-	["ServerScriptService"] = 0;
-	["Shirt"] = 43;
-	["ShirtGraphic"] = 40;
-	["SkateboardPlatform"] = 35;
-	["Sky"] = 28;
-	["SlidingBallConstraint"] = 89;
-	["Smoke"] = 59;
-	["Snap"] = 34;
-	["Sound"] = 11;
-	["SoundService"] = 31;
-	["Sparkles"] = 42;
-	["SpawnLocation"] = 25;
-	["SpecialMesh"] = 8;
-	["SphereHandleAdornment"] = 54;
-	["SpotLight"] = 13;
-	["SpringConstraint"] = 89;
-	["StarterCharacterScripts"] = 82;
-	["StarterGear"] = 20;
-	["StarterGui"] = 46;
-	["StarterPack"] = 20;
-	["StarterPlayer"] = 88;
-	["StarterPlayerScripts"] = 82;
-	["Status"] = 2;
-	["StringValue"] = 4;
-	["SunRaysEffect"] = 90;
-	["SurfaceGui"] = 64;
-	["SurfaceLight"] = 13;
-	["SurfaceSelection"] = 55;
-	["Team"] = 24;
-	["Teams"] = 23;
-	["TeleportService"] = 81;
-	["Terrain"] = 65;
-	["TerrainRegion"] = 65;
-	["TestService"] = 68;
-	["TextBox"] = 51;
-	["TextButton"] = 51;
-	["TextLabel"] = 50;
-	["Texture"] = 10;
-	["TextureTrail"] = 4;
-	["Tool"] = 17;
-	["TouchTransmitter"] = 37;
-	["TrussPart"] = 1;
-	["UnionOperation"] = 77;
-	["UserInputService"] = 84;
-	["Vector3Value"] = 4;
-	["VehicleSeat"] = 35;
-	["VelocityMotor"] = 34;
-	["WedgePart"] = 1;
-	["Weld"] = 34;
-	["Workspace"] = 19;
+local--[[New]]ExplorerIndex = {
+	["Accessory"] = 32,
+	["AccessoryDescription"] = 0,
+	["Accoutrement"] = 32,
+	["Actor"] = 113,
+	["AdGui"] = 145,
+	["AdPortal"] = 146,
+	["AdService"] = 145,
+	["AdvancedDragger"] = 41,
+	["AirController"] = 0,
+	["AlignOrientation"] = 100,
+	["AlignPosition"] = 99,
+	["AngularVelocity"] = 103,
+	["Animation"] = 60,
+	["AnimationConstraint"] = 0,
+	["AnimationController"] = 60,
+	["AnimationRigData"] = 58,
+	["AnimationTrack"] = 60,
+	["Animator"] = 60,
+	["ArcHandles"] = 56,
+	["AssetService"] = 25,
+	["Atmosphere"] = 28,
+	["Attachment"] = 81,
+	["AudioAnalyzer"] = 84,
+	["AudioChorus"] = 84,
+	["AudioCompressor"] = 84,
+	["AudioDeviceInput"] = 84,
+	["AudioDeviceOutput"] = 84,
+	["AudioDistortion"] = 84,
+	["AudioEcho"] = 84,
+	["AudioEmitter"] = 84,
+	["AudioEqualizer"] = 84,
+	["AudioFader"] = 84,
+	["AudioFlanger"] = 84,
+	["AudioListener"] = 84,
+	["AudioPitchShifter"] = 84,
+	["AudioPlayer"] = 84,
+	["AudioReverb"] = 84,
+	["AudioSearchParams"] = 84,
+	["AvatarEditorService"] = 40,
+	["Backpack"] = 20,
+	["BadgeService"] = 25,
+	["BallSocketConstraint"] = 86,
+	["Beam"] = 96,
+	["BillboardGui"] = 64,
+	["BinaryStringValue"] = 4,
+	["BindableEvent"] = 67,
+	["BindableFunction"] = 66,
+	["BlockMesh"] = 8,
+	["BloomEffect"] = 83,
+	["BlurEffect"] = 83,
+	["BodyAngularVelocity"] = 14,
+	["BodyColors"] = 58,
+	["BodyForce"] = 14,
+	["BodyGyro"] = 14,
+	["BodyPartDescription"] = 97,
+	["BodyPosition"] = 14,
+	["BodyThrust"] = 14,
+	["BodyVelocity"] = 14,
+	["Bone"] = 114,
+	["BoolValue"] = 4,
+	["BoxHandleAdornment"] = 111,
+	["BrickColorValue"] = 4,
+	["BubbleChatMessageProperties"] = 139,
+	["BuoyancySensor"] = 0,
+	["CFrameValue"] = 4,
+	["Camera"] = 5,
+	["CanvasGroup"] = 27,
+	["CharacterMesh"] = 60,
+	["Chat"] = 33,
+	["ChatInputBarConfiguration"] = 143,
+	["ChatWindowConfiguration"] = 143,
+	["ChorusSoundEffect"] = 84,
+	["ClickDetector"] = 41,
+	["ClientReplicator"] = 16,
+	["ClimbController"] = 137,
+	["Clouds"] = 28,
+	["CollectionService"] = 30,
+	["Color3Value"] = 4,
+	["ColorCorrectionEffect"] = 83,
+	["CompressorSoundEffect"] = 84,
+	["ConeHandleAdornment"] = 110,
+	["Configuration"] = 58,
+	["ContentProvider"] = 70,
+	["ContextActionService"] = 41,
+	["ControllerManager"] = 137,
+	["ControllerPartSensor"] = 99,
+	["CoreGui"] = 46,
+	["CoreScript"] = 18,
+	["CornerWedgePart"] = 1,
+	["CurveAnimation"] = 60,
+	["CustomEvent"] = 4,
+	["CustomEventReceiver"] = 4,
+	["CylinderHandleAdornment"] = 109,
+	["CylinderMesh"] = 8,
+	["CylindricalConstraint"] = 95,
+	["DataStoreGetOptions"] = 58,
+	["DataStoreIncrementOptions"] = 58,
+	["DataStoreOptions"] = 58,
+	["DataStoreSetOptions"] = 58,
+	["Debris"] = 30,
+	["DebuggerWatch"] = 58,
+	["Decal"] = 7,
+	["DepthOfFieldEffect"] = 83,
+	["Dialog"] = 62,
+	["DialogChoice"] = 63,
+	["DistortionSoundEffect"] = 84,
+	["DoubleConstrainedValue"] = 4,
+	["DragDetector"] = 41,
+	["Dragger"] = 41,
+	["EchoSoundEffect"] = 84,
+	["EditableImage"] = 49,
+	["EditableMesh"] = 8,
+	["EqualizerSoundEffect"] = 84,
+	["EulerRotationCurve"] = 0,
+	["ExperienceInviteOptions"] = 79,
+	["Explosion"] = 83,
+	["FaceControls"] = 129,
+	["FileMesh"] = 8,
+	["Fire"] = 61,
+	["Flag"] = 38,
+	["FlagStand"] = 39,
+	["FlangeSoundEffect"] = 84,
+	["FloatCurve"] = 96,
+	["FloorWire"] = 125,
+	["Folder"] = 77,
+	["ForceField"] = 37,
+	["Frame"] = 48,
+	["FunctionalTest"] = 68,
+	["GamePassService"] = 97,
+	["GetTextBoundsParams"] = 141,
+	["Glue"] = 34,
+	["GroundController"] = 0,
+	["GuiMain"] = 47,
+	["GuiService"] = 47,
+	["Handles"] = 53,
+	["HapticService"] = 0,
+	["Hat"] = 45,
+	["HeightmapImporterService"] = 2,
+	["HiddenSurfaceRemovalAsset"] = 0,
+	["Highlight"] = 133,
+	["HingeConstraint"] = 34,
+	["Hint"] = 33,
+	["Hole"] = 0,
+	["HopperBin"] = 22,
+	["HttpService"] = 121,
+	["Humanoid"] = 9,
+	["HumanoidController"] = 135,
+	["HumanoidDescription"] = 104,
+	["IKControl"] = 137,
+	["ImageButton"] = 52,
+	["ImageHandleAdornment"] = 108,
+	["ImageLabel"] = 49,
+	["InsertService"] = 25,
+	["IntConstrainedValue"] = 4,
+	["IntValue"] = 4,
+	["IntersectOperation"] = 130,
+	["JointInstance"] = 106,
+	["JointsService"] = 106,
+	["Keyframe"] = 60,
+	["KeyframeMarker"] = 0,
+	["KeyframeSequence"] = 60,
+	["KeyframeSequenceProvider"] = 60,
+	["Lighting"] = 13,
+	["LineForce"] = 132,
+	["LineHandleAdornment"] = 107,
+	["LinearVelocity"] = 102,
+	["LocalScript"] = 18,
+	["LocalizationService"] = 92,
+	["LocalizationTable"] = 97,
+	["LogService"] = 26,
+	["ManualGlue"] = 34,
+	["ManualWeld"] = 34,
+	["MarkerCurve"] = 96,
+	["MarketplaceService"] = 46,
+	["MaterialService"] = 123,
+	["MaterialVariant"] = 123,
+	["MemoryStoreService"] = 128,
+	["MeshPart"] = 8,
+	["Message"] = 33,
+	["Model"] = 2,
+	["ModuleScript"] = 76,
+	["Motor"] = 34,
+	["Motor6D"] = 34,
+	["MotorFeature"] = 0,
+	["NegateOperation"] = 0,
+	["NetworkClient"] = 16,
+	["NetworkReplicator"] = 29,
+	["NetworkServer"] = 15,
+	["NoCollisionConstraint"] = 0,
+	["Noise"] = 84,
+	["NumberPose"] = 0,
+	["NumberValue"] = 4,
+	["ObjectValue"] = 4,
+	["OperationGraph"] = 0,
+	["Pants"] = 44,
+	["ParabolaAdornment"] = 0,
+	["ParallelRampPart"] = 1,
+	["Part"] = 1,
+	["PartOperation"] = 0,
+	["PartOperationAsset"] = 0,
+	["PartPairLasso"] = 57,
+	["ParticleEmitter"] = 33,
+	["Path2D"] = 91,
+	["PathfindingLink"] = 91,
+	["PathfindingModifier"] = 91,
+	["PathfindingService"] = 132,
+	["PitchShiftSoundEffect"] = 84,
+	["Plane"] = 134,
+	["PlaneConstraint"] = 105,
+	["Platform"] = 35,
+	["Player"] = 12,
+	["PlayerGui"] = 46,
+	["Players"] = 21,
+	["PlayerScripts"] = 79,
+	["PluginAction"] = 0,
+	["PluginCapabilities"] = 0,
+	["PluginGuiService"] = 0,
+	["PointLight"] = 13,
+	["PointsService"] = 25,
+	["Pose"] = 60,
+	["PrismaticConstraint"] = 88,
+	["PrismPart"] = 1,
+	["ProximityPrompt"] = 124,
+	["ProximityPromptService"] = 124,
+	["PyramidPart"] = 1,
+	["RayValue"] = 4,
+	["ReflectionMetadata"] = 97,
+	["ReflectionMetadataCallbacks"] = 97,
+	["ReflectionMetadataClass"] = 97,
+	["ReflectionMetadataClasses"] = 97,
+	["ReflectionMetadataEnum"] = 97,
+	["ReflectionMetadataEnumItem"] = 97,
+	["ReflectionMetadataEnums"] = 97,
+	["ReflectionMetadataEvents"] = 97,
+	["ReflectionMetadataFunctions"] = 97,
+	["ReflectionMetadataMember"] = 97,
+	["ReflectionMetadataProperties"] = 97,
+	["ReflectionMetadataYieldFunctions"] = 97,
+	["RemoteEvent"] = 75,
+	["RemoteFunction"] = 74,
+	["RenderingTest"] = 68,
+	["ReplicatedFirst"] = 70,
+	["ReplicatedStorage"] = 70,
+	["ReverbSoundEffect"] = 134,
+	["RightAngleRampPart"] = 1,
+	["RigidConstraint"] = 133,
+	["RobloxEditableImage"] = 49,
+	["RobloxEditableMesh"] = 8,
+	["RocketPropulsion"] = 14,
+	["RodConstraint"] = 90,
+	["RopeConstraint"] = 89,
+	["Rotate"] = 34,
+	["RotateP"] = 34,
+	["RotateV"] = 34,
+	["RotationCurve"] = 0,
+	["RunService"] = 66,
+	["ScreenGui"] = 47,
+	["Script"] = 6,
+	["ScriptContext"] = 18,
+	["ScrollingFrame"] = 48,
+	["Seat"] = 35,
+	["Selection"] = 55,
+	["SelectionBox"] = 54,
+	["SelectionPartLasso"] = 57,
+	["SelectionPointLasso"] = 57,
+	["SelectionSphere"] = 54,
+	-- ["ServerScriptService"] = 71,
+	-- ["ServerStorage"] = 69,
+	["Shirt"] = 43,
+	["ShirtGraphic"] = 40,
+	["SkateboardController"] = 0,
+	["SkateboardPlatform"] = 35,
+	["Skin"] = 0,
+	["Sky"] = 28,
+	["SlidingBallConstraint"] = 86,
+	["Smoke"] = 59,
+	["Snap"] = 34,
+	["Sound"] = 11,
+	["SoundGroup"] = 38,
+	["SoundService"] = 31,
+	["Sparkles"] = 42,
+	["SpawnLocation"] = 25,
+	["SpecialMesh"] = 8,
+	["SphereHandleAdornment"] = 112,
+	["SpotLight"] = 13,
+	["SpringConstraint"] = 91,
+	["StandalonePluginScripts"] = 79,
+	["StarterCharacterScripts"] = 78,
+	["StarterGear"] = 20,
+	["StarterGui"] = 46,
+	["StarterPack"] = 20,
+	["StarterPlayer"] = 79,
+	["StarterPlayerScripts"] = 78,
+	["Status"] = 2,
+	["StringValue"] = 4,
+	["StyleDerive"] = 0,
+	["StyleLink"] = 0,
+	["StyleRule"] = 0,
+	["StyleSheet"] = 0,
+	["SunRaysEffect"] = 83,
+	["SurfaceAppearance"] = 0,
+	["SurfaceGui"] = 64,
+	["SurfaceLight"] = 13,
+	["SurfaceSelection"] = 55,
+	["SwimController"] = 0,
+	["Team"] = 24,
+	["Teams"] = 23,
+	["TeleportOptions"] = 146,
+	["TeleportService"] = 146,
+	["Terrain"] = 65,
+	["TerrainDetail"] = 65,
+	["TerrainRegion"] = 65,
+	["TestService"] = 68,
+	["TextBox"] = 51,
+	["TextButton"] = 51,
+	["TextChannel"] = 142,
+	["TextChatCommand"] = 138,
+	["TextChatMessageProperties"] = 140,
+	["TextLabel"] = 50,
+	["Texture"] = 10,
+	["TextureTrail"] = 4,
+	["Tool"] = 17,
+	["Torque"] = 103,
+	["TorsionSpringConstraint"] = 125,
+	["TouchTransmitter"] = 37,
+	["TrackerStreamAnimation"] = 0,
+	["Trail"] = 93,
+	["TremoloSoundEffect"] = 84,
+	["TrussPart"] = 1,
+	["Tween"] = 0,
+	["UIAspectRatioConstraint"] = 26,
+	["UICorner"] = 0,
+	["UIDragDetector"] = 0,
+	["UIFlexItem"] = 0,
+	["UIGradient"] = 0,
+	["UIGridLayout"] = 0,
+	["UIListLayout"] = 0,
+	["UIPadding"] = 0,
+	["UIPageLayout"] = 0,
+	["UIScale"] = 0,
+	["UISizeConstraint"] = 0,
+	["UIStroke"] = 0,
+	["UITableLayout"] = 0,
+	["UITextSizeConstraint"] = 0,
+	["Union"] = 73,
+	["UnionOperation"] = 73,
+	["UniversalConstraint"] = 0,
+	["UnreliableRemoteEvent"] = 75,
+	["UserInputService"] = 58,
+	["UserService"] = 143,
+	["Vector3Curve"] = 0,
+	["Vector3Value"] = 4,
+	["VectorForce"] = 102,
+	["VehicleController"] = 0,
+	["VehicleSeat"] = 35,
+	["VelocityMotor"] = 34,
+	["VideoDeviceInput"] = 0,
+	["VideoFrame"] = 120,
+	["ViewportFrame"] = 48,
+	["VirtualInputManager"] = 143,
+	["VisualizationMode"] = 0,
+	["VisualizationModeCategory"] = 0,
+	["WedgePart"] = 1,
+	["Weld"] = 34,
+	["WeldConstraint"] = 94,
+	["Wire"] = 0,
+	["WireframeHandleAdornment"] = 108,
+	["Workspace"] = 19,
+	["WorldModel"] = 2,
+	["WrapLayer"] = 0,
+	["WrapTarget"] = 0,
 }
 
 ----------------------------------------------------------------
@@ -496,20 +606,14 @@ end
 
 -- Connects a function to an event such that it fires asynchronously
 function Connect(event,func)
-	return event:connect(function(...)
-		local a = {...}
-		spawn(function() func(unpack(a)) end)
+	return event:Connect(function(...)
+		task.spawn(func, ...)
 	end)
 end
 
 -- returns the ascendant ScreenGui of an object
 function GetScreen(screen)
-	if screen == nil then return nil end
-	while not screen:IsA("ScreenGui") do
-		screen = screen.Parent
-		if screen == nil then return nil end
-	end
-	return screen
+	return screen:FindFirstAncestorOfClass("ScreenGui")
 end
 
 do
@@ -541,27 +645,19 @@ do
 end
 
 ---- IconMap ----
--- Image size: 256px x 256px
+-- Image size: 2352px x 16px
 -- Icon size: 16px x 16px
--- Padding between each icon: 2px
--- Padding around image edge: 1px
--- Total icons: 14 x 14 (196)
+-- Padding between each icon: 0px
+-- Padding around image edge: 0px
+-- Total icons: 147 x 1 (147)
+
 local Icon do
-	local iconMap = 'http://www.roblox.com/asset/?id=' .. MAP_ID
-	local ContentProvider = cloneref(game:GetService('ContentProvider'));
-	ContentProvider:Preload(iconMap)
-	local iconDehash do
-		-- 14 x 14, 0-based input, 0-based output
-		local f=math.floor
-		function iconDehash(h)
-			return f(h/14%14),f(h%14)
-		end
-	end
+	local iconMap = "rbxasset://textures/ClassImages.png"
+	local floor = math.floor
 
 	function Icon(IconFrame,index)
-		local row,col = iconDehash(index)
-		local mapSize = Vector2.new(256,256)
-		local pad,border = 2,1
+		index = floor(index)
+		local mapSize = Vector2.new(2352,16)
 		local iconSize = 16
 
 		local class = 'Frame'
@@ -585,10 +681,11 @@ local Icon do
 			})
 		end
 
-		IconFrame.IconMap.Position = UDim2.new(-col - (pad*(col+1) + border)/iconSize,0,-row - (pad*(row+1) + border)/iconSize,0)
+		IconFrame.IconMap.Position = UDim2.new(-index,0,0,0)
 		return IconFrame
 	end
 end
+
 
 ----------------------------------------------------------------
 ----------------------------------------------------------------
@@ -2922,9 +3019,10 @@ do
 			BorderColor3 = GuiColor.BorderSelected;
 			Position = UDim2.new(0,0,0,0);
 			Size = UDim2.new(1,0,1,0);
-			Create(Icon('ImageButton',0),{
+			Create("ImageButton",{
 				Name = "Expand";
 				AutoButtonColor = false;
+				BackgroundTransparency = 1;
 				Position = UDim2.new(0,-GUI_SIZE,0.5,-GUI_SIZE/2);
 				Size = UDim2.new(0,GUI_SIZE,0,GUI_SIZE);
 			});
@@ -2966,9 +3064,9 @@ do
 						local node = TreeList[i + self.ScrollIndex]
 						if #node > 0 then
 							if node.Expanded then
-								Icon(expand,NODE_EXPANDED_OVER)
+								expand.Image = NODE_EXPANDED
 							else
-								Icon(expand,NODE_COLLAPSED_OVER)
+								expand.Image = NODE_COLLAPSED
 							end
 						end
 					end)
@@ -2986,9 +3084,9 @@ do
 						
 						if #node > 0 then
 							if node.Expanded then
-								Icon(expand,NODE_EXPANDED)
+								expand.Image = NODE_EXPANDED
 							else
-								Icon(expand,NODE_COLLAPSED)
+								expand.Image = NODE_COLLAPSED
 							end
 						end
 					end)
@@ -3113,10 +3211,10 @@ do
 				if #node == 0 then
 					entry.IndentFrame.Expand.Visible = false
 				elseif node.Expanded then
-					Icon(entry.IndentFrame.Expand,NODE_EXPANDED)
+					entry.IndentFrame.Expand.Image = NODE_EXPANDED
 					entry.IndentFrame.Expand.Visible = true
 				else
-					Icon(entry.IndentFrame.Expand,NODE_COLLAPSED)
+					entry.IndentFrame.Expand.Image = NODE_COLLAPSED
 					entry.IndentFrame.Expand.Visible = true
 				end
 
@@ -3314,7 +3412,6 @@ local InstanceBlacklist = {
 	'ContextActionService';
 	'AssetService';
 	'TouchInputService';
-	'ScriptContext';
 	'FilteredSelection';
 	'MeshContentProvider';
 	'SolidModelContentProvider';
