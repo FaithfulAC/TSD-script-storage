@@ -102,7 +102,7 @@ local FONT_SIZE do
 	end
 end
 
-local GuiColor = {
+--[[local GuiColor = {
 	Background      = Color3.fromRGB(43, 43, 43);
 	Border          = Color3.fromRGB(20, 20, 20);
 	Selected        = Color3.fromRGB(5, 102, 141);
@@ -116,6 +116,22 @@ local GuiColor = {
 	Field           = Color3.fromRGB(43, 43, 43);
 	FieldBorder     = Color3.fromRGB(50, 50, 50);
 	TitleBackground = Color3.fromRGB(11, 11, 11);
+}]]
+
+local GuiColor = {
+	Background      = Color3.fromRGB(43, 43, 60);
+	Border          = Color3.fromRGB(10, 10, 30);
+	Selected        = Color3.fromRGB(0, 100, 200);
+	BorderSelected  = Color3.fromRGB(0, 50, 150);
+	Text            = Color3.fromRGB(245, 245, 245);
+	TextDisabled    = Color3.fromRGB(188, 188, 188);
+	TextSelected    = Color3.fromRGB(255, 255, 255);
+	Button          = Color3.fromRGB(33, 44, 66);
+	ButtonBorder    = Color3.fromRGB(133, 166, 199);
+	ButtonSelected  = Color3.fromRGB(0, 100, 200);
+	Field           = Color3.fromRGB(43, 43, 60);
+	FieldBorder     = Color3.fromRGB(50, 50, 100);
+	TitleBackground = Color3.fromRGB(11, 11, 22);
 }
 
 --[[
@@ -166,8 +182,6 @@ local ACTION_ADDSTAR_OVER 	 = 187
 
 local NODE_COLLAPSED      = "rbxasset://textures/ManageCollaborators/arrowRight_dark.png"
 local NODE_EXPANDED       = "rbxasset://textures/ManageCollaborators/arrowDown_dark.png"
-local NODE_COLLAPSED_OVER = 179
-local NODE_EXPANDED_OVER  = 180
 
 local--[[New]]ExplorerIndex = {
 	["Accessory"] = 32,
@@ -682,6 +696,56 @@ local Icon do
 		end
 
 		IconFrame.IconMap.Position = UDim2.new(-index,0,0,0)
+		return IconFrame
+	end
+end
+
+---- IconMap2 ----
+-- Image size: 512px x 512px
+-- Icon size: 16px x 16px
+-- Padding between each icon: 0px
+-- Padding around image edge: 0px
+-- Total icons: 1000
+
+local Icon2 do
+	local iconMap2 = "rbxasset://textures/TagEditor/famfamfam.png"
+	local floor = math.floor
+	
+	local iconDehash do
+		-- 14 x 14, 0-based input, 0-based output
+		local f=math.floor
+		function iconDehash(h)
+			return f(h/32%32),f(h%32)
+		end
+	end
+
+	function Icon2(IconFrame,index)
+		local row, col = iconDehash(index)
+		local mapSize = Vector2.new(512,512)
+		local iconSize = 16
+
+		local class = 'Frame'
+		if type(IconFrame) == 'string' then
+			class = IconFrame
+			IconFrame = nil
+		end
+
+		if not IconFrame then
+			IconFrame = Create(class,{
+				Name = "Icon";
+				BackgroundTransparency = 1;
+				ClipsDescendants = true;
+				Create('ImageLabel',{
+					Name = "IconMap2";
+					Active = false;
+					BackgroundTransparency = 1;
+					Image = iconMap2;
+					Size = UDim2.new(mapSize.x/iconSize,0,mapSize.y/iconSize,0);
+				});
+			})
+		end
+
+		IconFrame.IconMap2.Position = UDim2.new(-col,0,-row,0)
 		return IconFrame
 	end
 end
@@ -1306,7 +1370,7 @@ Create(scrollBarH.GUI,{
 	Parent = explorerPanel;
 })
 
-local headerFrame = Create('Frame',{
+--[[local headerFrame = Create('Frame',{
 	Name = "Header";
 	BorderSizePixel = 0;
 	BackgroundColor3 = GuiColor.Background;
@@ -1336,7 +1400,9 @@ local explorerFilter = 	Create('TextBox',{
 	Position = UDim2.new(0,4,0.5,0);
 	Size = UDim2.new(1,-8,0.5,-2);
 });
-explorerFilter.Parent = headerFrame
+explorerFilter.Parent = headerFrame]]
+local headerFrame = explorerPanel:FindFirstChild("Header")
+local explorerFilter = headerFrame:FindFirstChildWhichIsA("TextBox")
 
 SetZIndexOnChanged(explorerPanel)
 
@@ -1357,7 +1423,7 @@ local Row = {
 	TextColor = Styles.White;
 	TextColorOver = Styles.White;
 	TextLockedColor = Color3.fromRGB(155,155,155);
-	Height = 24;
+	Height = 20;
 	BorderColor = Color3.fromRGB(216/4,216/4,216/4);
 	BackgroundColor = Styles.Black2;
 	BackgroundColorAlternate = Color3.fromRGB(32, 32, 32);
@@ -3766,7 +3832,7 @@ end
 	local function makeButton(icon,over,name,vis,cond)
 		local buttonEnabled = false
 
-		local button = Create(Icon('ImageButton',icon),{
+		local button = Create(Icon2('ImageButton',icon),{
 			Name = name .. "Button";
 			Visible = Option.Modifiable and Option.Selectable;
 			Position = UDim2.new(1,-(GUI_SIZE+2)*currentActions+2,.25,-GUI_SIZE/2);
