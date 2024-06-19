@@ -79,16 +79,15 @@ local RbxApi = getRbxApi()
 
 -- Styles
 
-local function CreateColor3(r, g, b) return Color3.new(r/255,g/255,b/255) end
 
 local Styles = {
 	Font = Enum.Font.Arial;
 	Margin = 5;
-	Black = CreateColor3(0,0,0);
-	Black2 = CreateColor3(24, 24, 24);
-	White = CreateColor3(244,244,244);
-	Hover = CreateColor3(2, 128, 144);
-	Hover2 = CreateColor3(5, 102, 141);
+	Black = Color3.fromRGB(0,0,0);
+	Black2 = Color3.fromRGB(24, 24, 24);
+	White = Color3.fromRGB(244,244,244);
+	Hover = Color3.fromRGB(2, 128, 144);
+	Hover2 = Color3.fromRGB(5, 102, 141);
 }
 
 local Row = {
@@ -97,35 +96,34 @@ local Row = {
 	TextXAlignment = Enum.TextXAlignment.Left;
 	TextColor = Styles.White;
 	TextColorOver = Styles.White;
-	TextLockedColor = CreateColor3(155,155,155);
+	TextLockedColor = Color3.fromRGB(155,155,155);
 	Height = 24;
-	BorderColor = CreateColor3(216/4,216/4,216/4);
-	BackgroundColor = Styles.Black2;
-	BackgroundColorAlternate = CreateColor3(32, 32, 32);
-	BackgroundColorMouseover = CreateColor3(40, 40, 40);
-	TitleMarginLeft = 15;
+	BorderColor = Color3.fromRGB(10, 20, 30);
+	BackgroundColor = Color3.fromRGB(20, 20, 40);
+	BackgroundColorMouseover = Color3.fromRGB(40, 40, 60);
+	TitleMarginLeft = 20;
 }
 
 local DropDown = {
 	Font = Styles.Font;
 	FontSize = Enum.FontSize.Size14;
-	TextColor = CreateColor3(255,255,255);
+	TextColor = Color3.fromRGB(255,255,255);
 	TextColorOver = Styles.White;
 	TextXAlignment = Enum.TextXAlignment.Left;
 	Height = 16;
 	BackColor = Styles.Black2;
 	BackColorOver = Styles.Hover2;
-	BorderColor = CreateColor3(45,45,45);
+	BorderColor = Color3.fromRGB(45,45,60);
 	BorderSizePixel = 2;
-	ArrowColor = CreateColor3(160/2,160/2,160/2);
+	ArrowColor = Color3.fromRGB(80, 80, 80);
 	ArrowColorOver = Styles.Hover;
 }
 
 local BrickColors = {
 	BoxSize = 13;
 	BorderSizePixel = 1;
-	BorderColor = CreateColor3(160/3,160/3,160/3);
-	FrameColor = CreateColor3(160/3,160/3,160/3);
+	BorderColor = Color3.fromRGB(160/3,160/3,160/3);
+	FrameColor = Color3.fromRGB(160/3,160/3,160/3);
 	Size = 20;
 	Padding = 4;
 	ColorsPerRow = 8;
@@ -380,9 +378,10 @@ end
 
 local function CreateCell()
 	local tableCell = Instance.new("Frame")
-	tableCell.Size = UDim2.new(0.5, -1, 1, 0)
+	tableCell.Size = UDim2.new(0.55, -1, 1, 0)
 	tableCell.BackgroundColor3 = Row.BackgroundColor
 	tableCell.BorderColor3 = Row.BorderColor
+	tableCell.BorderSizePixel = 2
 	return tableCell
 end
 
@@ -1004,15 +1003,12 @@ function Set(object, propertyData, value)
 	end
 end
 
-function CreateRow(object, propertyData, isAlternateRow)
+function CreateRow(object, propertyData)
 	local propertyName = propertyData["Name"]
 	local propertyType = propertyData["ValueType"].Name
 	local propertyValue = object[propertyName]
 	--rowValue, rowValueType, isAlternate
 	local backColor = Row.BackgroundColor;
-	if (isAlternateRow) then
-		backColor = Row.BackgroundColorAlternate
-	end
 
 	local readOnly = not CanEditProperty(object, propertyData)
 	--if propertyType == "Instance" or propertyName == "Parent" then readOnly = true end
@@ -1033,8 +1029,8 @@ function CreateRow(object, propertyData, isAlternateRow)
 	propertyLabel.Parent = propertyLabelFrame
 
 	local propertyValueFrame = CreateCell()
-	propertyValueFrame.Size = UDim2.new(0.5, -1, 1, 0)
-	propertyValueFrame.Position = UDim2.new(0.5, 0, 0, 0)
+	propertyValueFrame.Size = UDim2.new(0.45, -1, 1, 0)
+	propertyValueFrame.Position = UDim2.new(0.55, 0, 0, 0)
 	propertyValueFrame.Parent = rowFrame
 
 	local control = GetControl(object, propertyData, readOnly)
@@ -1074,12 +1070,19 @@ end
 local selection = Gui:FindFirstChild("Selection", 1)
 
 function displayProperties(props)
+	-- display blank frame to separate search bar and properties below it
+	local rowFrame = Instance.new("Frame", ContentFrame)
+	rowFrame.Size = UDim2.new(1,0,0,Row.Height/10)
+	rowFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 20)
+	rowFrame.BackgroundTransparency = 0
+	rowFrame.Name = 'Row'
+
 	for i,v in pairs(props) do
 		pcall(function()
-			local a = CreateRow(v.object, v.propertyData, ((numRows % 2) == 0))
-			a.Position = UDim2.new(0,0,0,numRows*Row.Height)
+			local a = CreateRow(v.object, v.propertyData)
+			a.Position = UDim2.new(0,0,0,(numRows+0.1)*Row.Height)
 			a.Parent = ContentFrame
-			numRows = numRows + 1
+			numRows += 1
 		end)
 	end
 end
@@ -1094,9 +1097,9 @@ function checkForDupe(prop,props)
 end
 
 function sortProps(t)
-	table.sort(t, 
-		function(x,y) return x.propertyData.Name < y.propertyData.Name
-		end)
+	table.sort(t, function(x,y)
+		return x.propertyData.Name < y.propertyData.Name
+	end)
 end
 
 function showProperties(obj)
@@ -1137,19 +1140,19 @@ end
 local ScrollBarWidth = 16
 
 local ScrollStyles = {
-	Background      = Color3.fromRGB(43, 43, 43);
-	Border          = Color3.fromRGB(20, 20, 20);
-	Selected        = Color3.fromRGB(5, 102, 141);
-	BorderSelected  = Color3.fromRGB(2, 128, 144);
+	Background      = Color3.fromRGB(43, 43, 60);
+	Border          = Color3.fromRGB(20, 30, 40);
+	Selected        = Color3.fromRGB(0, 100, 200);
+	BorderSelected  = Color3.fromRGB(0, 50, 150);
 	Text            = Color3.fromRGB(245, 245, 245);
 	TextDisabled    = Color3.fromRGB(188, 188, 188);
 	TextSelected    = Color3.fromRGB(255, 255, 255);
-	Button          = Color3.fromRGB(33, 33, 33);
-	ButtonBorder    = Color3.fromRGB(133, 133, 133);
-	ButtonSelected  = Color3.fromRGB(0, 168, 150);
-	Field           = Color3.fromRGB(43, 43, 43);
-	FieldBorder     = Color3.fromRGB(50, 50, 50);
-	TitleBackground = Color3.fromRGB(11, 11, 11);
+	Button          = Color3.fromRGB(33, 44, 66);
+	ButtonBorder    = Color3.fromRGB(133, 166, 199);
+	ButtonSelected  = Color3.fromRGB(0, 100, 200);
+	Field           = Color3.fromRGB(43, 43, 60);
+	FieldBorder     = Color3.fromRGB(50, 50, 100);
+	TitleBackground = Color3.fromRGB(11, 11, 22);
 }
 do
 	local ZIndexLock = {}
