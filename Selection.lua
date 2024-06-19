@@ -78,7 +78,7 @@ local Windows = {
 }
 
 function switchWindows(wName,over)
-	if CurrentWindow == wName and not over then return end
+	if CurrentWindow == wName and not over then print(wName) return end
 
 	local count = 0
 
@@ -110,11 +110,11 @@ end
 
 function toggleDex(on)
 	if on then
-		SideMenu:TweenPosition(UDim2.new(1, -330, 0, 0), "Out", "Quad", 0.5, true)
+		SideMenu:TweenPosition(UDim2.new(1, -300, 0, 0), "Out", "Quad", 0.5, true)
 		OpenToggleButton:TweenPosition(UDim2.new(1,0,0,0), "Out", "Quad", 0.5, true)
 		switchWindows(CurrentWindow,true)
 	else
-		SideMenu:TweenPosition(UDim2.new(1, 0, 0, 0), "Out", "Quad", 0.5, true)
+		SideMenu:TweenPosition(UDim2.new(1, -300, 0, -30), "Out", "Quad", 0.5, true)
 		OpenToggleButton:TweenPosition(UDim2.new(1,-40,0,0), "Out", "Quad", 0.5, true)
 		switchWindows("Nothing c:")
 	end
@@ -474,27 +474,24 @@ task.wait(.75)
 
 SideMenu.Visible = true
 
-for i = 0,1,0.1 do
+for i = 0, 1, 0.1 do
 	IntroFrame.BackgroundTransparency = i
 	IntroFrame.Main.BackgroundTransparency = i
-	IntroFrame.Slant.ImageTransparency = i
+	IntroFrame.SlantHolder.BackgroundTransparency = i
 	IntroFrame.Title.TextTransparency = i
 	IntroFrame.Version.TextTransparency = i
 	IntroFrame.Creator.TextTransparency = i
-	IntroFrame.Sad.ImageTransparency = i
 	task.wait()
 end
 
 IntroFrame.Visible = false
 
 SlideFrame:TweenPosition(UDim2.new(0,0,0,0),Enum.EasingDirection.Out,Enum.EasingStyle.Quart,0.5,true)
-OpenScriptEditorButton:TweenPosition(UDim2.new(0,0,0,150),Enum.EasingDirection.Out,Enum.EasingStyle.Quart,0.5,true)
-CloseToggleButton:TweenPosition(UDim2.new(0,0,0,180),Enum.EasingDirection.Out,Enum.EasingStyle.Quart,0.5,true)
-Slant:TweenPosition(UDim2.new(0,0,0,210),Enum.EasingDirection.Out,Enum.EasingStyle.Quart,0.5,true)
+OpenScriptEditorButton:TweenPosition(UDim2.new(0,180,0,0),Enum.EasingDirection.Out,Enum.EasingStyle.Quart,0.5,true)
 
 task.wait(.5)
 
-for i = 1,0,-0.1 do
+for i = 1, 0, -0.1 do
 	OpenScriptEditorButton.Icon.ImageTransparency = i
 	CloseToggleButton.TextTransparency = i
 	task.wait()
