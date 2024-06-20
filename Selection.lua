@@ -500,6 +500,7 @@ SlideFrame:TweenPosition(UDim2.new(0,0,0,0),Enum.EasingDirection.Out,Enum.Easing
 OpenScriptEditorButton:TweenPosition(UDim2.new(0,180,0,0),Enum.EasingDirection.Out,Enum.EasingStyle.Quart,0.5,true)
 
 task.wait(.5)
+SlideOut.BackgroundTransparency = 0
 
 for i = 1, 0, -0.1 do
 	OpenScriptEditorButton.Icon.ImageTransparency = i
