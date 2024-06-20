@@ -1413,7 +1413,7 @@ local Styles = {
 	Black2 = Color3.fromRGB(24, 24, 24);
 	White = Color3.fromRGB(244,244,244);
 	Hover = Color3.fromRGB(2, 128, 144);
-	Hover2 = Color3.fromRGB(5, 102, 141);
+	Hover2 = Color3.fromRGB(0, 100, 200);
 }
 
 local Row = {
@@ -1425,9 +1425,9 @@ local Row = {
 	TextLockedColor = Color3.fromRGB(155,155,155);
 	Height = 20;
 	BorderColor = Color3.fromRGB(216/4,216/4,216/4);
-	BackgroundColor = Styles.Black2;
-	BackgroundColorAlternate = Color3.fromRGB(32, 32, 32);
-	BackgroundColorMouseover = Color3.fromRGB(40, 40, 40);
+	BackgroundColor = Color3.fromRGB(10, 20, 30);
+	BackgroundColorAlternate = Color3.fromRGB(32, 32, 64);
+	BackgroundColorMouseover = Color3.fromRGB(40, 40, 80);
 	TitleMarginLeft = 15;
 }
 
@@ -1438,11 +1438,11 @@ local DropDown = {
 	TextColorOver = Styles.White;
 	TextXAlignment = Enum.TextXAlignment.Left;
 	Height = 20;
-	BackColor = Styles.Black2;
+	BackColor = Color3.fromRGB(10,10,30);
 	BackColorOver = Styles.Hover2;
-	BorderColor = Color3.fromRGB(45,45,45);
-	BorderSizePixel = 2;
-	ArrowColor = Color3.fromRGB(160/2,160/2,160/2);
+	BorderColor = Color3.fromRGB(45,45,60);
+	BorderSizePixel = 0;
+	ArrowColor = Color3.fromRGB(80, 80, 80);
 	ArrowColorOver = Styles.Hover;
 }
 
