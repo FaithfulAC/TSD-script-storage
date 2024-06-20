@@ -16,7 +16,6 @@ local ScriptEditor = Gui:WaitForChild("ScriptEditor")
 
 local SlideOut = SideMenu:WaitForChild("SlideOut")
 local SlideFrame = SlideOut:WaitForChild("SlideFrame")
-local Slant = SideMenu:WaitForChild("Slant")
 
 local ExplorerButton = SlideFrame:WaitForChild("Explorer")
 local SettingsButton = SlideFrame:WaitForChild("Settings")
@@ -77,35 +76,47 @@ local Windows = {
 	About = {AboutPanel},
 }
 
-function switchWindows(wName,over)
-	if CurrentWindow == wName and not over then print(wName) return end
+local deb = false
 
+function switchWindows(wName,over)
+	if (CurrentWindow == wName and not over) or deb then print(wName) return end
+
+	deb = true
 	local count = 0
 
 	for i,v in pairs(Windows) do
 		count = 0
 		if i ~= wName then
-			for _,c in pairs(v) do c:TweenPosition(UDim2.new(1, 30, count * 0.5, count * 36), "Out", "Quad", 0.5, true) count = count + 1 end
+			for _,c in pairs(v) do c:TweenPosition(UDim2.new(1, 30, count * 0.5, (count * 36) + 30), "Out", "Quad", 0.5, true) count = count + 1 end
 		end
 	end
 
 	count = 0
 
 	if Windows[wName] then
-		for _,c in pairs(Windows[wName]) do c:TweenPosition(UDim2.new(1, -300, count * 0.5, count * 36), "Out", "Quad", 0.5, true) count = count + 1 end
+		for _,c in pairs(Windows[wName]) do c:TweenPosition(UDim2.new(1, -300, count * 0.5, (count * 36) + 30), "Out", "Quad", 0.5, true) count = count + 1 end
 	end
 
 	if wName ~= "Nothing c:" then
 		CurrentWindow = wName
 		for i,v in pairs(SlideFrame:GetChildren()) do
 			v.BackgroundTransparency = 1
-			v.Icon.ImageColor3 = Color3.new(0.6, 0.6, 0.6)
+			v.Frame.BackgroundTransparency = 1
+			v.Frame.Icon.ImageColor3 = Color3.new(0.6, 0.6, 0.6)
 		end
 		if SlideFrame:FindFirstChild(wName) then
 			SlideFrame[wName].BackgroundTransparency = 1
-			SlideFrame[wName].Icon.ImageColor3 = Color3.new(1,1,1)
+			
+			for i = 1, 10 do
+				task.wait(.01)
+				local transparency, colorint = 1-(0.8*(i/10)), 0.6+(0.4*(i/10))
+				SlideFrame[wName].Frame.BackgroundTransparency = transparency
+				SlideFrame[wName].Frame.Icon.ImageColor3 = Color3.new(1,1,colorint)
+			end
 		end
 	end
+
+	deb = false
 end
 
 function toggleDex(on)
@@ -114,7 +125,7 @@ function toggleDex(on)
 		OpenToggleButton:TweenPosition(UDim2.new(1,0,0,0), "Out", "Quad", 0.5, true)
 		switchWindows(CurrentWindow,true)
 	else
-		SideMenu:TweenPosition(UDim2.new(1, -300, 0, -30), "Out", "Quad", 0.5, true)
+		SideMenu:TweenPosition(UDim2.new(1, -300, 0, -100), "Out", "Quad", 0.5, true) -- (-100) for good measure
 		OpenToggleButton:TweenPosition(UDim2.new(1,-40,0,0), "Out", "Quad", 0.5, true)
 		switchWindows("Nothing c:")
 	end
@@ -476,7 +487,6 @@ SideMenu.Visible = true
 
 for i = 0, 1, 0.1 do
 	IntroFrame.BackgroundTransparency = i
-	IntroFrame.Main.BackgroundTransparency = i
 	IntroFrame.SlantHolder.BackgroundTransparency = i
 	IntroFrame.Title.TextTransparency = i
 	IntroFrame.Version.TextTransparency = i
