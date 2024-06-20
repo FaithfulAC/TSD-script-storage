@@ -87,14 +87,14 @@ function switchWindows(wName,over)
 	for i,v in pairs(Windows) do
 		count = 0
 		if i ~= wName then
-			for _,c in pairs(v) do c:TweenPosition(UDim2.new(1, 30, count * 0.5, (count * 36) + 30), "Out", "Quad", 0.5, true) count = count + 1 end
+			for _,c in pairs(v) do c:TweenPosition(UDim2.new(1, 30, count * 0.5, (count * 36) + (30-(count*30))), "Out", "Quad", 0.5, true) count = count + 1 end
 		end
 	end
 
 	count = 0
 
 	if Windows[wName] then
-		for _,c in pairs(Windows[wName]) do c:TweenPosition(UDim2.new(1, -300, count * 0.5, (count * 36) + 30), "Out", "Quad", 0.5, true) count = count + 1 end
+		for _,c in pairs(Windows[wName]) do c:TweenPosition(UDim2.new(1, -300, count * 0.5, (count * 36) + (30-(count*30))), "Out", "Quad", 0.5, true) count = count + 1 end
 	end
 
 	if wName ~= "Nothing c:" then
