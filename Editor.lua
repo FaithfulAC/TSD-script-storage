@@ -1053,7 +1053,7 @@ function EditorLib.Initialize(Frame, Options)
 				LineLabel.BackgroundTransparency = 1
 				LineLabel.Size = udim2(1, 0, 0, CharHeight)
 				LineLabel.Position = udim2(0, 0, 0, Y * CharHeight)
-				LineLabel.Font = Options.Font
+				LineLabel.Font = Enum.Font.Roboto
 				LineLabel.TextSize = Options.FontSize
 				LineLabel.TextXAlignment = Enum.TextXAlignment.Right
 				LineLabel.Text = LineNumber
