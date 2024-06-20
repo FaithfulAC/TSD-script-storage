@@ -125,7 +125,7 @@ function toggleDex(on)
 		OpenToggleButton:TweenPosition(UDim2.new(1,0,0,0), "Out", "Quad", 0.5, true)
 		switchWindows(CurrentWindow,true)
 	else
-		SideMenu:TweenPosition(UDim2.new(1, -300, 0, -100), "Out", "Quad", 0.5, true) -- (-100) for good measure
+		SideMenu:TweenPosition(UDim2.new(1, 30, 0, 0), "Out", "Quad", 0.5, true) -- (-100) for good measure
 		OpenToggleButton:TweenPosition(UDim2.new(1,-40,0,0), "Out", "Quad", 0.5, true)
 		switchWindows("Nothing c:")
 	end
