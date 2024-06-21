@@ -102,16 +102,13 @@ function switchWindows(wName,over)
 		for i,v in pairs(SlideFrame:GetChildren()) do
 			v.BackgroundTransparency = 1
 			v.Frame.BackgroundTransparency = 1
-			v.Frame.Icon.ImageColor3 = Color3.new(0.6, 0.6, 0.6)
 		end
 		if SlideFrame:FindFirstChild(wName) then
 			SlideFrame[wName].BackgroundTransparency = 1
-			
+
 			for i = 1, 10 do
 				task.wait(.01)
-				local transparency, colorint = 1-(0.8*(i/10)), 0.6+(0.4*(i/10))
-				SlideFrame[wName].Frame.BackgroundTransparency = transparency
-				SlideFrame[wName].Frame.Icon.ImageColor3 = Color3.new(1,1,colorint)
+				SlideFrame[wName].Frame.BackgroundTransparency = 1-(0.8*(i/10))
 			end
 		end
 	end
@@ -125,7 +122,7 @@ function toggleDex(on)
 		OpenToggleButton:TweenPosition(UDim2.new(1,0,0,0), "Out", "Quad", 0.5, true)
 		switchWindows(CurrentWindow,true)
 	else
-		SideMenu:TweenPosition(UDim2.new(1, 30, 0, 0), "Out", "Quad", 0.5, true) -- (-100) for good measure
+		SideMenu:TweenPosition(UDim2.new(1, 30, 0, 0), "Out", "Quad", 0.5, true)
 		OpenToggleButton:TweenPosition(UDim2.new(1,-40,0,0), "Out", "Quad", 0.5, true)
 		switchWindows("Nothing c:")
 	end
@@ -136,8 +133,7 @@ local Settings = {
 	SelBox = false,
 	ClearProps = false,
 	SelectUngrouped = true,
-	SaveInstanceScripts = true,
-	UseNewDecompiler = true
+	SaveInstanceScripts = true
 }
 
 local foldername = "TSDex"
@@ -163,23 +159,11 @@ function SaveSettings()
 	writefile(foldername .. "/dex_settings.json", JSON);
 end
 
-local _decompile = decompile;
-
-function decompile(s, ...)
-	if Settings.UseNewDecompiler then
-		return _decompile(s, 'new');
-	else
-		return _decompile(s, 'legacy');
-	end 
-end
-
 function ReturnSetting(set)
 	if set == 'ClearProps' then
 		return Settings.ClearProps
 	elseif set == 'SelectUngrouped' then
 		return Settings.SelectUngrouped
-	elseif set == 'UseNewDecompiler' then
-		return Settings.UseNewDecompiler
 	end
 end
 
@@ -303,7 +287,6 @@ createSetting("Selection Box","SelBox",false)
 createSetting("Clear property value on focus","ClearProps",false)
 createSetting("Select ungrouped models","SelectUngrouped",true)
 createSetting("SaveInstance decompiles scripts","SaveInstanceScripts",true)
-createSetting("Use New Decompiler","UseNewDecompiler",false)
 
 --[[
 ClickSelectOption.MouseButton1Up:connect(function()
@@ -364,6 +347,7 @@ Mouse.Button1Down:connect(function()
 		local target = Mouse.Target
 		if target then
 			if Settings.SelBox then
+				-- it's not really optimized but whatevs
 				SelectionBoxIns.Parent = target
 				SelectionBoxIns.Adornee = target
 			end
@@ -502,8 +486,11 @@ OpenScriptEditorButton:TweenPosition(UDim2.new(0,180,0,0),Enum.EasingDirection.O
 task.wait(.5)
 SlideOut.BackgroundTransparency = 0
 
+-- so it doesnt run a recursive findfirstchild 10 times
+local tempimage = OpenScriptEditorButton:FindFirstChild("Icon", true)
+
 for i = 1, 0, -0.1 do
-	OpenScriptEditorButton.Icon.ImageTransparency = i
+	tempimage.ImageTransparency = i
 	CloseToggleButton.TextTransparency = i
 	task.wait()
 end
