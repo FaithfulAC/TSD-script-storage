@@ -1374,7 +1374,7 @@ do
 				BackgroundColor3 = ScrollStyles.Button;
 				BorderColor3 = ScrollStyles.Border;
 				ImageColor3 = Styles.White;
-				--BorderSizePixel = 0;
+				BorderSizePixel = 0;
 			});
 			Create('ImageButton',{
 				Name = "ScrollUp";
@@ -1382,16 +1382,16 @@ do
 				BackgroundColor3 = ScrollStyles.Button;
 				BorderColor3 = ScrollStyles.Border;
 				ImageColor3 = Styles.White;
-				--BorderSizePixel = 0;
+				BorderSizePixel = 0;
 			});
 			Create('ImageButton',{
 				Name = "ScrollBar";
 				Size = horizontal and UDim2.new(1,-ScrollBarWidth*2,1,0) or UDim2.new(1,0,1,-ScrollBarWidth*2);
 				Position = horizontal and UDim2.new(0,ScrollBarWidth,0,0) or UDim2.new(0,0,0,ScrollBarWidth);
 				AutoButtonColor = false;
-				BackgroundColor3 = Color3.new(1/4, 1/4, 1/4);
+				BackgroundColor3 = Color3.fromRGB(40, 50, 100);
 				BorderColor3 = ScrollStyles.Border;
-				--BorderSizePixel = 0;
+				BorderSizePixel = 0;
 				Create('ImageButton',{
 					Name = "ScrollThumb";
 					AutoButtonColor = false;
@@ -1399,7 +1399,7 @@ do
 					BackgroundColor3 = ScrollStyles.Button;
 					BorderColor3 = ScrollStyles.Border;
 					ImageColor3 = Styles.White;
-					--BorderSizePixel = 0;
+					BorderSizePixel = 0;
 				});
 			});
 		})
