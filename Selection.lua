@@ -328,6 +328,9 @@ local function getSelection()
 end
 
 local SelectionBoxIns = Instance.new("SelectionBox")
+SelectionBoxIns.Parent = Dex
+SelectionBoxIns.Color3 = Color3.fromRGB(0, 100, 200)
+SelectionBoxIns.SurfaceColor3 = Color3.fromRGB(0, 100, 200)
 
 Mouse.Button1Down:connect(function()
 	if CurrentWindow == "Explorer" and Settings.ClickSelect then
@@ -335,7 +338,6 @@ Mouse.Button1Down:connect(function()
 		if target then
 			if Settings.SelBox then
 				-- it's not really optimized but whatevs
-				SelectionBoxIns.Parent = target
 				SelectionBoxIns.Adornee = target
 			end
 			TotallyNotSetSelection:Invoke({target})
