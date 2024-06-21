@@ -30,25 +30,12 @@ local SettingsListener = SettingsPanel:WaitForChild("GetSetting")
 local SettingTemplate = SettingsPanel:WaitForChild("SettingTemplate")
 local SettingList = SettingsPanel:WaitForChild("SettingList")
 
-local SaveMapCopyList = SaveMapWindow:WaitForChild("CopyList")
 local SaveMapSettingFrame = SaveMapWindow:WaitForChild("MapSettings")
 local SaveMapName = SaveMapWindow:WaitForChild("FileName")
 local SaveMapButton = SaveMapWindow:WaitForChild("Save")
-local SaveMapCopyTemplate = SaveMapWindow:WaitForChild("Entry")
+
 local SaveMapSettings = {
-	CopyWhat = {
-		Workspace = true,
-		Lighting = true,
-		ReplicatedStorage = true,
-		ReplicatedFirst = true,
-		StarterPack = true,
-		StarterGui = true,
-		StarterPlayer = true
-	},
 	SaveScripts = true,
-	SaveTerrain = true,
-	LightingProperties = true,
-	CameraInstances = true
 }
 
 --[[
@@ -108,7 +95,7 @@ function switchWindows(wName,over)
 
 			for i = 1, 10 do
 				task.wait(.01)
-				SlideFrame[wName].Frame.BackgroundTransparency = 1-(0.8*(i/10))
+				SlideFrame[wName].Frame.BackgroundTransparency = 1-(0.4*(i/10))
 			end
 		end
 	end
@@ -394,43 +381,10 @@ function createMapSetting(obj,interName,defaultOn)
 	end
 end
 
-function createCopyWhatSetting(serv)
-	if SaveMapSettings.CopyWhat[serv] then
-		local newSetting = SaveMapCopyTemplate:Clone()
-		newSetting.Position = UDim2.new(0,0,0,#SaveMapCopyList:GetChildren() * 22 + 5)
-		newSetting.Info.Text = serv
-
-		local function toggle(on)
-			if on then
-				newSetting.Change.enabled.Visible = true
-				SaveMapSettings.CopyWhat[serv] = true
-			else
-				newSetting.Change.enabled.Visible = false
-				SaveMapSettings.CopyWhat[serv] = false
-			end
-		end	
-
-		newSetting.Change.MouseButton1Click:connect(function()
-			toggle(not SaveMapSettings.CopyWhat[serv])
-		end)
-
-		newSetting.Visible = true
-		newSetting.Parent = SaveMapCopyList
-	end
-end
-
 createMapSetting(SaveMapSettingFrame.Scripts,"SaveScripts",true)
 -- createMapSetting(SaveMapSettingFrame.Terrain,"SaveTerrain",true)
 -- createMapSetting(SaveMapSettingFrame.Lighting,"LightingProperties",true)
 -- createMapSetting(SaveMapSettingFrame.CameraInstances,"CameraInstances",true)
-
-createCopyWhatSetting("Workspace")
-createCopyWhatSetting("Lighting")
-createCopyWhatSetting("ReplicatedStorage")
-createCopyWhatSetting("ReplicatedFirst")
-createCopyWhatSetting("StarterPack")
-createCopyWhatSetting("StarterGui")
-createCopyWhatSetting("StarterPlayer")
 
 SaveMapName.Text = tostring(game.PlaceId).."MapCopy"
 
@@ -471,7 +425,6 @@ SideMenu.Visible = true
 
 for i = 0, 1, 0.1 do
 	IntroFrame.BackgroundTransparency = i
-	IntroFrame.SlantHolder.BackgroundTransparency = i
 	IntroFrame.Title.TextTransparency = i
 	IntroFrame.Version.TextTransparency = i
 	IntroFrame.Creator.TextTransparency = i
@@ -483,17 +436,18 @@ IntroFrame.Visible = false
 SlideFrame:TweenPosition(UDim2.new(0,0,0,0),Enum.EasingDirection.Out,Enum.EasingStyle.Quart,0.5,true)
 OpenScriptEditorButton:TweenPosition(UDim2.new(0,180,0,0),Enum.EasingDirection.Out,Enum.EasingStyle.Quart,0.5,true)
 
-task.wait(.5)
-SlideOut.BackgroundTransparency = 0
-
 -- so it doesnt run a recursive findfirstchild 10 times
 local tempimage = OpenScriptEditorButton:FindFirstChild("Icon", true)
 
-for i = 1, 0, -0.1 do
-	tempimage.ImageTransparency = i
-	CloseToggleButton.TextTransparency = i
-	task.wait()
-end
+task.spawn(function()
+	for i = 1, 0, -0.1 do
+		tempimage.ImageTransparency = i
+		SlideOut.BackgroundTransparency = i
+		task.wait()
+	end
+end)
+
+task.wait(.5)
 
 CloseToggleButton.Active = true
 CloseToggleButton.AutoButtonColor = false
