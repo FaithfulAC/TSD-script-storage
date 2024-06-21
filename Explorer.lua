@@ -929,30 +929,30 @@ do
 				Size = UDim2.new(0, GUI_SIZE, 0, GUI_SIZE);
 				BackgroundColor3 = GuiColor.Button;
 				BorderColor3 = GuiColor.Border;
-				--BorderSizePixel = 0;
+				BorderSizePixel = 0;
 			});
 			Create('ImageButton',{
 				Name = "ScrollUp";
 				Size = UDim2.new(0, GUI_SIZE, 0, GUI_SIZE);
 				BackgroundColor3 = GuiColor.Button;
 				BorderColor3 = GuiColor.Border;
-				--BorderSizePixel = 0;
+				BorderSizePixel = 0;
 			});
 			Create('ImageButton',{
 				Name = "ScrollBar";
 				Size = horizontal and UDim2.new(1,-GUI_SIZE*2,1,0) or UDim2.new(1,0,1,-GUI_SIZE*2);
 				Position = horizontal and UDim2.new(0,GUI_SIZE,0,0) or UDim2.new(0,0,0,GUI_SIZE);
 				AutoButtonColor = false;
-				BackgroundColor3 = Color3.new(1/4, 1/4, 1/4);
+				BackgroundColor3 = Color3.fromRGB(40, 50, 100);
 				BorderColor3 = GuiColor.Border;
-				--BorderSizePixel = 0;
+				BorderSizePixel = 0;
 				Create('ImageButton',{
 					Name = "ScrollThumb";
 					AutoButtonColor = false;
 					Size = UDim2.new(0, GUI_SIZE, 0, GUI_SIZE);
 					BackgroundColor3 = GuiColor.Button;
 					BorderColor3 = GuiColor.Border;
-					--BorderSizePixel = 0;
+					BorderSizePixel = 0;
 				});
 			});
 		})
