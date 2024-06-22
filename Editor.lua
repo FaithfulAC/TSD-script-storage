@@ -1571,7 +1571,7 @@ local function openScript(o)
 		local decompile = decompile or disassemble or getscriptbytecode or function()
 			return "-- No function exists to load this script"
 		end;
-		
+
 		local s, res = pcall(decompile, o);
 		if s then
 			cache[id] = res;
