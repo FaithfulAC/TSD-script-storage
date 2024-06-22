@@ -7,14 +7,14 @@ local ReplicatedStorage = cloneref(game:GetService('ReplicatedStorage'));
 
 local IntroFrame = Gui:WaitForChild("IntroFrame")
 
-local SideMenu = Gui:WaitForChild("SideMenu")
+local TopMenu = Gui:WaitForChild("TopMenu")
 local OpenToggleButton = Gui:WaitForChild("Toggle")
-local CloseToggleButton = SideMenu:WaitForChild("Toggle")
-local OpenScriptEditorButton = SideMenu:WaitForChild("OpenScriptEditor")
+local CloseToggleButton = TopMenu:WaitForChild("Toggle")
+local OpenScriptEditorButton = TopMenu:WaitForChild("OpenScriptEditor")
 
 local ScriptEditor = Gui:WaitForChild("ScriptEditor")
 
-local SlideOut = SideMenu:WaitForChild("SlideOut")
+local SlideOut = TopMenu:WaitForChild("SlideOut")
 local SlideFrame = SlideOut:WaitForChild("SlideFrame")
 
 local ExplorerButton = SlideFrame:WaitForChild("Explorer")
@@ -105,11 +105,11 @@ end
 
 function toggleDex(on)
 	if on then
-		SideMenu:TweenPosition(UDim2.new(1, -300, 0, 0), "Out", "Quad", 0.5, true)
+		TopMenu:TweenPosition(UDim2.new(1, -300, 0, 0), "Out", "Quad", 0.5, true)
 		OpenToggleButton:TweenPosition(UDim2.new(1,0,0,0), "Out", "Quad", 0.5, true)
 		switchWindows(CurrentWindow,true)
 	else
-		SideMenu:TweenPosition(UDim2.new(1, 30, 0, 0), "Out", "Quad", 0.5, true)
+		TopMenu:TweenPosition(UDim2.new(1, 30, 0, 0), "Out", "Quad", 0.5, true)
 		OpenToggleButton:TweenPosition(UDim2.new(1,-40,0,0), "Out", "Quad", 0.5, true)
 		switchWindows("Nothing c:")
 	end
@@ -172,7 +172,7 @@ end)
 
 --[[
 OpenToggleButton.MouseButton1Up:connect(function()
-	SideMenu:TweenPosition(UDim2.new(1, -330, 0, 0), "Out", "Quad", 0.5, true)
+	TopMenu:TweenPosition(UDim2.new(1, -330, 0, 0), "Out", "Quad", 0.5, true)
 	
 	if CurrentWindow == "Explorer" then
 		ExplorerPanel:TweenPosition(UDim2.new(1, -300, 0, 0), "Out", "Quad", 0.5, true)
@@ -185,7 +185,7 @@ OpenToggleButton.MouseButton1Up:connect(function()
 end)
 
 CloseToggleButton.MouseButton1Up:connect(function()
-	SideMenu:TweenPosition(UDim2.new(1, 0, 0, 0), "Out", "Quad", 0.5, true)
+	TopMenu:TweenPosition(UDim2.new(1, 0, 0, 0), "Out", "Quad", 0.5, true)
 	
 	ExplorerPanel:TweenPosition(UDim2.new(1, 30, 0, 0), "Out", "Quad", 0.5, true)
 	PropertiesFrame:TweenPosition(UDim2.new(1, 30, 0.5, 36), "Out", "Quad", 0.5, true)
@@ -328,7 +328,7 @@ local function getSelection()
 end
 
 local SelectionBoxIns = Instance.new("SelectionBox")
-SelectionBoxIns.Parent = Dex
+SelectionBoxIns.Parent = Dex or script.Parent
 SelectionBoxIns.Color3 = Color3.fromRGB(0, 100, 200)
 SelectionBoxIns.SurfaceColor3 = Color3.fromRGB(0, 100, 200)
 
@@ -337,7 +337,6 @@ Mouse.Button1Down:connect(function()
 		local target = Mouse.Target
 		if target then
 			if Settings.SelBox then
-				-- it's not really optimized but whatevs
 				SelectionBoxIns.Adornee = target
 			end
 			TotallyNotSetSelection:Invoke({target})
@@ -348,7 +347,6 @@ end)
 TotallyNotSelectionChanged.Event:connect(function()
 	if getSelection() ~= SelectionBoxIns.Adornee then
 		SelectionBoxIns.Adornee = nil
-		SelectionBoxIns.Parent = nil
 	end
 end)
 
@@ -423,7 +421,7 @@ switchWindows("Explorer")
 
 task.wait(.75)
 
-SideMenu.Visible = true
+TopMenu.Visible = true
 
 for i = 0, 1, 0.1 do
 	IntroFrame.BackgroundTransparency = i
@@ -435,19 +433,17 @@ end
 
 IntroFrame.Visible = false
 
-SlideFrame:TweenPosition(UDim2.new(0,0,0,0),Enum.EasingDirection.Out,Enum.EasingStyle.Quart,0.5,true)
-OpenScriptEditorButton:TweenPosition(UDim2.new(0,180,0,0),Enum.EasingDirection.Out,Enum.EasingStyle.Quart,0.5,true)
-
 -- so it doesnt run a recursive findfirstchild 10 times
 local tempimage = OpenScriptEditorButton:FindFirstChild("Icon", true)
 
-task.spawn(function()
-	for i = 1, 0, -0.1 do
-		tempimage.ImageTransparency = i
-		SlideOut.BackgroundTransparency = i
-		task.wait()
-	end
-end)
+for i = 1, 0, -0.1 do
+	tempimage.ImageTransparency = i
+	SlideOut.BackgroundTransparency = i
+	task.wait()
+end
+
+SlideFrame:TweenPosition(UDim2.new(0,0,0,0),Enum.EasingDirection.Out,Enum.EasingStyle.Quart,0.5,true)
+OpenScriptEditorButton:TweenPosition(UDim2.new(0,144,0,0),Enum.EasingDirection.Out,Enum.EasingStyle.Quart,0.5,true)
 
 task.wait(.5)
 
