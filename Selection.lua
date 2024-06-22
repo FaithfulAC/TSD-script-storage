@@ -443,7 +443,7 @@ for i = 1, 0, -0.1 do
 end
 
 SlideFrame:TweenPosition(UDim2.new(0,0,0,0),Enum.EasingDirection.Out,Enum.EasingStyle.Quart,0.5,true)
-OpenScriptEditorButton:TweenPosition(UDim2.new(0,144,0,0),Enum.EasingDirection.Out,Enum.EasingStyle.Quart,0.5,true)
+OpenScriptEditorButton:TweenPosition(UDim2.new(0,156,0,0),Enum.EasingDirection.Out,Enum.EasingStyle.Quart,0.5,true)
 
 task.wait(.5)
 
