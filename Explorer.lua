@@ -943,7 +943,7 @@ do
 				Size = horizontal and UDim2.new(1,-GUI_SIZE*2,1,0) or UDim2.new(1,0,1,-GUI_SIZE*2);
 				Position = horizontal and UDim2.new(0,GUI_SIZE,0,0) or UDim2.new(0,0,0,GUI_SIZE);
 				AutoButtonColor = false;
-				BackgroundColor3 = BackgroundColor3 = Color3.fromRGB(40, 50, 100);
+				BackgroundColor3 = Color3.fromRGB(40, 50, 100);
 				BorderColor3 = GuiColor.Border;
 				BorderSizePixel = 0;
 				Create('ImageButton',{
@@ -2520,13 +2520,13 @@ end
 local function parseData(obj, numTabs, isKey, overflow, noTables, forceDict)
 	local objType = typeof(obj)
 	local objStr;
-	
+
 	if typeof(obj) ~= "userdata" and typeof(obj) ~= "table" then
 		objStr = tostring(obj)
 	else
 		local getmetatable = getrawmetatable or getmetatable
 		local mt = getmetatable(obj)
-		
+
 		if typeof(mt) == "table" then
 			local __tostring = rawget(mt, "__tostring")
 			rawset(mt, "__tostring", nil)
@@ -2535,10 +2535,10 @@ local function parseData(obj, numTabs, isKey, overflow, noTables, forceDict)
 		else
 			objStr = tostring(obj)
 		end
-		
+
 		mt = nil
 	end
-	
+
 	if objType == "table" then
 		if noTables then
 			return objStr
