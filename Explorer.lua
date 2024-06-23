@@ -1676,18 +1676,18 @@ function CreateFunctionCallerMenu(choices, currentChoice, readOnly, onClick)
 
 		local function GetParameters(functionData)
 			local paraString = ""
-			paraString ..= "("
+			paraString = paraString .. "("
 
 			-- note from europa, jesus this code looks so ugly
 			for i, v in pairs(functionData.Parameters) do
-				paraString ..= v.Type.Name .. " " .. v.Name
+				paraString = paraString .. v.Type.Name .. " " .. v.Name
 
 				if i < #functionData.Parameters then
-					paraString ..= ", "
+					paraString = paraString .. ", "
 				end
 			end
 
-			paraString ..= ")"
+			paraString = paraString .. ")"
 			return paraString
 		end
 
@@ -1703,10 +1703,10 @@ function CreateFunctionCallerMenu(choices, currentChoice, readOnly, onClick)
 				returntype = ""
 
 				for i, v in ipairs(name.ReturnType) do
-					returntype ..= v.Name
+					returntype = returntype .. v.Name
 
 					if i ~= #name.ReturnType then
-						returntype ..= ", "
+						returntype = returntype .. ", "
 					end
 				end
 			end

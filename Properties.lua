@@ -1082,7 +1082,7 @@ function displayProperties(props)
 			local a = CreateRow(v.object, v.propertyData)
 			a.Position = UDim2.new(0,0,0,(numRows+0.1)*Row.Height)
 			a.Parent = ContentFrame
-			numRows += 1
+			numRows = numRows+1
 		end)
 	end
 end
