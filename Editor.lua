@@ -1568,18 +1568,34 @@ local function openScript(o)
 	if cache[id] then
 		ScriptEditor.SetContent(cache[id])
 	else
-		local decompile = decompile or disassemble or getscriptbytecode or function()
+		local decompile = decompile or getscriptbytecode or function()
 			return "-- No function exists to load this script"
 		end;
 
 		local s, res = pcall(decompile, o);
+		
 		if s then
 			cache[id] = res;
 			task.wait()
 			ScriptEditor.SetContent(cache[id])
 		else
-			task.wait()
-			ScriptEditor.SetContent("-- An error occurred while loading this script: " .. res)
+			decompile = getscriptbytecode or function()
+				return "-- An error occurred while loading this script: " .. res
+			end;
+			s, res = pcall(decompile, o);			
+			
+			if s then
+				cache[id] = res;
+				task.wait()
+				ScriptEditor.SetContent(
+					"-- Function decompile failed to decompile this script, falling back to getscriptbytecode...\n\n"
+						..
+						res
+				)
+			else
+				task.wait()
+				ScriptEditor.SetContent("-- An error occurred while loading this script with getscriptbytecode: " .. res)
+			end
 		end
 	end
 

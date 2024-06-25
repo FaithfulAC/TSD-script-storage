@@ -9,6 +9,7 @@ local Option = {
 }
 
 local getfunctions = gets.getfunctions
+local GetDebugId = function(a) if typeof(a) ~= "Instance" then print("???????", a) print(debug.traceback()) end return clonefunction(game.GetDebugId)(a) end
 
 -- MERELY
 
@@ -1753,7 +1754,7 @@ function CreateFunctionCaller(oh)
 			CurrentFunctionCallerWindow = nil
 			local list = SelectionVar():Get()
 			for i,v in pairs(list) do
-				pcall(function() pcall(function() v[option.Name](v) end) end)
+				print(pcall(v[option.Name], v))
 			end
 
 			DestroyRightClick()
@@ -1952,7 +1953,7 @@ local nodeWidth = 0
 local QuickButtons = {}
 
 function filteringWorkspace()
-	if explorerFilter.Text ~= "" and explorerFilter.Text ~= "Filter Workspace" then
+	if explorerFilter.Text ~= "" and explorerFilter.Text ~= "Search Workspace" then
 		return true
 	end
 	return false
@@ -2021,22 +2022,22 @@ local updateList,rawUpdateList,updateScroll,rawUpdateSize do
 	end
 
 	function rawUpdateList()
-		-- Clear then repopulate the entire list. It appears to be fast enough.
+		-- Clear then repopulate the entire list. It appears to be fast enough.		
 		TreeList = {}
 		nodeWidth = 0
-		r(NodeLookup[workspace.Parent])
-		r(NodeLookup[DexOutput])
+		r(NodeLookup[GetDebugId(workspace.Parent)])
+		r(NodeLookup[GetDebugId(DexOutput)])
 		if DexStorageEnabled then
-			r(NodeLookup[DexStorage])
+			r(NodeLookup[GetDebugId(DexStorage)])
 		end
 		if NilStorageEnabled then
-			r(NodeLookup[NilStorage])
+			r(NodeLookup[GetDebugId(NilStorage)])
 		end
 		if RunningScriptsStorageEnabled then
-			r(NodeLookup[RunningScriptsStorage])
+			r(NodeLookup[GetDebugId(RunningScriptsStorage)])
 		end
 		if LoadedModulesStorageEnabled then
-			r(NodeLookup[LoadedModulesStorage])
+			r(NodeLookup[GetDebugId(LoadedModulesStorage)])
 		end
 		rawUpdateSize()
 		updateActions()
@@ -2098,7 +2099,7 @@ local Selection do
 		local supdate = false
 
 		if not SelectionSet[object] then
-			local node = NodeLookup[object]
+			local node = NodeLookup[GetDebugId(object)]
 			if node then
 				table.insert(SelectionList,object)
 				SelectionSet[object] = true
@@ -2126,7 +2127,7 @@ local Selection do
 		if #SelectionList > 0 then
 			for i = 1,#SelectionList do
 				local object = SelectionList[i]
-				local node = NodeLookup[object]
+				local node = NodeLookup[GetDebugId(object)]
 				if node then
 					node.Selected = false
 					SelectionSet[object] = nil
@@ -2186,12 +2187,12 @@ local Selection do
 
 	function Selection:Remove(object,noupdate)
 		if SelectionSet[object] then
-			local node = NodeLookup[object]
+			local node = NodeLookup[GetDebugId(object)]
 			if node then
 				node.Selected = false
 				SelectionSet[object] = nil
 				for i = 1,#SelectionList do
-					if SelectionList[i] == object then
+					if compareinstances(SelectionList[i], object) then
 						table.remove(SelectionList,i)
 						break
 					end
@@ -2793,7 +2794,7 @@ function rightClickMenu(sObj)
 				for i = 1, #list do
 					-- calling workspace:IsA("Model") returns true, so let's just do a classname check ;)
 					if list[i].ClassName == "Model" then
-						for i2,v2 in pairs(list[i]:GetChildren()) do
+						for i2, v2 in pairs(list[i]:GetChildren()) do
 							pcall(function()
 								v2.Parent = list[i].Parent or workspace
 							end)
@@ -2873,7 +2874,34 @@ function rightClickMenu(sObj)
 					if list[i]:IsA("LocalScript") or list[i]:IsA("ModuleScript") or
 						(list[i]:IsA("Script") and list[i].RunContext == Enum.RunContext.Client)
 					then
-						writefile("TSDex/" .. game.PlaceId .. '_' .. list[i].Name:gsub('%W', '') .. '_' .. math.random(100000, 999999) .. '.lua', decompile(list[i]));
+						local decompile = decompile or disassemble or getscriptbytecode or function()
+							return "-- No function exists to load this script"
+						end;
+						
+						-- to set
+						local data = nil;
+
+						local s, res = pcall(decompile, list[i]);
+
+						if s then
+							data = res
+						else
+							decompile = getscriptbytecode or function()
+								return "-- An error occurred while loading this script: " .. res
+							end;
+							s, res = pcall(decompile, list[i]);			
+
+							if s then
+								data = "-- Function decompile failed to decompile this script, falling back to getscriptbytecode...\n\n"
+									..
+									res;
+							else
+								task.wait()
+								data = "-- An error occurred while loading this script: " .. res
+							end
+						end
+						
+						writefile("TSDex/" .. game.PlaceId .. '_' .. list[i].Name:gsub('%W', '') .. '_' .. math.random(100000, 999999) .. '.lua', data);
 					end
 				end
 			elseif option == 'Refresh Instances' then
@@ -2887,7 +2915,7 @@ function rightClickMenu(sObj)
 					end
 				elseif sObj == RunningScriptsStorageMain then
 					for i,v in pairs(getscripts()) do
-						if v ~= RunningScriptsStorage and v ~= LoadedModulesStorage and v ~= DexStorage and v ~= UpvalueStorage then
+						if v ~= RunningScriptsStorage and v ~= LoadedModulesStorage and v ~= DexStorage then
 							if v:IsA("BaseScript") then
 								v.Archivable = true;
 								local ls = v:Clone()
@@ -2898,7 +2926,7 @@ function rightClickMenu(sObj)
 					end
 				elseif sObj == LoadedModulesStorageMain then
 					for i,v in pairs(getloadedmodules()) do
-						if v ~= RunningScriptsStorage and v ~= LoadedModulesStorage and v ~= DexStorage and v ~= UpvalueStorage then
+						if v ~= RunningScriptsStorage and v ~= LoadedModulesStorage and v ~= DexStorage then
 							if (v:IsA'LocalScript' or v:IsA'ModuleScript' or v:IsA'Script') then
 								v.Archivable = true;
 								local ls = v:clone()
@@ -3022,7 +3050,7 @@ do
 				if pos.x >= 0 and pos.x <= size.x and pos.y >= 0 and pos.y <= size.y + ENTRY_SIZE*2 then
 					local i = math.ceil(pos.y/ENTRY_BOUND-2)
 					local node = TreeList[i + scrollBar.ScrollIndex]
-					if node and node.Object ~= object and not object:IsAncestorOf(node.Object) then
+					if node and not compareinstances(node.Object, object) and not object:IsAncestorOf(node.Object) then
 						parentIndex = i
 						local entry = listEntries[i]
 						if entry then
@@ -3194,7 +3222,7 @@ do
 
 						if #node > 0 then
 							node.Expanded = not node.Expanded
-							if node.Object == explorerPanel.Parent and node.Expanded then
+							if compareinstances(node.Object, explorerPanel.Parent) and node.Expanded then
 								CreateCaution("Warning","Please be careful when editing instances inside here, this is like the System32 of Dex and modifying objects here can break Dex.")
 							end
 							-- use raw update so the list updates instantly
@@ -3438,7 +3466,7 @@ end
 -- Removes an object's tree node. Called when the object stops existing in the
 -- game tree.
 local function removeObject(object)
-	local objectNode = NodeLookup[object]
+	local objectNode = NodeLookup[GetDebugId(object)]
 	if not objectNode then
 		return
 	end
@@ -3449,9 +3477,9 @@ local function removeObject(object)
 
 	local parent = objectNode.Parent
 	remove(parent,objectNode.Index)
-	NodeLookup[object] = nil
-	connLookup[object]:disconnect()
-	connLookup[object] = nil
+	NodeLookup[GetDebugId(object)] = nil
+	connLookup[GetDebugId(object)]:Disconnect()
+	connLookup[GetDebugId(object)] = nil
 
 	if visible then
 		updateList()
@@ -3463,12 +3491,12 @@ end
 -- Moves a tree node to a new parent. Called when an existing object's parent
 -- changes.
 local function moveObject(object,parent)
-	local objectNode = NodeLookup[object]
+	local objectNode = NodeLookup[GetDebugId(object)]
 	if not objectNode then
 		return
 	end
 
-	local parentNode = NodeLookup[parent]
+	local parentNode = NodeLookup[GetDebugId(parent)]
 	if not parentNode then
 		return
 	end
@@ -3556,9 +3584,7 @@ end
 -- Creates a new tree node from an object. Called when an object starts
 -- existing in the game tree.
 local function addObject(object,noupdate)
-	local Proxied = cloneref(object);
-	if type(object) == "userdata" then if (object:GetDebugId() ~= Proxied:GetDebugId()) then object = Proxied; end end -- Protecc
-	if object.Parent == game and InstanceBlacklist[object.ClassName] or object.ClassName == '' then
+	if (object == nil or object.Parent == nil) or (object.Parent == game and InstanceBlacklist[object.ClassName] or object.ClassName == '') then
 		return;
 	end
 
@@ -3570,13 +3596,13 @@ local function addObject(object,noupdate)
 		end
 	end
 
-	local parentNode = NodeLookup[object.Parent]
+	local parentNode = NodeLookup[GetDebugId(object.Parent)]
 	if not parentNode then
 		return
 	end
 
 	local objectNode = {
-		Object = object;
+		Object = object; -- since this is cloneref'd by default we need not cloneref it here
 		Parent = parentNode;
 		Index = 0;
 		Expanded = false;
@@ -3584,8 +3610,8 @@ local function addObject(object,noupdate)
 		Depth = depth(object);
 	}
 
-	connLookup[object] = Connect(object.AncestryChanged,function(c,p)
-		if c == object then
+	connLookup[GetDebugId(object)] = Connect(object.AncestryChanged,function(c,p)
+		if compareinstances(c, object) then
 			if p == nil then
 				removeObject(c)
 			else
@@ -3594,7 +3620,7 @@ local function addObject(object,noupdate)
 		end
 	end)
 
-	NodeLookup[object] = objectNode
+	NodeLookup[GetDebugId(object)] = objectNode
 	insert(parentNode,#parentNode+1,objectNode)
 
 	if not noupdate then
@@ -3702,14 +3728,14 @@ function updateDexStorageListeners()
 end
 
 do
-	NodeLookup[workspace.Parent] = {
+	NodeLookup[GetDebugId(workspace.Parent)] = {
 		Object = workspace.Parent;
 		Parent = nil;
 		Index = 0;
 		Expanded = true;
 	}
 
-	NodeLookup[DexOutput] = {
+	NodeLookup[GetDebugId(DexOutput)] = {
 		Object = DexOutput;
 		Parent = nil;
 		Index = 0;
@@ -3717,7 +3743,7 @@ do
 	}
 
 	if DexStorageEnabled then
-		NodeLookup[DexStorage] = {
+		NodeLookup[GetDebugId(DexStorage)] = {
 			Object = DexStorage;
 			Parent = nil;
 			Index = 0;
@@ -3726,7 +3752,7 @@ do
 	end
 
 	if NilStorageEnabled then
-		NodeLookup[NilStorage] = {
+		NodeLookup[GetDebugId(NilStorage)] = {
 			Object = NilStorage;
 			Parent = nil;
 			Index = 0;
@@ -3735,7 +3761,7 @@ do
 	end
 
 	if RunningScriptsStorageEnabled then
-		NodeLookup[RunningScriptsStorage] = {
+		NodeLookup[GetDebugId(RunningScriptsStorage)] = {
 			Object = RunningScriptsStorage;
 			Parent = nil;
 			Index = 0;
@@ -3744,7 +3770,7 @@ do
 	end
 
 	if LoadedModulesStorageEnabled then
-		NodeLookup[LoadedModulesStorage] = {
+		NodeLookup[GetDebugId(LoadedModulesStorage)] = {
 			Object = LoadedModulesStorage;
 			Parent = nil;
 			Index = 0;
@@ -3752,22 +3778,20 @@ do
 		}
 	end
 
-	Connect(game.DescendantAdded,addObject)
+	Connect(game.DescendantAdded,function(a) addObject(cloneref(a)) end)
 	Connect(game.DescendantRemoving,removeObject)
 
-	Connect(DexOutput.DescendantAdded,addObject)
+	Connect(DexOutput.DescendantAdded,function(a) addObject(cloneref(a)) end)
 	Connect(DexOutput.DescendantRemoving,removeObject)
 
 	if DexStorageEnabled then
-		--[[
-		if readfile(getelysianpath().."DexStorage.txt") == nil then
+		--[[if readfile(getelysianpath().."DexStorage.txt") == nil then
 			writefile(getelysianpath().."DexStorage.txt","")
 		end
-		--]]
 
-		buildDexStorage()
+		buildDexStorage()]]
 
-		Connect(DexStorage.DescendantAdded,addObject)
+		Connect(DexStorage.DescendantAdded,function(a) addObject(cloneref(a)) end)
 		Connect(DexStorage.DescendantRemoving,removeObject)
 
 		Connect(DexStorage.DescendantAdded,updateDexStorage)
@@ -3775,8 +3799,8 @@ do
 	end
 
 	if NilStorageEnabled then
-		Connect(NilStorage.DescendantAdded,addObject)
-		Connect(NilStorage.DescendantRemoving,removeObject)		
+		Connect(NilStorage.DescendantAdded,function(a) addObject(cloneref(a)) end)
+		Connect(NilStorage.DescendantRemoving,removeObject)	
 
 		--[[local currentTable = get_nil_instances()	
 		
@@ -3802,23 +3826,35 @@ do
 		end)]]
 	end
 	if RunningScriptsStorageEnabled then
-		Connect(RunningScriptsStorage.DescendantAdded,addObject)
+		Connect(RunningScriptsStorage.DescendantAdded,function(a) addObject(cloneref(a)) end)
 		Connect(RunningScriptsStorage.DescendantRemoving,removeObject)
 	end
 	if LoadedModulesStorageEnabled then
-		Connect(LoadedModulesStorage.DescendantAdded,addObject)
+		Connect(LoadedModulesStorage.DescendantAdded,function(a) addObject(cloneref(a)) end)
 		Connect(LoadedModulesStorage.DescendantRemoving,removeObject)
 	end
 
 	local function get(o)
 		return o:GetDescendants()
 	end
+	
+	local StarterClassNames = {
+		[1] = "Workspace", [2] = "Players", [3] = "CoreGui", [4] = "Lighting", [5] = "NetworkClient",
+		[6] = "ReplicatedFirst", [7] = "ReplicatedStorage", [8] = "StarterGui", [9] = "StarterPack",
+		[10] = "StarterPlayer", [11] = "Teams", [12] = "SoundService", [13] = "TestService",
+	}
+	
+	for hey, class in ipairs(StarterClassNames) do
+		addObject(cloneref(game:GetService(class)), true)
+	end
 
 	local function r(o)
 		local s,children = pcall(get, o)
 		if s then
-			for i = 1,#children do
-				addObject(children[i],true);
+			for i, v in pairs(children) do
+				if not table.find(StarterClassNames, v.ClassName) then
+					addObject(cloneref(v), true);
+				end
 			end
 		end
 	end
