@@ -9,7 +9,7 @@ local Option = {
 }
 
 local getfunctions = gets.getfunctions
-local GetDebugId = function(a) if typeof(a) ~= "Instance" then print("???????", a) print(debug.traceback()) end return clonefunction(game.GetDebugId)(a) end
+local GetDebugId = clonefunction(game.GetDebugId)
 
 -- MERELY
 
