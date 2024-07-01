@@ -2204,9 +2204,7 @@ local Selection do
 	end
 
 	function Selection:Get()
-		local list = {}
-		table.move(SelectionList, 1, #SelectionList, 1, list)
-		return list
+		return table.clone(SelectionList)
 	end
 
 	bindSetSelection.OnInvoke = function(...)
