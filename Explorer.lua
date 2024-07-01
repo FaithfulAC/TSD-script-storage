@@ -3777,11 +3777,11 @@ do
 		}
 	end
 
-	Connect(game.DescendantAdded,function(a) addObject(cloneref(a)) end)
-	Connect(game.DescendantRemoving,removeObject)
+	Connect(game.DescendantAdded,function(a) task.spawn(addObject, cloneref(a)) end)
+	Connect(game.DescendantRemoving,function(a) task.spawn(removeObject, a) end)
 
-	Connect(DexOutput.DescendantAdded,function(a) addObject(cloneref(a)) end)
-	Connect(DexOutput.DescendantRemoving,removeObject)
+	Connect(DexOutput.DescendantAdded,function(a) task.spawn(addObject, cloneref(a)) end)
+	Connect(DexOutput.DescendantRemoving,function(a) task.spawn(removeObject, a) end)
 
 	if DexStorageEnabled then
 		--[[if readfile(getelysianpath().."DexStorage.txt") == nil then
@@ -3790,16 +3790,16 @@ do
 
 		buildDexStorage()]]
 
-		Connect(DexStorage.DescendantAdded,function(a) addObject(cloneref(a)) end)
-		Connect(DexStorage.DescendantRemoving,removeObject)
+		Connect(DexStorage.DescendantAdded,function(a) task.spawn(addObject, cloneref(a)) end)
+		Connect(DexStorage.DescendantRemoving,function(a) task.spawn(removeObject, a) end)
 
-		Connect(DexStorage.DescendantAdded,updateDexStorage)
-		Connect(DexStorage.DescendantRemoving,updateDexStorage)
+		Connect(DexStorage.DescendantAdded,function(a) task.spawn(updateDexStorage, a) end)
+		Connect(DexStorage.DescendantRemoving,function(a) task.spawn(updateDexStorage, a) end)
 	end
 
 	if NilStorageEnabled then
-		Connect(NilStorage.DescendantAdded,function(a) addObject(cloneref(a)) end)
-		Connect(NilStorage.DescendantRemoving,removeObject)	
+		Connect(NilStorage.DescendantAdded,function(a) task.spawn(addObject, cloneref(a)) end)
+		Connect(NilStorage.DescendantRemoving,function(a) task.spawn(removeObject, a) end)	
 
 		--[[local currentTable = get_nil_instances()	
 		
@@ -3825,12 +3825,12 @@ do
 		end)]]
 	end
 	if RunningScriptsStorageEnabled then
-		Connect(RunningScriptsStorage.DescendantAdded,function(a) addObject(cloneref(a)) end)
-		Connect(RunningScriptsStorage.DescendantRemoving,removeObject)
+		Connect(RunningScriptsStorage.DescendantAdded,function(a) task.spawn(addObject, cloneref(a)) end)
+		Connect(RunningScriptsStorage.DescendantRemoving,function(a) task.spawn(removeObject, a) end)
 	end
 	if LoadedModulesStorageEnabled then
-		Connect(LoadedModulesStorage.DescendantAdded,function(a) addObject(cloneref(a)) end)
-		Connect(LoadedModulesStorage.DescendantRemoving,removeObject)
+		Connect(LoadedModulesStorage.DescendantAdded,function(a) task.spawn(addObject, cloneref(a)) end)
+		Connect(LoadedModulesStorage.DescendantRemoving,function(a) task.spawn(removeObject, a) end)
 	end
 
 	local function get(o)
@@ -3852,7 +3852,7 @@ do
 		if s then
 			for i, v in pairs(children) do
 				if not table.find(StarterClassNames, v.ClassName) then
-					addObject(cloneref(v), true);
+					task.spawn(addObject, cloneref(v), true);
 				end
 			end
 		end
