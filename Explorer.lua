@@ -620,11 +620,7 @@ function createDDown(dBut, callback,...)
 end
 
 -- Connects a function to an event such that it fires asynchronously
-function Connect(event,func)
-	return event:Connect(function(...)
-		task.spawn(func, ...)
-	end)
-end
+local Connect = game.Changed.Connect;
 
 -- returns the ascendant ScreenGui of an object
 function GetScreen(screen)
@@ -651,7 +647,7 @@ do
 	end
 
 	function SetZIndexOnChanged(object)
-		return object.Changed:connect(function(p)
+		return Connect(object.Changed, function(p)
 			if p == "ZIndex" then
 				SetZIndex(object,object.ZIndex)
 			end
@@ -1078,15 +1074,15 @@ do
 		})
 
 		local scrollEventID = 0
-		ScrollDownFrame.MouseButton1Down:connect(function()
+		Connect(ScrollDownFrame.MouseButton1Down, function()
 			scrollEventID = tick()
 			local current = scrollEventID
 			local up_con
-			up_con = MouseDrag.MouseButton1Up:connect(function()
+			up_con = Connect(MouseDrag.MouseButton1Up, function()
 				scrollEventID = tick()
 				MouseDrag.Parent = nil
 				ResetButtonColor(ScrollDownFrame)
-				up_con:disconnect(); drag = nil
+				up_con:Disconnect(); drag = nil
 			end)
 			MouseDrag.Parent = GetScreen(ScrollFrame)
 			Class:ScrollDown()
@@ -1098,19 +1094,19 @@ do
 			end
 		end)
 
-		ScrollDownFrame.MouseButton1Up:connect(function()
+		Connect(ScrollDownFrame.MouseButton1Up, function()
 			scrollEventID = tick()
 		end)
 
-		ScrollUpFrame.MouseButton1Down:connect(function()
+		Connect(ScrollUpFrame.MouseButton1Down, function()
 			scrollEventID = tick()
 			local current = scrollEventID
 			local up_con
-			up_con = MouseDrag.MouseButton1Up:connect(function()
+			up_con = Connect(MouseDrag.MouseButton1Up, function()
 				scrollEventID = tick()
 				MouseDrag.Parent = nil
 				ResetButtonColor(ScrollUpFrame)
-				up_con:disconnect(); drag = nil
+				up_con:Disconnect(); drag = nil
 			end)
 			MouseDrag.Parent = GetScreen(ScrollFrame)
 			Class:ScrollUp()
@@ -1122,20 +1118,20 @@ do
 			end
 		end)
 
-		ScrollUpFrame.MouseButton1Up:connect(function()
+		Connect(ScrollUpFrame.MouseButton1Up, function()
 			scrollEventID = tick()
 		end)
 
 		if horizontal then
-			ScrollBarFrame.MouseButton1Down:connect(function(x,y)
+			Connect(ScrollBarFrame.MouseButton1Down, function(x,y)
 				scrollEventID = tick()
 				local current = scrollEventID
 				local up_con
-				up_con = MouseDrag.MouseButton1Up:connect(function()
+				up_con = Connect(MouseDrag.MouseButton1Up, function()
 					scrollEventID = tick()
 					MouseDrag.Parent = nil
 					ResetButtonColor(ScrollUpFrame)
-					up_con:disconnect(); drag = nil
+					up_con:Disconnect(); drag = nil
 				end)
 				MouseDrag.Parent = GetScreen(ScrollFrame)
 				if x > ScrollThumbFrame.AbsolutePosition.x then
@@ -1157,15 +1153,15 @@ do
 				end
 			end)
 		else
-			ScrollBarFrame.MouseButton1Down:connect(function(x,y)
+			Connect(ScrollBarFrame.MouseButton1Down, function(x,y)
 				scrollEventID = tick()
 				local current = scrollEventID
 				local up_con
-				up_con = MouseDrag.MouseButton1Up:connect(function()
+				up_con = Connect(MouseDrag.MouseButton1Up, function()
 					scrollEventID = tick()
 					MouseDrag.Parent = nil
 					ResetButtonColor(ScrollUpFrame)
-					up_con:disconnect(); drag = nil
+					up_con:Disconnect(); drag = nil
 				end)
 				MouseDrag.Parent = GetScreen(ScrollFrame)
 				if y > ScrollThumbFrame.AbsolutePosition.y then
@@ -1189,12 +1185,12 @@ do
 		end
 
 		if horizontal then
-			ScrollThumbFrame.MouseButton1Down:connect(function(x,y)
+			Connect(ScrollThumbFrame.MouseButton1Down, function(x,y)
 				scrollEventID = tick()
 				local mouse_offset = x - ScrollThumbFrame.AbsolutePosition.x
 				local drag_con
 				local up_con
-				drag_con = MouseDrag.MouseMoved:connect(function(x,y)
+				drag_con = Connect(MouseDrag.MouseMoved, function(x,y)
 					local bar_abs_pos = ScrollBarFrame.AbsolutePosition.x
 					local bar_drag = ScrollBarFrame.AbsoluteSize.x - ScrollThumbFrame.AbsoluteSize.x
 					local bar_abs_one = bar_abs_pos + bar_drag
@@ -1203,22 +1199,22 @@ do
 					x = x - bar_abs_pos
 					Class:SetScrollPercent(x/(bar_drag))
 				end)
-				up_con = MouseDrag.MouseButton1Up:connect(function()
+				up_con = Connect(MouseDrag.MouseButton1Up, function()
 					scrollEventID = tick()
 					MouseDrag.Parent = nil
 					ResetButtonColor(ScrollThumbFrame)
-					drag_con:disconnect(); drag_con = nil
-					up_con:disconnect(); drag = nil
+					drag_con:Disconnect(); drag_con = nil
+					up_con:Disconnect(); drag = nil
 				end)
 				MouseDrag.Parent = GetScreen(ScrollFrame)
 			end)
 		else
-			ScrollThumbFrame.MouseButton1Down:connect(function(x,y)
+			Connect(ScrollThumbFrame.MouseButton1Down, function(x,y)
 				scrollEventID = tick()
 				local mouse_offset = y - ScrollThumbFrame.AbsolutePosition.y
 				local drag_con
 				local up_con
-				drag_con = MouseDrag.MouseMoved:connect(function(x,y)
+				drag_con = Connect(MouseDrag.MouseMoved, function(x,y)
 					local bar_abs_pos = ScrollBarFrame.AbsolutePosition.y
 					local bar_drag = ScrollBarFrame.AbsoluteSize.y - ScrollThumbFrame.AbsoluteSize.y
 					local bar_abs_one = bar_abs_pos + bar_drag
@@ -1227,12 +1223,12 @@ do
 					y = y - bar_abs_pos
 					Class:SetScrollPercent(y/(bar_drag))
 				end)
-				up_con = MouseDrag.MouseButton1Up:connect(function()
+				up_con = Connect(MouseDrag.MouseButton1Up, function()
 					scrollEventID = tick()
 					MouseDrag.Parent = nil
 					ResetButtonColor(ScrollThumbFrame)
-					drag_con:disconnect(); drag_con = nil
-					up_con:disconnect(); drag = nil
+					drag_con:Disconnect(); drag_con = nil
+					up_con:Disconnect(); drag = nil
 				end)
 				MouseDrag.Parent = GetScreen(ScrollFrame)
 			end)
@@ -1791,7 +1787,7 @@ function CreateRightClickMenuItem(text, onClick, insObj)
 		button.FontSize = Enum.FontSize.Size11
 	end
 
-	button.MouseEnter:connect(function()
+	Connect(button.MouseEnter, function()
 		button.TextColor3 = DropDown.TextColorOver
 		button.BackgroundColor3 = DropDown.BackColorOver
 		if not insObj and CurrentInsertObjectWindow then
@@ -1810,11 +1806,11 @@ function CreateRightClickMenuItem(text, onClick, insObj)
 			end
 		end
 	end)
-	button.MouseLeave:connect(function()
+	Connect(button.MouseLeave, function()
 		button.TextColor3 = DropDown.TextColor
 		button.BackgroundColor3 = DropDown.BackColor
 	end)
-	button.MouseButton1Click:connect(function()
+	Connect(button.MouseButton1Click, function()
 		button.TextColor3 = DropDown.TextColor
 		button.BackgroundColor3 = DropDown.BackColor
 		onClick(text)
@@ -2227,7 +2223,7 @@ function CreateCaution(title,msg)
 	newCaution.Visible = true
 	newCaution.Title.Text = title
 	newCaution.MainWindow.Desc.Text = msg
-	newCaution.MainWindow.Ok.MouseButton1Up:connect(function()
+	Connect(newCaution.MainWindow.Ok.MouseButton1Up, function()
 		newCaution.Visible = false
 	end)
 end
@@ -2251,7 +2247,7 @@ function CreateTableCaution(title,msg)
 	end
 	newCaution.Parent = explorerPanel.Parent
 	newCaution.Visible = true
-	newCaution.MainWindow.Ok.MouseButton1Up:connect(function()
+	Connect(newCaution.MainWindow.Ok.MouseButton1Up, function()
 		newCaution:Destroy()
 	end)
 end
@@ -2411,13 +2407,13 @@ function PromptRemoteCaller(inst)
 	local newArgument = ArgumentTemplate:Clone()
 	newArgument.Parent = ArgumentList
 	newArgument.Visible = true
-	newArgument.Type.MouseButton1Down:connect(function()
+	Connect(newArgument.Type.MouseButton1Down, function()
 		createDDown(newArgument.Type,function(choice)
 			newArgument.Type.Text = choice
 		end,"Number","String","Color3","Vector3","Vector2","UDim2","NumberRange")
 	end)
 
-	CurrentRemoteWindow.MainWindow.Ok.MouseButton1Up:connect(function()
+	Connect(CurrentRemoteWindow.MainWindow.Ok.MouseButton1Up, function()
 		if CurrentRemoteWindow and inst.Parent ~= nil then
 			local MyArguments = {}
 			for i,v in pairs(ArgumentList:GetChildren()) do
@@ -2446,14 +2442,14 @@ function PromptRemoteCaller(inst)
 		end
 	end)
 
-	CurrentRemoteWindow.MainWindow.Add.MouseButton1Up:connect(function()
+	Connect(CurrentRemoteWindow.MainWindow.Add.MouseButton1Up, function()
 		if CurrentRemoteWindow then
 			local newArgument = ArgumentTemplate:Clone()
 			newArgument.Position = UDim2.new(0,0,0,#ArgumentList:GetChildren() * 20)
 			newArgument.Parent = ArgumentList
 			ArgumentList.CanvasSize = UDim2.new(0,0,0,#ArgumentList:GetChildren() * 20)
 			newArgument.Visible = true
-			newArgument.Type.MouseButton1Down:connect(function()
+			Connect(newArgument.Type.MouseButton1Down, function()
 				createDDown(newArgument.Type,function(choice)
 					newArgument.Type.Text = choice
 				end,"Number","String","Color3","Vector3","Vector2","UDim2","NumberRange")
@@ -2461,7 +2457,7 @@ function PromptRemoteCaller(inst)
 		end
 	end)
 
-	CurrentRemoteWindow.MainWindow.Subtract.MouseButton1Up:connect(function()
+	Connect(CurrentRemoteWindow.MainWindow.Subtract.MouseButton1Up, function()
 		if CurrentRemoteWindow then
 			if #ArgumentList:GetChildren() > 1 then
 				ArgumentList:GetChildren()[#ArgumentList:GetChildren()]:Destroy()
@@ -2470,14 +2466,14 @@ function PromptRemoteCaller(inst)
 		end
 	end)
 
-	CurrentRemoteWindow.MainWindow.Cancel.MouseButton1Up:connect(function()
+	Connect(CurrentRemoteWindow.MainWindow.Cancel.MouseButton1Up, function()
 		if CurrentRemoteWindow then
 			CurrentRemoteWindow:Destroy()
 			CurrentRemoteWindow = nil
 		end
 	end)
 
-	CurrentRemoteWindow.MainWindow.DisplayReturned.MouseButton1Up:connect(function()
+	Connect(CurrentRemoteWindow.MainWindow.DisplayReturned.MouseButton1Up, function()
 		if displayValues then
 			displayValues = false
 			CurrentRemoteWindow.MainWindow.DisplayReturned.enabled.Visible = false
@@ -2964,7 +2960,7 @@ do
 		local connDrag
 		local conUp
 
-		conDrag = mouseDrag.MouseMoved:connect(function(x,y)
+		conDrag = Connect(mouseDrag.MouseMoved, function(x,y)
 			local pos = Vector2.new(x,y) - listFrame.AbsolutePosition
 			local size = listFrame.AbsoluteSize
 			if pos.x < 0 or pos.x > size.x or pos.y < 0 or pos.y > size.y then return end
@@ -2987,12 +2983,12 @@ do
 
 		function cancelSelectDrag()
 			mouseDrag.Parent = nil
-			conDrag:disconnect()
-			conUp:disconnect()
+			conDrag:Disconnect()
+			conUp:Disconnect()
 			function cancelSelectDrag()end
 		end
 
-		conUp = mouseDrag[button]:connect(cancelSelectDrag)
+		conUp = Connect(mouseDrag[button], cancelSelectDrag)
 
 		mouseDrag.Parent = GetScreen(listFrame)
 	end
@@ -3039,7 +3035,7 @@ do
 		})
 		SetZIndex(parentHighlight,9)
 
-		conDrag = mouseDrag.MouseMoved:connect(function(x,y)
+		conDrag = Connect(mouseDrag.MouseMoved, function(x,y)
 			local dragPos = Vector2.new(x,y)
 			if dragged then
 				local pos = dragPos - listFrame.AbsolutePosition
@@ -3075,9 +3071,9 @@ do
 
 		function cancelReparentDrag()
 			mouseDrag.Parent = nil
-			conDrag:disconnect()
-			conUp:disconnect()
-			conUp2:disconnect()
+			conDrag:Disconnect()
+			conUp:Disconnect()
+			conUp2:Disconnect()
 			dragGhost:Destroy()
 			parentHighlight:Destroy()
 			function cancelReparentDrag()end
@@ -3088,7 +3084,7 @@ do
 			Selection:Set({object})
 		end
 
-		conUp = mouseDrag.MouseButton1Up:connect(function()
+		conUp = Connect(mouseDrag.MouseButton1Up, function()
 			cancelReparentDrag()
 			if dragged then
 				if parentIndex then
@@ -3117,7 +3113,7 @@ do
 				end
 			end
 		end)
-		conUp2 = mouseDrag.MouseButton2Down:connect(function()
+		conUp2 = Connect(mouseDrag.MouseButton2Down, function()
 			cancelReparentDrag()
 		end)
 
@@ -3178,7 +3174,7 @@ do
 					listEntries[i] = entry
 
 					local expand = entry.IndentFrame.Expand
-					expand.MouseEnter:connect(function()
+					Connect(expand.MouseEnter, function()
 						local node = TreeList[i + self.ScrollIndex]
 						if #node > 0 then
 							if node.Expanded then
@@ -3188,7 +3184,7 @@ do
 							end
 						end
 					end)
-					expand.MouseLeave:connect(function()
+					Connect(expand.MouseLeave, function()
 						local node = TreeList[i + self.ScrollIndex]
 
 						if not node then
@@ -3208,7 +3204,7 @@ do
 							end
 						end
 					end)
-					expand.MouseButton1Down:connect(function()
+					Connect(expand.MouseButton1Down, function()
 						local node = TreeList[i + self.ScrollIndex]
 
 						if not node then
@@ -3230,7 +3226,7 @@ do
 						end
 					end)
 
-					entry.MouseButton1Down:connect(function(x,y)
+					Connect(entry.MouseButton1Down, function(x,y)
 						local node = TreeList[i + self.ScrollIndex]
 						DestroyRightClick()
 						if GetAwaitRemote:Invoke() then
@@ -3288,7 +3284,7 @@ do
 						end
 					end)
 
-					entry.MouseButton2Down:connect(function()
+					Connect(entry.MouseButton2Down, function()
 						if not Option.Selectable then return end
 
 						DestroyRightClick()
@@ -3308,7 +3304,7 @@ do
 					end)
 
 
-					entry.MouseButton2Up:connect(function()
+					Connect(entry.MouseButton2Up, function()
 						if not Option.Selectable then return end
 
 						local node = TreeList[i + self.ScrollIndex]
@@ -3346,11 +3342,11 @@ do
 
 				-- update name change detection
 				if nameConnLookup[entry] then
-					nameConnLookup[entry]:disconnect()
+					nameConnLookup[entry]:Disconnect()
 				end
 				local text = entry.IndentFrame.EntryText
 				text.Text = object.Name
-				nameConnLookup[entry] = node.Object.Changed:connect(function(p)
+				nameConnLookup[entry] = Connect(node.Object.Changed, function(p)
 					if p == 'Name' then
 						text.Text = object.Name
 					end
@@ -3393,14 +3389,14 @@ do
 	end)
 
 	local wheelAmount = 6
-	explorerPanel.MouseWheelForward:connect(function()
+	Connect(explorerPanel.MouseWheelForward, function()
 		if scrollBar.VisibleSpace - 1 > wheelAmount then
 			scrollBar:ScrollTo(scrollBar.ScrollIndex - wheelAmount)
 		else
 			scrollBar:ScrollTo(scrollBar.ScrollIndex - scrollBar.VisibleSpace)
 		end
 	end)
-	explorerPanel.MouseWheelBackward:connect(function()
+	Connect(explorerPanel.MouseWheelBackward, function()
 		if scrollBar.VisibleSpace - 1 > wheelAmount then
 			scrollBar:ScrollTo(scrollBar.ScrollIndex + wheelAmount)
 		else
@@ -3466,7 +3462,9 @@ end
 -- Removes an object's tree node. Called when the object stops existing in the
 -- game tree.
 local function removeObject(object)
-	local objectNode = NodeLookup[GetDebugId(object)]
+	local debugid = GetDebugId(object)
+	
+	local objectNode = NodeLookup[debugid]
 	if not objectNode then
 		return
 	end
@@ -3477,9 +3475,9 @@ local function removeObject(object)
 
 	local parent = objectNode.Parent
 	remove(parent,objectNode.Index)
-	NodeLookup[GetDebugId(object)] = nil
-	connLookup[GetDebugId(object)]:Disconnect()
-	connLookup[GetDebugId(object)] = nil
+	NodeLookup[debugid] = nil
+	connLookup[debugid]:Disconnect()
+	connLookup[debugid] = nil
 
 	if visible then
 		updateList()
@@ -3595,8 +3593,11 @@ local function addObject(object,noupdate)
 			return
 		end
 	end
+	
+	local debugid = GetDebugId(object)
+	local parentdebugid = GetDebugId(object.Parent)
 
-	local parentNode = NodeLookup[GetDebugId(object.Parent)]
+	local parentNode = NodeLookup[parentdebugid]
 	if not parentNode then
 		return
 	end
@@ -3610,7 +3611,7 @@ local function addObject(object,noupdate)
 		Depth = depth(object);
 	}
 
-	connLookup[GetDebugId(object)] = Connect(object.AncestryChanged,function(c,p)
+	connLookup[debugid] = Connect(object.AncestryChanged,function(c,p)
 		if compareinstances(c, object) then
 			if p == nil then
 				removeObject(c)
@@ -3620,7 +3621,7 @@ local function addObject(object,noupdate)
 		end
 	end)
 
-	NodeLookup[GetDebugId(object)] = objectNode
+	NodeLookup[debugid] = objectNode
 	insert(parentNode,#parentNode+1,objectNode)
 
 	if not noupdate then
@@ -3721,7 +3722,7 @@ function updateDexStorageListeners()
 	dexStorageListeners = {}
 	for i,v in pairs(DexStorageMain:GetChildren()) do
 		pcall(function()
-			local ev = v.Changed:connect(updateDexStorage)
+			local ev = Connect(v.Changed, updateDexStorage)
 			table.insert(dexStorageListeners,ev)
 		end)
 	end
@@ -4073,7 +4074,7 @@ function SelectionVar()
 	return Selection
 end
 
-Input.InputBegan:connect(function(key)
+Connect(Input.InputBegan, function(key)
 	if key.KeyCode == Enum.KeyCode.LeftControl then
 		HoldingCtrl = true
 	end
@@ -4082,7 +4083,7 @@ Input.InputBegan:connect(function(key)
 	end
 end)
 
-Input.InputEnded:connect(function(key)
+Connect(Input.InputEnded, function(key)
 	if key.KeyCode == Enum.KeyCode.LeftControl then
 		HoldingCtrl = false
 	end
@@ -4099,7 +4100,7 @@ explorerFilter.Changed:connect(function(prop)
 end)
 ]] -- literally just free lag
 
-explorerFilter.FocusLost:Connect(function(EnterPressed)
+Connect(explorerFilter.FocusLost, function(EnterPressed)
 	if EnterPressed then
 		rawUpdateList()
 	end
