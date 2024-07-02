@@ -3609,7 +3609,7 @@ local function addObject(object,noupdate)
 		Depth = depth(object);
 	}
 
-	connLookup[debugid] = Connect(object.AncestryChanged,function(c,p)
+	connLookup[debugid] = object.AncestryChanged:Connect(function(c,p)
 		if compareinstances(c, object) then
 			if p == nil then
 				removeObject(c)
