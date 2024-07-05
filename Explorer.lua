@@ -2662,6 +2662,7 @@ local GetPath = function(Instance) -- ripped from some random script
 	local string = {}
 	local temp = {}
 	local error = false
+	local game = workspace.Parent -- :(
 
 	while Obj ~= game do
 		if Obj == nil then
