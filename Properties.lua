@@ -323,31 +323,27 @@ local function GetCheckboxImageName(checked, readOnly, mouseover)
 	end
 end
 
-local MAP_ID = 418720155
-
--- Gui Controls --
-
 ---- IconMap ----
--- Image size: 256px x 256px
+-- Image size: 512px x 512px
 -- Icon size: 16px x 16px
--- Padding between each icon: 2px
--- Padding around image edge: 1px
--- Total icons: 14 x 14 (196)
+-- Padding between each icon: 0px
+-- Padding around image edge: 0px
+-- Total icons: 1000
+
 local Icon do
-	local iconMap = 'http://www.roblox.com/asset/?id=' .. MAP_ID
-	ContentProvider:Preload(iconMap)
+	local iconMap = "rbxasset://textures/TagEditor/famfamfam.png"
+
 	local iconDehash do
 		-- 14 x 14, 0-based input, 0-based output
 		local f=math.floor
 		function iconDehash(h)
-			return f(h/14%14),f(h%14)
+			return f(h/32%32),f(h%32)
 		end
 	end
 
 	function Icon(IconFrame,index)
-		local row,col = iconDehash(index)
-		local mapSize = Vector2.new(256,256)
-		local pad,border = 2,1
+		local row, col = iconDehash(index)
+		local mapSize = Vector2.new(512,512)
 		local iconSize = 16
 
 		local class = 'Frame'
@@ -371,7 +367,7 @@ local Icon do
 			})
 		end
 
-		IconFrame.IconMap.Position = UDim2.new(-col - (pad*(col+1) + border)/iconSize,0,-row - (pad*(row+1) + border)/iconSize,0)
+		IconFrame.IconMap.Position = UDim2.new(-col,0,-row,0)
 		return IconFrame
 	end
 end
@@ -428,11 +424,11 @@ local function CreateObject(readOnly)
 	else
 		button.TextColor3 = Row.TextColor
 	end
-	local cancel = Create(Icon('ImageButton',177),{
+	local cancel = Create(Icon('ImageButton',338),{
 		Name = "Cancel";
 		Visible = false;
 		Position = UDim2.new(1,-20,0,0);
-		Size = UDim2.new(0,20,0,20);
+		Size = UDim2.new(0,24,0,24);
 		Parent = button;
 	})
 	return button
