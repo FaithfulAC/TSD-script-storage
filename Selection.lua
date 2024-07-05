@@ -243,7 +243,7 @@ function createSetting(name,interName,defaultOn)
 
 	local function toggle(on)
 		if on then
-			newSetting.Change.Bar:TweenPosition(UDim2.new(0,28,0,-2),Enum.EasingDirection.Out,Enum.EasingStyle.Quart,0.25,true)
+			newSetting.Change.Bar:TweenPosition(UDim2.new(0,30,0,-2),Enum.EasingDirection.Out,Enum.EasingStyle.Quart,0.25,true)
 			newSetting.Change.OnBar:TweenSize(UDim2.new(0,34,0,15),Enum.EasingDirection.Out,Enum.EasingStyle.Quart,0.25,true)
 			newSetting.Status.Text = "On"
 			Settings[interName] = true
