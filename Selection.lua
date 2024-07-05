@@ -357,7 +357,7 @@ SettingsListener.OnInvoke = ReturnSetting
 function createMapSetting(obj,interName,defaultOn)
 	local function toggle(on)
 		if on then
-			obj.Change.Bar:TweenPosition(UDim2.new(0,32,0,-2),Enum.EasingDirection.Out,Enum.EasingStyle.Quart,0.25,true)
+			obj.Change.Bar:TweenPosition(UDim2.new(0,30,0,-2),Enum.EasingDirection.Out,Enum.EasingStyle.Quart,0.25,true)
 			obj.Change.OnBar:TweenSize(UDim2.new(0,34,0,15),Enum.EasingDirection.Out,Enum.EasingStyle.Quart,0.25,true)
 			obj.Status.Text = "On"
 			SaveMapSettings[interName] = true
