@@ -2872,7 +2872,7 @@ function rightClickMenu(sObj)
 						local decompile = decompile or disassemble or getscriptbytecode or function()
 							return "-- No function exists to load this script"
 						end;
-						
+
 						-- to set
 						local data = nil;
 
@@ -2895,7 +2895,7 @@ function rightClickMenu(sObj)
 								data = "-- An error occurred while loading this script: " .. res
 							end
 						end
-						
+
 						writefile("TSDex/" .. game.PlaceId .. '_' .. list[i].Name:gsub('%W', '') .. '_' .. math.random(100000, 999999) .. '.lua', data);
 					end
 				end
@@ -3440,6 +3440,8 @@ local function depth(o)
 	while o do
 		o = o.Parent
 		d = d + 1
+		
+		if d%100 == 0 then task.wait() end
 	end
 	return d
 end
@@ -3462,7 +3464,7 @@ end
 -- game tree.
 local function removeObject(object)
 	local debugid = GetDebugId(object)
-	
+
 	local objectNode = NodeLookup[debugid]
 	if not objectNode then
 		return
@@ -3592,7 +3594,7 @@ local function addObject(object,noupdate)
 			return
 		end
 	end
-	
+
 	local debugid = GetDebugId(object)
 	local parentdebugid = GetDebugId(object.Parent)
 
@@ -3777,7 +3779,7 @@ do
 			Expanded = true;
 		}
 	end
-	
+
 	-- Connects a function to an event such that it fires asynchronously
 	local function Connect(event,func)
 		return event:Connect(function(...)
@@ -3844,13 +3846,13 @@ do
 	local function get(o)
 		return o:GetDescendants()
 	end
-	
+
 	local StarterClassNames = {
 		[1] = "Workspace", [2] = "Players", [3] = "CoreGui", [4] = "Lighting", [5] = "NetworkClient",
 		[6] = "ReplicatedFirst", [7] = "ReplicatedStorage", [8] = "StarterGui", [9] = "StarterPack",
 		[10] = "StarterPlayer", [11] = "Teams", [12] = "SoundService", [13] = "TestService", [14] = "Stats",
 	}
-	
+
 	for hey, class in ipairs(StarterClassNames) do
 		addObject(cloneref(game:GetService(class)), true)
 	end
