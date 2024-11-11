@@ -331,7 +331,12 @@ end
 -- Total icons: 1000
 
 local Icon do
-	local iconMap = "rbxasset://textures/TagEditor/famfamfam.png"
+	local iconMap;
+	if not getcustomasset then
+		iconMap = "rbxasset://textures/TagEditor/famfamfam.png"
+	else
+		iconMap = getcustomasset(game:HttpGet("https://raw.githubusercontent.com/FaithfulAC/TSD-script-storage/refs/heads/main/DexAssets/famfamfam.png"))
+	end
 
 	local iconDehash do
 		-- 14 x 14, 0-based input, 0-based output
