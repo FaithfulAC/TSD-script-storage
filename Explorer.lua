@@ -664,11 +664,11 @@ end
 
 local Icon do
 	local iconMap;
-	if not getcustomasset then
+	--if not getcustomasset then
 		iconMap = "rbxasset://textures/ClassImages.png"
-	else
-		iconMap = getcustomasset(game:HttpGet("https://raw.githubusercontent.com/FaithfulAC/TSD-script-storage/refs/heads/main/DexAssets/ClassImages.png"))
-	end
+	--else
+	--	iconMap = getcustomasset(game:HttpGet("https://raw.githubusercontent.com/FaithfulAC/TSD-script-storage/refs/heads/main/DexAssets/ClassImages.png"))
+	--end
 	local floor = math.floor
 
 	function Icon(IconFrame,index)
@@ -711,11 +711,11 @@ end
 
 local Icon2 do
 	local iconMap2;
-	if not getcustomasset then
+	--if not getcustomasset then
 		iconMap2 = "rbxasset://textures/TagEditor/famfamfam.png"
-	else
-		iconMap2 = getcustomasset(game:HttpGet("https://raw.githubusercontent.com/FaithfulAC/TSD-script-storage/refs/heads/main/DexAssets/famfamfam.png"))
-	end
+	--else
+	--	iconMap2 = getcustomasset(game:HttpGet("https://raw.githubusercontent.com/FaithfulAC/TSD-script-storage/refs/heads/main/DexAssets/famfamfam.png"))
+	--end
 	local floor = math.floor
 
 	local iconDehash do
