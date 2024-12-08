@@ -1,4 +1,4 @@
-local script = ...
+local script, _, __, isActor = ...
 
 local editor = script.Parent;
 local bindable = editor:WaitForChild("OpenScript");
@@ -11,7 +11,13 @@ local FileName = editor:WaitForChild("TopBar"):WaitForChild("Other"):WaitForChil
 local Title	= editor:WaitForChild("TopBar"):WaitForChild("title");
 
 local cache = {};
-local GetDebugId = clonefunction(game.GetDebugId);
+
+local cloneref = cloneref
+local GetDebugId = clonefunction(game.GetDebugId)
+if isActor then
+	cloneref = function(...) return ... end
+	GetDebugId = function(...) return ... end
+end
 
 local dragger = {}; do
 	local Players = cloneref(game:GetService("Players"))
