@@ -1,6 +1,9 @@
-local script, Api, gets = ...
+local script, Api, gets, isActor = ...
 
 task.wait()
+
+local cloneref = cloneref
+if isActor then cloneref = function(...) return ... end end
 
 local UIS = cloneref(game:GetService('UserInputService'));
 
