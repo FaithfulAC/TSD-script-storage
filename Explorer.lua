@@ -1,4 +1,11 @@
-local script, RbxApi, gets = ...
+local script, RbxApi, gets, isActor = ...
+
+local cloneref = cloneref
+local GetDebugId = clonefunction(game.GetDebugId)
+if isActor then
+	cloneref = function(...) return ... end
+	GetDebugId = function(...) return ... end
+end
 
 -- initial states
 local Option = {
@@ -9,7 +16,6 @@ local Option = {
 }
 
 local getfunctions = gets.getfunctions
-local GetDebugId = clonefunction(game.GetDebugId)
 
 -- MERELY
 
@@ -1995,6 +2001,7 @@ end
 local updateList,rawUpdateList,updateScroll,rawUpdateSize do
 	local function r(t)
 		for i = 1,#t do
+			if i%100 == 0 then task.wait() end
 			if not filteringWorkspace() or scanName(t[i].Object) then
 				TreeList[#TreeList+1] = t[i]
 
