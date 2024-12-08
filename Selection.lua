@@ -1,4 +1,7 @@
-local script = ...
+local script, _, __, isActor = ...
+
+local cloneref = cloneref
+if isActor then cloneref = function(...) return ... end end
 
 local Gui = script.Parent
 
