@@ -1995,8 +1995,6 @@ end
 local updateList,rawUpdateList,updateScroll,rawUpdateSize do
 	local function r(t)
 		for i = 1,#t do
-			if i % 100 == 0 then task.wait() end
-
 			if not filteringWorkspace() or scanName(t[i].Object) then
 				TreeList[#TreeList+1] = t[i]
 
@@ -3450,8 +3448,6 @@ local function depth(o)
 	while o do
 		o = o.Parent
 		d = d + 1
-		
-		if d%100 == 0 then task.wait() end
 	end
 	return d
 end
@@ -3592,6 +3588,7 @@ end
 
 -- Creates a new tree node from an object. Called when an object starts
 -- existing in the game tree.
+
 local function addObject(object,noupdate)
 	if (object == nil or object.Parent == nil) or (object.Parent == game and InstanceBlacklist[object.ClassName] or object.ClassName == '') then
 		return;
@@ -3634,7 +3631,7 @@ local function addObject(object,noupdate)
 
 	NodeLookup[debugid] = objectNode
 	insert(parentNode,#parentNode+1,objectNode)
-
+	
 	if not noupdate then
 		if nodeIsVisible(objectNode) then
 			updateList()
