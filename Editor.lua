@@ -747,12 +747,6 @@ EditorLib.Selection = Selection
 function EditorLib.NewTheme(Name, Theme)
 	Themes[Name] = Theme
 end
-local TextCursor = {
-	Image = "rbxassetid://1188942192",
-	HotspotX = 3,
-	HotspotY = 8,
-	Size = udim2(0, 7, 0, 17)
-}
 function EditorLib.Initialize(Frame, Options)
 	local themestuff = {}
 	local function ThemeSet(obj, prop, val)
