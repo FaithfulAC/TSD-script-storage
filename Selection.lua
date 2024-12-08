@@ -66,7 +66,7 @@ local Windows = {
 local deb = false
 
 function switchWindows(wName,over)
-	if (CurrentWindow == wName and not over) or deb then print(wName) return end
+	if (CurrentWindow == wName and not over) or deb then return end
 
 	deb = true
 	local count = 0
