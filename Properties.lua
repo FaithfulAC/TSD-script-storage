@@ -309,7 +309,8 @@ local AssetImages = {
 }
 
 for i, png in pairs(AssetImages) do
-	AssetImages[i] = "rbxasset://textures/DeveloperFramework/" .. png
+	AssetImages[i] = getcustomasset and getcustomasset("rbxasset://textures/DeveloperFramework/" .. png)
+		or "rbxasset://textures/DeveloperFramework/" .. png;
 end
 
 local function GetCheckboxImageName(checked, readOnly, mouseover)
