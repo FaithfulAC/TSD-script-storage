@@ -335,11 +335,14 @@ end
 
 local Icon do
 	local iconMap;
-	--if not getcustomasset then
+	if not getcustomasset then
 		iconMap = "rbxasset://textures/TagEditor/famfamfam.png"
-	--else
-	--	iconMap = getcustomasset(game:HttpGet("https://raw.githubusercontent.com/FaithfulAC/TSD-script-storage/refs/heads/main/DexAssets/famfamfam.png"))
-	--end
+	else
+		if not readfile("TSDex/famfamfam.png") then
+			writefile("TSDex/famfamfam.png", game:HttpGet("https://raw.githubusercontent.com/FaithfulAC/TSD-script-storage/refs/heads/main/DexAssets/famfamfam.png"))
+		end
+		iconMap = getcustomasset("TSDex/famfamfam.png")
+	end
 
 	local iconDehash do
 		-- 14 x 14, 0-based input, 0-based output
