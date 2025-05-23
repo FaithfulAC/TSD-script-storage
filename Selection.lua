@@ -218,7 +218,7 @@ if getcustomasset then
 end
 
 -- manually set the Icon-named imagelabels' image to targetImage
-for _, icon in pairs(SlideFrame:GetDescendants()) do
+for _, icon in pairs(TopMenu:GetDescendants()) do
 	if icon:IsA("ImageLabel") and icon.Name == "Icon" then
 		icon.Image = targetImage
 	end
