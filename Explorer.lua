@@ -187,8 +187,11 @@ local ACTION_ADDSTAR 		 = 184
 local ACTION_ADDSTAR_OVER 	 = 187
 ]]
 
-local NODE_COLLAPSED      = "rbxasset://textures/ManageCollaborators/arrowRight_dark.png"
-local NODE_EXPANDED       = "rbxasset://textures/ManageCollaborators/arrowDown_dark.png"
+local NODE_COLLAPSED      = getcustomasset and getcustomasset("rbxasset://textures/ManageCollaborators/arrowRight_dark.png")
+	or "rbxasset://textures/ManageCollaborators/arrowRight_dark.png";
+
+local NODE_EXPANDED       = getcustomasset and getcustomasset("rbxasset://textures/ManageCollaborators/arrowDown_dark.png")
+	or "rbxasset://textures/ManageCollaborators/arrowDown_dark.png";
 
 local--[[New]]ExplorerIndex = {
 	["Accessory"] = 32,
@@ -1554,6 +1557,9 @@ end
 
 local Players = cloneref(game:GetService("Players"));
 
+local blackBkg = getcustomasset and getcustomasset("rbxasset://textures/blackBkg_square.png")
+		or "rbxasset://textures/blackBkg_square.png";
+
 function CreateInsertObjectMenu(choices, currentChoice, readOnly, onClick)
 	local mouse = Players.LocalPlayer:GetMouse()
 	local totalSize = explorerPanel.Parent.AbsoluteSize.y
@@ -1607,9 +1613,9 @@ function CreateInsertObjectMenu(choices, currentChoice, readOnly, onClick)
 		menu.BackgroundColor3 = DropDown.BackColor
 		menu.BorderColor3 = DropDown.BorderColor
 		menu.BorderSizePixel = DropDown.BorderSizePixel
-		menu.TopImage = "rbxasset://textures/blackBkg_square.png"
-		menu.MidImage = "rbxasset://textures/blackBkg_square.png"
-		menu.BottomImage = "rbxasset://textures/blackBkg_square.png"
+		menu.TopImage = blackBkg
+		menu.MidImage = blackBkg
+		menu.BottomImage = blackBkg
 		menu.Active = true
 		menu.ZIndex = 5
 		menu.Parent = frame
@@ -1680,9 +1686,9 @@ function CreateFunctionCallerMenu(choices, currentChoice, readOnly, onClick)
 		menu.BackgroundColor3 = DropDown.BackColor
 		menu.BorderColor3 = DropDown.BorderColor
 		menu.BorderSizePixel = DropDown.BorderSizePixel
-		menu.TopImage = "rbxasset://textures/blackBkg_square.png"
-		menu.MidImage = "rbxasset://textures/blackBkg_square.png"
-		menu.BottomImage = "rbxasset://textures/blackBkg_square.png"
+		menu.TopImage = blackBkg
+		menu.MidImage = blackBkg
+		menu.BottomImage = blackBkg
 		menu.Active = true
 		menu.ZIndex = 5
 		menu.Parent = frame
