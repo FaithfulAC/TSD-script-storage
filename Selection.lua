@@ -208,10 +208,25 @@ SettingsButton.MouseButton1Up:connect(function()
 end)
 --]]
 
+local targetImage = "rbxasset://textures/TagEditor/famfamfam.png"
+
+if getcustomasset then
+	if not isfile("TSDex/famfamfam.png") then
+		writefile("TSDex/famfamfam.png", game:HttpGet("https://raw.githubusercontent.com/FaithfulAC/TSD-script-storage/refs/heads/main/DexAssets/famfamfam.png"))
+	end
+	targetImage = getcustomasset("TSDex/famfamfam.png")
+end
+
 for i,v in pairs(SlideFrame:GetChildren()) do
 	v.MouseButton1Click:connect(function()
 		switchWindows(v.Name)
 	end)
+
+	for _, icon in pairs(v:GetDescendants()) do
+		if icon:IsA("ImageLabel") and icon.Name == "Icon" then
+			icon.Image = targetImage
+		end
+	end
 
 	-- v.MouseEnter:connect(function()v.BackgroundTransparency = 0.5 end)
 	-- v.MouseLeave:connect(function()if CurrentWindow~=v.Name then v.BackgroundTransparency = 1 end end)
