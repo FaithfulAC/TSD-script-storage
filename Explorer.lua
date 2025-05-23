@@ -187,10 +187,10 @@ local ACTION_ADDSTAR 		 = 184
 local ACTION_ADDSTAR_OVER 	 = 187
 ]]
 
-local NODE_COLLAPSED      = getcustomasset and getcustomasset("rbxasset://textures/ManageCollaborators/arrowRight_dark.png")
+local NODE_COLLAPSED      = getcustomasset and isfile("TSDex/arrowRight_dark.png") and getcustomasset("TSDex/arrowRight_dark.png")
 	or "rbxasset://textures/ManageCollaborators/arrowRight_dark.png";
 
-local NODE_EXPANDED       = getcustomasset and getcustomasset("rbxasset://textures/ManageCollaborators/arrowDown_dark.png")
+local NODE_EXPANDED       = getcustomasset and isfile("TSDex/arrowDown_dark.png") and getcustomasset("TSDex/arrowDown_dark.png")
 	or "rbxasset://textures/ManageCollaborators/arrowDown_dark.png";
 
 local--[[New]]ExplorerIndex = {
@@ -1557,7 +1557,7 @@ end
 
 local Players = cloneref(game:GetService("Players"));
 
-local blackBkg = getcustomasset and getcustomasset("rbxasset://textures/blackBkg_square.png")
+local blackBkg = getcustomasset and isfile("TSDex/blackBkg_square.png") and getcustomasset("TSDex/blackBkg_square.png")
 		or "rbxasset://textures/blackBkg_square.png";
 
 function CreateInsertObjectMenu(choices, currentChoice, readOnly, onClick)
