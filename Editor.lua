@@ -806,8 +806,8 @@ function EditorLib.Initialize(Frame, Options)
 	TextArea.ScrollBarThickness = 10;
 	TextArea.ScrollBarImageTransparency = 0;
 	TextArea.ScrollBarImageColor3 = Color3.fromRGB(20, 20, 20)
-	TextArea.BottomImage = "rbxasset://textures/ui/Scroll/scroll-middle.png"
-	TextArea.TopImage = "rbxasset://textures/ui/Scroll/scroll-middle.png"
+	TextArea.BottomImage = getcustomasset and getcustomasset("rbxasset://textures/ui/Scroll/scroll-middle.png") or "rbxasset://textures/ui/Scroll/scroll-middle.png"
+	TextArea.TopImage = getcustomasset and getcustomasset("rbxasset://textures/ui/Scroll/scroll-middle.png") or "rbxasset://textures/ui/Scroll/scroll-middle.png"
 	TextArea.ZIndex = 3;
 
 	local Gutter = newInst("Frame")
