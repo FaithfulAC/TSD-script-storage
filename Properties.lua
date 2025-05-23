@@ -309,7 +309,7 @@ local AssetImages = {
 }
 
 for i, png in pairs(AssetImages) do
-	AssetImages[i] = getcustomasset and getcustomasset("rbxasset://textures/DeveloperFramework/" .. png)
+	AssetImages[i] = getcustomasset and isfile("TSDex/" .. png) and getcustomasset("TSDex/" .. png)
 		or "rbxasset://textures/DeveloperFramework/" .. png;
 end
 
