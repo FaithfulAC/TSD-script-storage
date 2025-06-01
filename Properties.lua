@@ -140,6 +140,7 @@ local ContentUrl = ContentProvider.BaseUrl .. "asset/?id="
 local SettingsRemote = Gui:WaitForChild("SettingsPanel"):WaitForChild("GetSetting")
 
 local propertiesSearch = PropertiesFrame.Header.TextBox
+propertiesSearch = cloneref(propertiesSearch)
 
 local AwaitingObjectValue = false
 local AwaitingObjectObj
@@ -454,6 +455,8 @@ local function CreateTextBox(readOnly)
 		box.TextXAlignment = Row.TextXAlignment
 		box.BackgroundTransparency = 1
 		box.TextColor3 = Row.TextColor
+
+		box = cloneref(box)
 		return box
 	end
 end
