@@ -38,12 +38,6 @@ function getRbxApi()
 	RbxApi.Classes = {}
 	RbxApi.Enums = {}
 
-	local function sortAlphabetic(t, property)
-		table.sort(t, function(x,y)
-			return x[property] < y[property]
-		end)
-	end
-
 	local function isEnum(name)
 		return RbxApi.Enums[name] ~= nil
 	end
