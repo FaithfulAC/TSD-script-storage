@@ -109,6 +109,7 @@ local FONT_SIZE do
 	end
 end
 
+-- old colors of dex (grey); below is the navy blue renditioned look
 --[[local GuiColor = {
 	Background      = Color3.fromRGB(43, 43, 43);
 	Border          = Color3.fromRGB(20, 20, 20);
@@ -140,52 +141,6 @@ local GuiColor = {
 	FieldBorder     = Color3.fromRGB(50, 50, 100);
 	TitleBackground = Color3.fromRGB(11, 11, 22);
 }
-
---[[
-local GuiColor = {
-	Background      = Color3.new(233/255, 233/255, 233/255);
-	Border          = Color3.new(149/255, 149/255, 149/255);
-	Selected        = Color3.new( 96/255, 140/255, 211/255);
-	BorderSelected  = Color3.new( 86/255, 125/255, 188/255);
-	Text            = Color3.new(  0/255,   0/255,   0/255);
-	TextDisabled    = Color3.new(128/255, 128/255, 128/255);
-	TextSelected    = Color3.new(255/255, 255/255, 255/255);
-	Button          = Color3.new(221/255, 221/255, 221/255);
-	ButtonBorder    = Color3.new(149/255, 149/255, 149/255);
-	ButtonSelected  = Color3.new(255/255,   0/255,   0/255);
-	Field           = Color3.new(255/255, 255/255, 255/255);
-	FieldBorder     = Color3.new(191/255, 191/255, 191/255);
-	TitleBackground = Color3.new(178/255, 178/255, 178/255);
-}
-]]
-
-----------------------------------------------------------------
-----------------------------------------------------------------
-----------------------------------------------------------------
-----------------------------------------------------------------
----- Icon map constants
-
--- local MAP_ID = 483448923
-
--- Indices based on implementation of Icon function.
--- !!! TO BE REPLACED !!!
---[[
-local ACTION_CUT         	 = 160
-local ACTION_COPY        	 = 161
-local ACTION_PASTE       	 = 162
-local ACTION_DELETE      	 = 163
-local ACTION_SORT        	 = 164
-local ACTION_CUT_OVER    	 = 174
-local ACTION_COPY_OVER   	 = 175
-local ACTION_PASTE_OVER  	 = 176
-local ACTION_DELETE_OVER	 = 177
-local ACTION_SORT_OVER  	 = 178
-local ACTION_EDITQUICKACCESS = 190
-local ACTION_FREEZE 		 = 188
-local ACTION_STARRED 		 = 189
-local ACTION_ADDSTAR 		 = 184
-local ACTION_ADDSTAR_OVER 	 = 187
-]]
 
 local NODE_COLLAPSED      = getcustomasset and isfile("TSDex/arrowRight_dark.png") and getcustomasset("TSDex/arrowRight_dark.png")
 	or "rbxasset://textures/ManageCollaborators/arrowRight_dark.png";
@@ -3913,197 +3868,6 @@ do
 	updateList()
 end
 
-----------------------------------------------------------------
-----------------------------------------------------------------
-----------------------------------------------------------------
-----------------------------------------------------------------
----- Actions
-
---[[local actionButtons do
-	actionButtons = {}
-
-	local totalActions = 1
-	local currentActions = totalActions
-	local function makeButton(icon,over,name,vis,cond)
-		local buttonEnabled = false
-
-		local button = Create(Icon2('ImageButton',icon),{
-			Name = name .. "Button";
-			Visible = Option.Modifiable and Option.Selectable;
-			Position = UDim2.new(1,-(GUI_SIZE+2)*currentActions+2,.25,-GUI_SIZE/2);
-			Size = UDim2.new(0,GUI_SIZE,0,GUI_SIZE);
-			Parent = headerFrame;
-		})
-
-		local tipText = Create('TextLabel',{
-			Name = name .. "Text";
-			Text = name;
-			Visible = false;
-			BackgroundTransparency = 1;
-			TextXAlignment = 'Right';
-			Font = FONT;
-			FontSize = FONT_SIZE;
-			Position = UDim2.new(0,0,0,0);
-			Size = UDim2.new(1,-(GUI_SIZE+2)*totalActions,1,0);
-			Parent = headerFrame;
-		})
-
-
-		button.MouseEnter:connect(function()
-			if buttonEnabled then
-				button.BackgroundTransparency = 0.9
-			end
-			--Icon(button,over)
-			--tipText.Visible = true
-		end)
-		button.MouseLeave:connect(function()
-			button.BackgroundTransparency = 1
-			--Icon(button,icon)
-			--tipText.Visible = false
-		end)
-
-		currentActions = currentActions + 1
-		actionButtons[#actionButtons+1] = {Obj = button,Cond = cond}
-		QuickButtons[#actionButtons+1] = {Obj = button,Cond = cond, Toggle = function(on)
-			if on then
-				buttonEnabled = true
-				Icon(button,over)
-			else
-				buttonEnabled = false
-				Icon(button,icon)
-			end
-		end}
-		return button
-	end
-
-	--local clipboard = {}
-	local function delete(o)
-		o.Parent = nil
-	end
-
-	makeButton(ACTION_EDITQUICKACCESS,ACTION_EDITQUICKACCESS,"Options",true,function()return true end).MouseButton1Click:connect(function()
-
-	end)
-
-
-	-- DELETE
-	makeButton(ACTION_DELETE,ACTION_DELETE_OVER,"Delete",true,function() return #Selection:Get() > 0 end).MouseButton1Click:connect(function()
-		if not Option.Modifiable then return end
-		local list = Selection:Get()
-		for i = 1,#list do
-			pcall(delete,list[i])
-		end
-		Selection:Set({})
-	end)
-
-	-- PASTE
-	makeButton(ACTION_PASTE,ACTION_PASTE_OVER,"Paste",true,function() return #Selection:Get() > 0 and #clipboard > 0 end).MouseButton1Click:connect(function()
-		if not Option.Modifiable then return end
-		local parent = Selection.List[1] or workspace
-		for i = 1,#clipboard do
-			clipboard[i]:Clone().Parent = parent
-		end
-	end)
-
-	-- COPY
-	makeButton(ACTION_COPY,ACTION_COPY_OVER,"Copy",true,function() return #Selection:Get() > 0 end).MouseButton1Click:connect(function()
-		if not Option.Modifiable then return end
-		clipboard = {}
-		local list = Selection.List
-		for i = 1,#list do
-			table.insert(clipboard,list[i]:Clone())
-		end
-		updateActions()
-	end)
-
-	-- CUT
-	makeButton(ACTION_CUT,ACTION_CUT_OVER,"Cut",true,function() return #Selection:Get() > 0 end).MouseButton1Click:connect(function()
-		if not Option.Modifiable then return end
-		clipboard = {}
-		local list = Selection.List
-		local cut = {}
-		for i = 1,#list do
-			local obj = list[i]:Clone()
-			if obj then
-				table.insert(clipboard,obj)
-				table.insert(cut,list[i])
-			end
-		end
-		for i = 1,#cut do
-			pcall(delete,cut[i])
-		end
-		updateActions()
-	end)
-
-	-- FREEZE
-	makeButton(ACTION_FREEZE,ACTION_FREEZE,"Freeze",true,function() return true end)
-
-	-- ADD/REMOVE STARRED
-	makeButton(ACTION_ADDSTAR,ACTION_ADDSTAR_OVER,"Star",true,function() return #Selection:Get() > 0 end)
-
-	-- STARRED
-	makeButton(ACTION_STARRED,ACTION_STARRED,"Starred",true,function() return true end)
-
-
-	-- SORT
-	-- local actionSort = makeButton(ACTION_SORT,ACTION_SORT_OVER,"Sort")
-end
-
-----------------------------------------------------------------
-----------------------------------------------------------------
-----------------------------------------------------------------
-----------------------------------------------------------------
----- Option Bindables
-
-do
-	local optionCallback = {
-		Modifiable = function(value)
-			for i = 1,#actionButtons do
-				actionButtons[i].Obj.Visible = value and Option.Selectable
-			end
-			cancelReparentDrag()
-		end;
-		Selectable = function(value)
-			for i = 1,#actionButtons do
-				actionButtons[i].Obj.Visible = value and Option.Modifiable
-			end
-			cancelSelectDrag()
-			Selection:Set({})
-		end;
-	}
-
-	local bindSetOption = explorerPanel:FindFirstChild("SetOption")
-	if not bindSetOption then
-		bindSetOption = Create('BindableFunction',{Name = "SetOption"})
-		bindSetOption.Parent = explorerPanel
-	end
-
-	bindSetOption.OnInvoke = function(optionName,value)
-		if optionCallback[optionName] then
-			Option[optionName] = value
-			optionCallback[optionName](value)
-		end
-	end
-
-	local bindGetOption = explorerPanel:FindFirstChild("GetOption")
-	if not bindGetOption then
-		bindGetOption = Create('BindableFunction',{Name = "GetOption"})
-		bindGetOption.Parent = explorerPanel
-	end
-
-	bindGetOption.OnInvoke = function(optionName)
-		if optionName then
-			return Option[optionName]
-		else
-			local options = {}
-			for k,v in pairs(Option) do
-				options[k] = v
-			end
-			return options
-		end
-	end
-end]]
-
 function SelectionVar()
 	return Selection
 end
@@ -4125,14 +3889,6 @@ Connect(Input.InputEnded, function(key)
 		HoldingShift = false
 	end
 end)
-
---[[
-explorerFilter.Changed:connect(function(prop)
-	if prop == "Text" then
-		rawUpdateList()
-	end
-end)
-]] -- literally just free lag
 
 Connect(explorerFilter.FocusLost, function(EnterPressed)
 	if EnterPressed then
