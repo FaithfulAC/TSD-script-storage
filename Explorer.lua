@@ -1380,6 +1380,7 @@ local explorerFilter = 	Create('TextBox',{
 explorerFilter.Parent = headerFrame]]
 local headerFrame = explorerPanel:FindFirstChild("Header")
 local explorerFilter = headerFrame:FindFirstChildWhichIsA("TextBox")
+explorerFilter = cloneref(explorerFilter) -- mitigation
 
 SetZIndexOnChanged(explorerPanel)
 
