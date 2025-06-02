@@ -2894,7 +2894,7 @@ function rightClickMenu(sObj)
 					end
 				end
 			elseif option == 'Refresh Instances' then
-				if sObj == NilStorageMain then
+				if compareinstances(sObj, NilStorageMain) then
 					for i, v in pairs(getnilinstances()) do
 						if v ~= DexOutput and v ~= DexOutputMain and v ~= DexStorage and v ~= DexStorageMain and v ~= RunningScriptsStorage and v ~= RunningScriptsStorageMain and v ~= LoadedModulesStorage and v ~= LoadedModulesStorageMain and v ~= NilStorage and v ~= NilStorageMain then
 							pcall(function()
@@ -2902,7 +2902,7 @@ function rightClickMenu(sObj)
 							end)
 						end
 					end
-				elseif sObj == RunningScriptsStorageMain then
+				elseif compareinstances(Obj, RunningScriptsStorageMain) then
 					for i,v in pairs(getscripts()) do
 						if v ~= RunningScriptsStorage and v ~= LoadedModulesStorage and v ~= DexStorage then
 							if v:IsA("BaseScript") then
@@ -2913,7 +2913,7 @@ function rightClickMenu(sObj)
 							end
 						end
 					end
-				elseif sObj == LoadedModulesStorageMain then
+				elseif compareinstances(sObj, LoadedModulesStorageMain) then
 					for i,v in pairs(getloadedmodules()) do
 						if v ~= RunningScriptsStorage and v ~= LoadedModulesStorage and v ~= DexStorage then
 							if (v:IsA'LocalScript' or v:IsA'ModuleScript' or v:IsA'Script') then
