@@ -2,6 +2,7 @@ local script, RbxApi, gets, isActor = ...
 
 local cloneref = cloneref
 local GetDebugId = clonefunction(game.GetDebugId)
+
 if isActor then
 	cloneref = function(...) return ... end
 	GetDebugId = function(...) return ... end
@@ -2669,7 +2670,17 @@ function rightClickMenu(sObj)
 
 	local mouse = Players.LocalPlayer:GetMouse()
 
-	local extra = ((sObj == RunningScriptsStorageMain or sObj == LoadedModulesStorageMain or sObj == NilStorageMain) and 'Refresh Instances' or nil)
+	local extra = (
+		(
+			compareinstances(sObj, RunningScriptsStorageMain)
+			or
+			compareinstances(sObj, LoadedModulesStorageMain)
+			or
+			compareinstances(sObj, NilStorageMain)
+		)
+		and 'Refresh Instances'
+		or nil
+	)
 
 	currentRightClickMenu = CreateRightClickMenu(
 		{
