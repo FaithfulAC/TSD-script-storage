@@ -1721,6 +1721,18 @@ function CreateInsertObject()
 	end
 end
 
+local function LogFunctionResult(funcName, ...)
+	local success = (...)
+	local results = table.pack(select(2, ...))
+
+	if typeof(europa) == "table" and europa.internal and typeof(getrenv) == "function" and getrenv() and typeof(print) == "function" and getrenv().print ~= print then
+		print(success, unpack(results, 1, results.n)) -- since our print ~= original print it cannot be detected by log checks in the coregui internal console
+	end
+
+	local log = Instance.new("Dialog", DexOutputMain)
+	log.Name = funcName .. "_" .. math.random(1, 1000) .. ": " .. (safetostring and safetostring or tostring)(results[1])
+end
+
 function CreateFunctionCaller(oh)
 	if CurrentFunctionCallerWindow then
 		CurrentFunctionCallerWindow:Destroy()
@@ -1735,7 +1747,7 @@ function CreateFunctionCaller(oh)
 			CurrentFunctionCallerWindow = nil
 			local list = SelectionVar():Get()
 			for i,v in pairs(list) do
-				print(pcall(v[option.Name], v))
+				LogFunctionResult(option.Name, pcall(v[option.Name], v))
 			end
 
 			DestroyRightClick()
