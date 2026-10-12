@@ -53,7 +53,7 @@ local TotallyNotGetSelection = ExplorerPanel:WaitForChild("TotallyNotGetSelectio
 local TotallyNotSetSelection = ExplorerPanel:WaitForChild("TotallyNotSetSelection")
 
 local Player = cloneref(game:GetService("Players").LocalPlayer)
-local Mouse = Player:GetMouse()
+local Mouse = cloneref(Player:GetMouse())
 
 local CurrentWindow = "Nothing c:"
 local Windows = {
