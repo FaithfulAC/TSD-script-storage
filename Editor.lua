@@ -1,4 +1,4 @@
-local script, _, __, isActor = ...
+local script, inActor = (...), ({...})[4]
 
 local editor = script.Parent;
 local bindable = editor:WaitForChild("OpenScript");
@@ -14,14 +14,14 @@ local cache = {};
 
 local cloneref = cloneref
 local GetDebugId = clonefunction(game.GetDebugId)
-if isActor then
+if inActor then
 	cloneref = function(...) return ... end
 	GetDebugId = function(...) return ... end
 end
 
 local dragger = {}; do
 	local Players = cloneref(game:GetService("Players"))
-	local mouse = Players.LocalPlayer:GetMouse();
+	local mouse = cloneref(Players.LocalPlayer:GetMouse());
 	local inputService = cloneref(game:GetService('UserInputService'));
 	local RunService = cloneref(game:GetService("RunService"));
 	-- // credits to Ririchi / Inori for this cute drag function :)
