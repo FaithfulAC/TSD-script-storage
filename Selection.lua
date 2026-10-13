@@ -1,7 +1,10 @@
-local script, _, __, isActor = ...
+local script, inActor = (...), ({...})[4]
 
 local cloneref = cloneref
-if isActor then cloneref = function(...) return ... end end
+
+if inActor then
+	cloneref = function(...) return ... end
+end
 
 local Gui = script.Parent
 
