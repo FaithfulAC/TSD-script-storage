@@ -1,9 +1,11 @@
-local script, Api, gets, isActor = ...
+local script, API, getPropertiesPayload, inActor = ...
 
 task.wait()
 
-local cloneref = cloneref
-if isActor then cloneref = function(...) return ... end end
+local cloneref = cloneref;
+if inActor then
+	cloneref = function(...) return ... end
+end
 
 local UIS = cloneref(game:GetService('UserInputService'));
 
@@ -20,58 +22,58 @@ local Players = cloneref(game:GetService("Players"))
 local ReplicatedStorage = cloneref(game:GetService("ReplicatedStorage"))
 
 --[[
-	Api.Classes
-	Api.Enums
-	Api.GetProperties(className)
-	Api.IsEnum(valueType)
+	API.Classes
+	API.Enums
+	API.GetProperties(className)
+	API.IsEnum(valueType)
 ]]
 
-function getRbxApi()
+function getRbxAPI()
 	local foldername = "TSDex"
 
 	if not isfolder(foldername) then
 		makefolder(foldername)
 	end
 
-	local RbxApi = {}
+	local RbxAPI = {}
 
-	RbxApi.Classes = {}
-	RbxApi.Enums = {}
+	RbxAPI.Classes = {}
+	RbxAPI.Enums = {}
 
 	local function isEnum(name)
-		return RbxApi.Enums[name] ~= nil
+		return RbxAPI.Enums[name] ~= nil
 	end
 
-	for _, class in ipairs(Api.Classes) do
-		RbxApi.Classes[class.Name] = class
+	for _, class in ipairs(API.Classes) do
+		RbxAPI.Classes[class.Name] = class
 	end
 
-	for _, enum in ipairs(Api.Enums) do
-		RbxApi.Enums[enum.Name] = enum
+	for _, enum in ipairs(API.Enums) do
+		RbxAPI.Enums[enum.Name] = enum
 		enum.EnumItems = {}
 	end
 
-	for _, enum in ipairs(Api.Enums) do
+	for _, enum in ipairs(API.Enums) do
 		for _, item in ipairs(enum.Items) do
-			RbxApi.Enums[enum.Name].EnumItems[item.Name] = item
+			RbxAPI.Enums[enum.Name].EnumItems[item.Name] = item
 		end
 	end
 
-	RbxApi.GetProperties = gets.getproperties -- defined by lua-getproperties
-	RbxApi.IsEnum = isEnum
+	RbxAPI.GetProperties = getPropertiesPayload.getproperties -- defined by lua-getproperties
+	RbxAPI.IsEnum = isEnum
 
-	return RbxApi
+	return RbxAPI
 end
 
 -- Modules
 local Permissions = {CanEdit = true}
-local RbxApi = getRbxApi()
+local RbxAPI = getRbxAPI()
 
 --[[
-	RbxApi.Classes
-	RbxApi.Enums
-	RbxApi.GetProperties(className)
-	RbxApi.IsEnum(valueType)
+	RbxAPI.Classes
+	RbxAPI.Enums
+	RbxAPI.GetProperties(className)
+	RbxAPI.IsEnum(valueType)
 ]]
 
 -- Styles
@@ -947,9 +949,9 @@ function GetControl(object, propertyData, readOnly)
 
 	if Controls[propertyType] then
 		return Controls[propertyType](object, propertyData, readOnly)
-	elseif RbxApi.IsEnum(propertyType) then
+	elseif RbxAPI.IsEnum(propertyType) then
 		return Controls["Enum"](object, propertyData, readOnly)
-	elseif RbxApi.Classes[propertyType] then
+	elseif RbxAPI.Classes[propertyType] then
 		return Controls["Object"](object, propertyData, readOnly)
 	end
 
@@ -972,7 +974,7 @@ function CanEditProperty(object,propertyData)
 	return CanEditObject(object)
 end
 
---RbxApi
+--RbxAPI
 local function PropertyIsHidden(propertyData)
 	local tags = propertyData.Tags or {}
 	local security = propertyData.Security or {}
@@ -1116,7 +1118,7 @@ function showProperties(obj)
 	for _,nextObj in pairs(obj) do
 		if not foundProps[nextObj.className] then
 			foundProps[nextObj.className] = true
-			for i,v in pairs(RbxApi.GetProperties(nextObj.className)) do
+			for i,v in pairs(RbxAPI.GetProperties(nextObj.className)) do
 				local suc, err = pcall(function()
 					if not (PropertyIsHidden(v)) and not checkForDupe(v,propHolder) then
 						if string.find(string.lower(v.Name),string.lower(propertiesSearch.Text)) or not searchingProperties() then
