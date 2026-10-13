@@ -1,9 +1,9 @@
-local script, RbxApi, gets, isActor = ...
+local script, API, getPropertiesPayload, inActor = ...
 
 local cloneref = cloneref
 local GetDebugId = clonefunction(game.GetDebugId)
 
-if isActor then
+if inActor then
 	cloneref = function(...) return ... end
 	GetDebugId = function(...) return ... end
 end
@@ -16,7 +16,7 @@ local Option = {
 	Selectable = true;
 }
 
-local getfunctions = gets.getfunctions
+local getfunctions = getPropertiesPayload.getfunctions
 
 -- MERELY
 
@@ -1446,13 +1446,13 @@ function ClassCanCreate(IName)
 end
 
 function GetClasses()
-	if RbxApi == nil then
+	if API == nil then
 		return {}
 	end
 
 	local classTable = {}
 
-	for _, classData in pairs(RbxApi.Classes) do
+	for _, classData in pairs(API.Classes) do
 		if ClassCanCreate(classData.Name) then
 			table.insert(classTable, classData.Name)
 		end
@@ -1479,7 +1479,7 @@ local function FunctionIsHidden(functionData)
 end
 
 local function GetAllFunctions(className)
-	if not RbxApi then
+	if not API then
 		return {}
 	end
 
@@ -1493,7 +1493,7 @@ local function GetAllFunctions(className)
 end
 
 function GetFunctions()
-	if not RbxApi then
+	if not API then
 		return {}
 	end
 
@@ -3653,7 +3653,7 @@ end
 
 local function writeObject(obj)
 	local newObject = {ClassName = obj.ClassName, Properties = {}}
-	for i,v in pairs(RbxApi.GetProperties(obj.className)) do
+	for i,v in pairs(API.GetProperties(obj.className)) do
 		if v["Name"] ~= "Parent" then
 			table.insert(newObject.Properties,{Name = v["Name"], Type = v["ValueType"].Name, Value = tostring(obj[v["Name"]])})
 		end
