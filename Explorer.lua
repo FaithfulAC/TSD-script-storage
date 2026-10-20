@@ -36,7 +36,7 @@ local Input = cloneref(game:GetService("UserInputService"))
 local HoldingCtrl = false
 local HoldingShift = false
 
-local DexOutput = Instance.new("Folder")
+local DexOutput = Instance.new("Folder", cloneref(game:GetService("CoreGui")))
 DexOutput.Name = "Output"
 local DexOutputMain = Instance.new("ScreenGui", DexOutput)
 DexOutputMain.Name = "Dex Output"
