@@ -2012,6 +2012,7 @@ local updateList,rawUpdateList,updateScroll,rawUpdateSize do
 	end
 
 	function rawUpdateList()
+		if print ~= getrenv().print then print("raw updating list", tick()) end
 		-- Clear then repopulate the entire list. It appears to be fast enough.		
 		TreeList = {}
 		nodeWidth = 0
