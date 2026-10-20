@@ -1261,9 +1261,7 @@ local lastSelectedNode
 
 local DexStorage
 local DexStorageMain
-local DexStorageEnabled
-
-if saveinstance then DexStorageEnabled = true end
+local DexStorageEnabled = false
 
 local _decompile = decompile;
 
