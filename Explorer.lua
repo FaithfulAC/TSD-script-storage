@@ -1980,7 +1980,6 @@ end
 local updateList,rawUpdateList,updateScroll,rawUpdateSize do
 	local function r(t)
 		for i = 1,#t do
-			if i%100 == 0 then task.wait() end
 			if (t[i]) and (not filteringWorkspace() or scanName(t[i].Object)) then
 				TreeList[#TreeList+1] = t[i]
 
